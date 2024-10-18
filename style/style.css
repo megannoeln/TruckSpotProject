@@ -252,3 +252,24 @@ h1 {
         width: 100%;
     }
 }
+
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.login-header {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.continue-btns {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1rem;
+}
