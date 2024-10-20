@@ -4,6 +4,8 @@
 -- Team C 
 -- Megan Noel, Seth Lubic, Testimony Awuzie & Apiwat Anachai
 --
+-- Last update: Added uspLoginUser procedure
+--
 -- --------------------------------------------------------------------------------
 -- --------------------------------------------------------------------------------
 -- Options
@@ -39,6 +41,11 @@ IF OBJECT_ID('TCuisineTypes')		IS NOT NULL DROP TABLE TCuisineTypes;
 IF OBJECT_ID('TUsers')				IS NOT NULL DROP TABLE TUsers;               
 IF OBJECT_ID('TUserTypes')			IS NOT NULL DROP TABLE TUserTypes;  
 IF OBJECT_ID('TStatuses')			IS NOT NULL DROP TABLE TStatuses; 
+
+
+IF OBJECT_ID( 'uspLoginUser' )	    IS NOT NULL DROP PROCEDURE  uspLoginUser
+
+
 
 
 -- --------------------------------------------------------------------------------
@@ -363,6 +370,34 @@ VALUES
 
 
 
+-- --------------------------------------------------------------------------------
+-- CRUD Stored Procedures
+-- --------------------------------------------------------------------------------
+GO
+
+-- if this returns a record, log user in
+-- if it doesn't return a record their credentials weren't a match
+CREATE PROCEDURE uspLoginUser
+	@strEmail			AS VARCHAR( 50 )
+   ,@strPassword		AS VARCHAR( 50 )
+AS
+SET NOCOUNT ON		
+SET XACT_ABORT ON
+
+BEGIN TRANSACTION
+
+	Select intUserID from TUsers
+	Where strEmail = @strEmail and strPassword = @strPassword
+
+COMMIT TRANSACTION
+
+GO
+
+
+
+-- testing login procedure
+-- Execute uspLoginUser 'alice@gmail.com', 'password111';
+
 
 
 -- quick tests
@@ -387,3 +422,4 @@ VALUES
 --delete from TUserEvents where intUserID = 1;
 --delete from TFoodTrucks where intUserID = 1;
 --delete from TUsers where intUserID = 1;
+
