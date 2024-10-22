@@ -1,25 +1,78 @@
-<!doctype html>
-<html class="no-js" lang="">
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="x-ua-compatible" content="ie=edge">
-        <title>Create an Account</title>
-        <meta name="description" content="">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../style/style.css">
+    <title>Create an Account</title>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <a href="#" class="logo">
+                <img src="../images/logo.jpg" alt="Logo" class="logo-image">
+            </a>
+            <div class="nav-links">
+                <div class="menu-items">
+                <a href="../front-end_js/index.html">Home</a>
+                <a href="../front-end_js/events.html">Event</a>
+                <a href="../front-end_js/my_reservation.html">My Reservation</a>
+                <a href="#">Contact Support</a>
+                </div>
+            </div>
+            <a href="../front-end_js/login.html" class="login-link">Login</a>
+        </div>
+    </nav>
 
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-        <!-- Place favicon.ico in the root directory -->
+    <main>
+        <div class="login-container">
+        <h1 class="login-header">Sign Up</h1>
+            <div>
+                <form action="#">
+                     <div>
+                        <label for="firstName">First Name</label>
+                        <input type="text" id="firstName" name="firstName" required>
+                    </div>
+                    <div>
+                        <label for="lastName">Last Name</label>
+                        <input type="text" id="lastName" name="lastName" required>
+                    </div>
+                    <div>
+                        <label for="businessName">Name of Business</label>
+                        <input type="text" id="businessName" name="businessName" required>
+                    </div>
+                    <div>
+                        <label for="email">Email address</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    <div>
+                        <label for="tel">Phone Number</label>
+                        <input type="tel" id="tel" name="tel" required>
+                    </div>
+                    <div>
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" required>
+                    </div>
+                    <div>
+                        <label for="password">Confirm Password</label>
+                        <input type="password" id="password" name="password" required>
+                    </div>
+                    <br>
+                    <hr>
 
-    </head>
-    <body>
-        <!--[if lt IE 8]>
-            <p class="browserupgrade">
-            You are using an <strong>outdated</strong> browser. Please
-            <a href="http://browsehappy.com/">upgrade your browser</a> to improve
-            your experience.
-            </p>
-        <![endif]-->
-
-
-    </body>
+                    <br>
+                    <p>Are you an Event Organizer or a Vendor?</p>
+                    <div>
+                        <input type="radio" id="eventOrganizer" name="acctType" value="eventOrganizer">
+                        <label for="eventOrganizer">Event Organizer</label><br>
+                        <input type="radio" id="vendor" name="acctType" value="vendor">
+                        <label for="vendor">Vendor</label>
+                    </div>
+                    <br>
+                    <button type="submit">Join!</button>
+                </form>
+            </div>
+        </div>
+    </main>
+</body>
 </html>
