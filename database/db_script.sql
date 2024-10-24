@@ -45,9 +45,14 @@ IF OBJECT_ID('TStatuses')			IS NOT NULL DROP TABLE TStatuses;
 
 
 IF OBJECT_ID( 'uspLoginUser' )	    IS NOT NULL DROP PROCEDURE  uspLoginUser
+
 IF OBJECT_ID( 'uspCreateUser' )	    IS NOT NULL DROP PROCEDURE  uspCreateUser
 IF OBJECT_ID( 'uspCreateFoodTruck')	IS NOT NULL DROP PROCEDURE  uspCreateFoodTruck
 IF OBJECT_ID( 'uspCreateEvent')	    IS NOT NULL DROP PROCEDURE  uspCreateEvent
+
+IF OBJECT_ID( 'uspUpdateUser')	    IS NOT NULL DROP PROCEDURE  uspUpdateUser
+IF OBJECT_ID( 'uspUpdateEvent')	    IS NOT NULL DROP PROCEDURE  uspUpdateEvent
+IF OBJECT_ID( 'uspUpdateFoodTruck')	IS NOT NULL DROP PROCEDURE  uspUpdateFoodTruck
 
 
 -- --------------------------------------------------------------------------------
@@ -642,3 +647,179 @@ GO
 
 --select * from TEvents
 --select * from TEventSpaces where intEventID = @NewEventID;
+
+
+
+
+-- UPDATE USER 
+CREATE PROCEDURE uspUpdateUser
+    @intUserID INT,
+    @intUserTypeID INT = NULL,
+    @strFirstName VARCHAR(50) = NULL,
+    @strLastName VARCHAR(50) = NULL,
+    @strPassword VARCHAR(50) = NULL,
+    @strEmail VARCHAR(50) = NULL,
+    @strPhone VARCHAR(50) = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;  
+    SET XACT_ABORT ON;  
+
+    BEGIN TRANSACTION; 
+
+    BEGIN TRY
+        
+        UPDATE TUsers
+        SET 
+            intUserTypeID = COALESCE(@intUserTypeID, intUserTypeID),
+            strFirstName = COALESCE(@strFirstName, strFirstName),
+            strLastName = COALESCE(@strLastName, strLastName),
+            strPassword = COALESCE(@strPassword, strPassword),
+            strEmail = COALESCE(@strEmail, strEmail),
+            strPhone = COALESCE(@strPhone, strPhone)
+        WHERE intUserID = @intUserID;
+
+        COMMIT TRANSACTION;  
+    END TRY
+    BEGIN CATCH
+        ROLLBACK TRANSACTION;  
+    END CATCH
+END
+
+GO
+-- testing update user
+--select * from TUsers where intUserID = 1;
+
+--DECLARE @intUserID INT = 1; 
+
+--EXEC uspUpdateUser 
+--    @intUserID = @intUserID, 
+--    @intUserTypeID = NULL,         
+--    @strFirstName = NULL,          
+--    @strLastName = 'Johnson',       
+--    @strPassword = NULL,           
+--    @strEmail = NULL,               
+--    @strPhone = NULL                     
+
+
+--select * from TUsers where intUserID = 1;
+
+
+
+
+
+-- UPDATE EVENT
+CREATE PROCEDURE uspUpdateEvent
+    @intEventID INT,
+    @intUserID INT = NULL,
+    @strEventName VARCHAR(50) = NULL,
+    @dtDateOfEvent DATETIME = NULL,
+    @dtSetUpTime DATETIME = NULL,
+    @strLocation VARCHAR(50) = NULL,
+    @intTotalSpaces INT = NULL,
+    @intAvailableSpaces INT = NULL,
+    @monPricePerSpace MONEY = NULL,
+    @intExpectedGuests INT = NULL,
+    @intStatusID INT = NULL,
+    @strLogoFilePath VARCHAR(500) = NULL,
+    @monTotalRevenue MONEY = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;  
+    SET XACT_ABORT ON;  
+
+    BEGIN TRANSACTION; 
+
+    BEGIN TRY
+        UPDATE TEvents
+        SET 
+            intUserID = COALESCE(@intUserID, intUserID),
+            strEventName = COALESCE(@strEventName, strEventName),
+            dtDateOfEvent = COALESCE(@dtDateOfEvent, dtDateOfEvent),
+            dtSetUpTime = COALESCE(@dtSetUpTime, dtSetUpTime),
+            strLocation = COALESCE(@strLocation, strLocation),
+            intTotalSpaces = COALESCE(@intTotalSpaces, intTotalSpaces),
+            intAvailableSpaces = COALESCE(@intAvailableSpaces, intAvailableSpaces),
+            monPricePerSpace = COALESCE(@monPricePerSpace, monPricePerSpace),
+            intExpectedGuests = COALESCE(@intExpectedGuests, intExpectedGuests),
+            intStatusID = COALESCE(@intStatusID, intStatusID),
+            strLogoFilePath = COALESCE(@strLogoFilePath, strLogoFilePath),
+            monTotalRevenue = COALESCE(@monTotalRevenue, monTotalRevenue)
+        WHERE intEventID = @intEventID;
+
+        COMMIT TRANSACTION;  
+    END TRY
+    BEGIN CATCH
+        ROLLBACK TRANSACTION;  
+        THROW;
+    END CATCH
+END
+GO
+-- testing update event
+--select * from TEvents where intEventID = 1;
+
+--EXEC uspUpdateEvent 
+--    @intEventID = 1,                   
+--    @intUserID = 6,                     
+--    @strEventName = 'Halloween Fest'
+ 
+
+--	select * from TEvents where intEventID = 1;
+
+
+
+GO
+
+-- UPDATE FOODTRUCK
+CREATE PROCEDURE uspUpdateFoodTruck
+    @intFoodTruckID INT,
+    @intUserID INT = NULL,
+    @intCuisineTypeID INT = NULL,
+    @strTruckName VARCHAR(50) = NULL,
+    @monMinPrice MONEY = NULL,
+    @monMaxPrice MONEY = NULL,
+    @strLogoFilePath VARCHAR(500) = NULL,
+    @strOperatingLicense VARCHAR(50) = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;  
+    SET XACT_ABORT ON;  
+
+    BEGIN TRANSACTION; 
+
+    BEGIN TRY
+        UPDATE TFoodTrucks
+        SET 
+            intUserID = COALESCE(@intUserID, intUserID),
+            intCuisineTypeID = COALESCE(@intCuisineTypeID, intCuisineTypeID),
+            strTruckName = COALESCE(@strTruckName, strTruckName),
+            monMinPrice = COALESCE(@monMinPrice, monMinPrice),
+            monMaxPrice = COALESCE(@monMaxPrice, monMaxPrice),
+            strLogoFilePath = COALESCE(@strLogoFilePath, strLogoFilePath),
+            strOperatingLicense = COALESCE(@strOperatingLicense, strOperatingLicense)
+        WHERE intFoodTruckID = @intFoodTruckID;
+
+        COMMIT TRANSACTION;  
+    END TRY
+    BEGIN CATCH
+        ROLLBACK TRANSACTION;  
+        THROW;
+    END CATCH
+END
+GO
+
+-- testing update food truck
+
+--select * from TFoodTrucks where intFoodTruckID = 1;
+
+--EXEC uspUpdateFoodTruck 
+--    @intFoodTruckID = 1,                   
+--    @intUserID = 3,                     
+--    @strOperatingLicense = 'dfgdgd57'
+ 
+
+--select * from TFoodTrucks where intFoodTruckID = 1;
+
+
+
+
