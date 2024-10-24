@@ -4,6 +4,7 @@
 -- Team C 
 -- Megan Noel, Seth Lubic, Testimony Awuzie & Apiwat Anachai
 --
+--
 -- --------------------------------------------------------------------------------
 -- --------------------------------------------------------------------------------
 -- Options
@@ -25,7 +26,7 @@ SET NOCOUNT ON;
 -- --------------------------------------------------------------------------------
 -- Drop statements (Tables, Procedures)
 -- --------------------------------------------------------------------------------
- 
+IF OBJECT_ID('TMenus')				IS NOT NULL DROP TABLE TMenus; 
 IF OBJECT_ID('TFoodTruckEvents')	IS NOT NULL DROP TABLE TFoodTruckEvents;     
 IF OBJECT_ID('TReservations')		IS NOT NULL DROP TABLE TReservations;        
 IF OBJECT_ID('TPayments')			IS NOT NULL DROP TABLE TPayments;            
@@ -39,6 +40,21 @@ IF OBJECT_ID('TCuisineTypes')		IS NOT NULL DROP TABLE TCuisineTypes;
 IF OBJECT_ID('TUsers')				IS NOT NULL DROP TABLE TUsers;               
 IF OBJECT_ID('TUserTypes')			IS NOT NULL DROP TABLE TUserTypes;  
 IF OBJECT_ID('TStatuses')			IS NOT NULL DROP TABLE TStatuses; 
+
+
+IF OBJECT_ID( 'uspLoginUser' )	    IS NOT NULL DROP PROCEDURE  uspLoginUser
+
+IF OBJECT_ID( 'uspCreateUser' )	    IS NOT NULL DROP PROCEDURE  uspCreateUser
+IF OBJECT_ID( 'uspCreateFoodTruck')	IS NOT NULL DROP PROCEDURE  uspCreateFoodTruck
+IF OBJECT_ID( 'uspCreateEvent')	    IS NOT NULL DROP PROCEDURE  uspCreateEvent
+
+IF OBJECT_ID( 'uspUpdateUser')	    IS NOT NULL DROP PROCEDURE  uspUpdateUser
+IF OBJECT_ID( 'uspUpdateEvent')	    IS NOT NULL DROP PROCEDURE  uspUpdateEvent
+IF OBJECT_ID( 'uspUpdateFoodTruck')	IS NOT NULL DROP PROCEDURE  uspUpdateFoodTruck
+
+IF OBJECT_ID( 'uspGetUser')			IS NOT NULL DROP PROCEDURE  uspGetUser
+IF OBJECT_ID( 'uspGetFoodTruck')	IS NOT NULL DROP PROCEDURE  uspGetFoodTruck
+IF OBJECT_ID( 'uspGetEvent')		IS NOT NULL DROP PROCEDURE  uspGetEvent
 
 
 -- --------------------------------------------------------------------------------
@@ -178,6 +194,16 @@ CREATE TABLE TFoodTruckEvents
 	,FOREIGN KEY ( intEventID ) REFERENCES TEvents ( intEventID ) 
 	,FOREIGN KEY ( intFoodTruckID ) REFERENCES TFoodTrucks ( intFoodTruckID )
 	,CONSTRAINT chk_TotalRevenue CHECK (monTotalRevenue >= 0) 
+);
+
+CREATE TABLE TMenus (
+     intMenuID				INTEGER  IDENTITY		NOT NULL
+    ,intFoodTruckEventID	INTEGER					NOT NULL         
+    ,strItem				VARCHAR(255)			NOT NULL         
+    ,monPrice				MONEY					NOT NULL         
+    ,intUnitsSold			INTEGER					NULL                    
+    ,CONSTRAINT TMenus_PK PRIMARY KEY ( intMenuID )
+    ,FOREIGN KEY ( intFoodTruckEventID ) REFERENCES TFoodTruckEvents ( intFoodTruckEventID )
 );
 
 CREATE TABLE TEventSponsors
@@ -363,27 +389,533 @@ VALUES
 
 
 
+-- --------------------------------------------------------------------------------
+-- CRUD Stored Procedures
+-- --------------------------------------------------------------------------------
+GO
+
+--LOGIN USER
+-- if this returns a record, log user in
+-- if it doesn't return a record their credentials weren't a match
+CREATE PROCEDURE uspLoginUser
+	@strEmail			AS VARCHAR( 50 )
+   ,@strPassword		AS VARCHAR( 50 )
+AS
+SET NOCOUNT ON		
+SET XACT_ABORT ON
+
+BEGIN TRANSACTION
+
+	Select intUserID from TUsers
+	Where strEmail = @strEmail and strPassword = @strPassword
 
 
--- quick tests
---select * from TEvents;
---select * from TUsers;
---select * from TFoodTrucks;
---select * from TEvents where intStatusID = 2;
+	-- update this as their most recent login
+    IF @@ROWCOUNT > 0
+    BEGIN
+        UPDATE TUsers
+        SET dtLastLogin = GETDATE()
+        WHERE strEmail = @strEmail AND strPassword = @strPassword;
+    END
+
+COMMIT TRANSACTION
+
+GO
+-- testing login procedure
+-- Execute uspLoginUser 'alice@gmail.com', 'password111';
 
 
 
 
--- note to self
--- will use "instead of delete" triggers for deletions to get around cascade deletes and foreign key constraints
--- delete records from grandchild tables, child tables, parent tables
 
---delete from TEventSpaces where intEventID = 1;
---delete from TUserEvents where intEventID = 1;
---delete from TEvents where intEventID = 1;
 
+-- CREATE USER
+-- this will return the primary key of the new user
+CREATE PROCEDURE uspCreateUser
+    @intUserID AS INTEGER OUTPUT,        
+    @intUserTypeID AS INTEGER,
+    @strFirstName AS VARCHAR(50),
+    @strLastName AS VARCHAR(50),
+    @strPassword AS VARCHAR(50),
+    @strEmail AS VARCHAR(50),
+    @strPhone AS VARCHAR(50)
+AS
+SET NOCOUNT ON        
+SET XACT_ABORT ON     
+
+BEGIN TRANSACTION
+
+    
+    INSERT INTO TUsers WITH (TABLOCKX) (
+        intUserTypeID,
+        strFirstName,
+        strLastName,
+        strPassword,
+        strEmail,
+        strPhone,
+        dtDateCreated,
+        dtLastLogin
+    )
+    VALUES (
+        @intUserTypeID,
+        @strFirstName,
+        @strLastName,
+        @strPassword,
+        @strEmail,
+        @strPhone,
+        GETDATE(),       
+        GETDATE()        
+    );
+
+    
+    SET @intUserID = SCOPE_IDENTITY();
+
+COMMIT TRANSACTION
+
+GO
+-- testing create user
+--select * From TUsers
+
+--DECLARE @UserID INT;
+
+--EXEC uspCreateUser
+--    @intUserID = @UserID OUTPUT,
+--    @intUserTypeID = 1,
+--    @strFirstName = 'John',
+--    @strLastName = 'Doe',
+--    @strPassword = 'johnspassword',
+--    @strEmail = 'johndoe@gmail.com',
+--    @strPhone = '123-456-7890';
+
+--SELECT @UserID AS NewUserID;
+
+
+--select * From TUsers
+
+
+
+
+
+-- CREATE FOODTRUCK
+-- will return primary key of new food truck
+CREATE PROCEDURE uspCreateFoodTruck
+    @intFoodTruckID AS INTEGER OUTPUT,       
+    @intUserID AS INTEGER,
+    @intCuisineTypeID AS INTEGER,
+    @strTruckName AS VARCHAR(50),
+    @monMinPrice AS MONEY,
+    @monMaxPrice AS MONEY,
+    @strLogoFilePath AS VARCHAR(500) = NULL,  -- optional parameter so defaulting it to null unless provided
+    @strOperatingLicense AS VARCHAR(50)
+AS
+SET NOCOUNT ON       
+SET XACT_ABORT ON    
+
+BEGIN TRANSACTION
+
+    INSERT INTO TFoodTrucks WITH (TABLOCKX) (
+        intUserID,
+        intCuisineTypeID,
+        strTruckName,
+        monMinPrice,
+        monMaxPrice,
+        strLogoFilePath,
+        strOperatingLicense
+    )
+    VALUES (
+        @intUserID,
+        @intCuisineTypeID,
+        @strTruckName,
+        @monMinPrice,
+        @monMaxPrice,
+        @strLogoFilePath,
+        @strOperatingLicense
+    );
+
+    SET @intFoodTruckID = SCOPE_IDENTITY();
+
+COMMIT TRANSACTION
+
+GO
+--testing create foodtruck
+--select * from TFoodTrucks
+
+--DECLARE @NewFoodTruckID INT;
+
+--EXEC uspCreateFoodTruck
+--    @intFoodTruckID = @NewFoodTruckID OUTPUT,
+--    @intUserID = 1,
+--    @intCuisineTypeID = 2,
+--    @strTruckName = 'Tasty Tacos',
+--    @monMinPrice = 5.00,
+--    @monMaxPrice = 15.00,
+--    @strLogoFilePath = 'images/tastytacoslogo.gif',
+--    @strOperatingLicense = 'TX123456';
+
+
+--SELECT @NewFoodTruckID AS NewFoodTruckID;
+
+--select * from TFoodTrucks
+
+
+
+
+-- CREATE EVENT
+-- also auto populates TEventSpaces with correct number of available spaces, and they're all set to "available" initially
+CREATE PROCEDURE uspCreateEvent
+    @intEventID AS INTEGER OUTPUT,       
+    @intUserID AS INTEGER,
+    @strEventName AS VARCHAR(50),
+    @dtDateOfEvent AS DATETIME,
+    @dtSetUpTime AS DATETIME,
+    @strLocation AS VARCHAR(50),
+    @intTotalSpaces AS INTEGER,
+    @intAvailableSpaces AS INTEGER,
+    @monPricePerSpace AS MONEY,
+    @intExpectedGuests AS INTEGER,
+    @intStatusID AS INTEGER,
+    @strLogoFilePath AS VARCHAR(500) = NULL,  -- optional, null if not provided
+    @monTotalRevenue AS MONEY = NULL    -- will be updated at a later time after event      
+AS
+SET NOCOUNT ON        
+SET XACT_ABORT ON     
+
+BEGIN TRANSACTION
+
+  
+    INSERT INTO TEvents WITH (TABLOCKX) (
+        intUserID,
+        strEventName,
+        dtDateOfEvent,
+        dtSetUpTime,
+        strLocation,
+        intTotalSpaces,
+        intAvailableSpaces,
+        monPricePerSpace,
+        intExpectedGuests,
+        intStatusID,
+        strLogoFilePath,
+        monTotalRevenue
+    )
+    VALUES (
+        @intUserID,
+        @strEventName,
+        @dtDateOfEvent,
+        @dtSetUpTime,
+        @strLocation,
+        @intTotalSpaces,
+        @intAvailableSpaces,
+        @monPricePerSpace,
+        @intExpectedGuests,
+        @intStatusID,
+        @strLogoFilePath,
+        @monTotalRevenue
+    );
+
+   
+    SET @intEventID = SCOPE_IDENTITY();
+
+    
+	-- loop and add spaces for event. they will be "A, B, C" etc
+    DECLARE @index INT = 1;
+    DECLARE @strSpaceNum CHAR(1);
+
+    WHILE @index <= @intAvailableSpaces
+    BEGIN
+        
+        SET @strSpaceNum = CHAR(64 + @index); 
+
+        INSERT INTO TEventSpaces (intEventID, strSpaceNum, strSize, boolIsAvailable)
+        VALUES (@intEventID, @strSpaceNum, '10x10', 1); 
+
+        SET @index = @index + 1;
+    END
+
+COMMIT TRANSACTION
+
+GO
+-- testing create event
 --select * from TEvents
 
---delete from TUserEvents where intUserID = 1;
---delete from TFoodTrucks where intUserID = 1;
---delete from TUsers where intUserID = 1;
+--DECLARE @NewEventID INT;
+
+--EXEC uspCreateEvent
+--    @intEventID = @NewEventID OUTPUT,
+--    @intUserID = 5,
+--    @strEventName = 'New Event',
+--    @dtDateOfEvent = '2024-12-15',
+--    @dtSetUpTime = '2024-12-15 09:00:00',
+--    @strLocation = 'Central Park',
+--    @intTotalSpaces = 10,
+--    @intAvailableSpaces = 10,
+--    @monPricePerSpace = 100.00,
+--    @intExpectedGuests = 2000,
+--    @intStatusID = 1,
+--    @strLogoFilePath = 'images/eventlogo.gif',
+--    @monTotalRevenue = null;
+
+
+--SELECT @NewEventID AS NewEventID;
+
+--select * from TEvents
+--select * from TEventSpaces where intEventID = @NewEventID;
+
+
+
+
+-- UPDATE USER 
+CREATE PROCEDURE uspUpdateUser
+    @intUserID INT,
+    @intUserTypeID INT = NULL,
+    @strFirstName VARCHAR(50) = NULL,
+    @strLastName VARCHAR(50) = NULL,
+    @strPassword VARCHAR(50) = NULL,
+    @strEmail VARCHAR(50) = NULL,
+    @strPhone VARCHAR(50) = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;  
+    SET XACT_ABORT ON;  
+
+    BEGIN TRANSACTION; 
+
+    BEGIN TRY
+        
+        UPDATE TUsers
+        SET 
+            intUserTypeID = COALESCE(@intUserTypeID, intUserTypeID),
+            strFirstName = COALESCE(@strFirstName, strFirstName),
+            strLastName = COALESCE(@strLastName, strLastName),
+            strPassword = COALESCE(@strPassword, strPassword),
+            strEmail = COALESCE(@strEmail, strEmail),
+            strPhone = COALESCE(@strPhone, strPhone)
+        WHERE intUserID = @intUserID;
+
+        COMMIT TRANSACTION;  
+    END TRY
+    BEGIN CATCH
+        ROLLBACK TRANSACTION;  
+    END CATCH
+END
+
+GO
+-- testing update user
+--select * from TUsers where intUserID = 1;
+
+--DECLARE @intUserID INT = 1; 
+
+--EXEC uspUpdateUser 
+--    @intUserID = @intUserID, 
+--    @intUserTypeID = NULL,         
+--    @strFirstName = NULL,          
+--    @strLastName = 'Johnson',       
+--    @strPassword = NULL,           
+--    @strEmail = NULL,               
+--    @strPhone = NULL                     
+
+
+--select * from TUsers where intUserID = 1;
+
+
+
+
+
+-- UPDATE EVENT
+CREATE PROCEDURE uspUpdateEvent
+    @intEventID INT,
+    @intUserID INT = NULL,
+    @strEventName VARCHAR(50) = NULL,
+    @dtDateOfEvent DATETIME = NULL,
+    @dtSetUpTime DATETIME = NULL,
+    @strLocation VARCHAR(50) = NULL,
+    @intTotalSpaces INT = NULL,
+    @intAvailableSpaces INT = NULL,
+    @monPricePerSpace MONEY = NULL,
+    @intExpectedGuests INT = NULL,
+    @intStatusID INT = NULL,
+    @strLogoFilePath VARCHAR(500) = NULL,
+    @monTotalRevenue MONEY = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;  
+    SET XACT_ABORT ON;  
+
+    BEGIN TRANSACTION; 
+
+    BEGIN TRY
+        UPDATE TEvents
+        SET 
+            intUserID = COALESCE(@intUserID, intUserID),
+            strEventName = COALESCE(@strEventName, strEventName),
+            dtDateOfEvent = COALESCE(@dtDateOfEvent, dtDateOfEvent),
+            dtSetUpTime = COALESCE(@dtSetUpTime, dtSetUpTime),
+            strLocation = COALESCE(@strLocation, strLocation),
+            intTotalSpaces = COALESCE(@intTotalSpaces, intTotalSpaces),
+            intAvailableSpaces = COALESCE(@intAvailableSpaces, intAvailableSpaces),
+            monPricePerSpace = COALESCE(@monPricePerSpace, monPricePerSpace),
+            intExpectedGuests = COALESCE(@intExpectedGuests, intExpectedGuests),
+            intStatusID = COALESCE(@intStatusID, intStatusID),
+            strLogoFilePath = COALESCE(@strLogoFilePath, strLogoFilePath),
+            monTotalRevenue = COALESCE(@monTotalRevenue, monTotalRevenue)
+        WHERE intEventID = @intEventID;
+
+        COMMIT TRANSACTION;  
+    END TRY
+    BEGIN CATCH
+        ROLLBACK TRANSACTION;  
+        THROW;
+    END CATCH
+END
+GO
+-- testing update event
+--select * from TEvents where intEventID = 1;
+
+--EXEC uspUpdateEvent 
+--    @intEventID = 1,                   
+--    @intUserID = 6,                     
+--    @strEventName = 'Halloween Fest'
+ 
+
+--	select * from TEvents where intEventID = 1;
+
+
+
+GO
+
+-- UPDATE FOODTRUCK
+CREATE PROCEDURE uspUpdateFoodTruck
+    @intFoodTruckID INT,
+    @intUserID INT = NULL,
+    @intCuisineTypeID INT = NULL,
+    @strTruckName VARCHAR(50) = NULL,
+    @monMinPrice MONEY = NULL,
+    @monMaxPrice MONEY = NULL,
+    @strLogoFilePath VARCHAR(500) = NULL,
+    @strOperatingLicense VARCHAR(50) = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;  
+    SET XACT_ABORT ON;  
+
+    BEGIN TRANSACTION; 
+
+    BEGIN TRY
+        UPDATE TFoodTrucks
+        SET 
+            intUserID = COALESCE(@intUserID, intUserID),
+            intCuisineTypeID = COALESCE(@intCuisineTypeID, intCuisineTypeID),
+            strTruckName = COALESCE(@strTruckName, strTruckName),
+            monMinPrice = COALESCE(@monMinPrice, monMinPrice),
+            monMaxPrice = COALESCE(@monMaxPrice, monMaxPrice),
+            strLogoFilePath = COALESCE(@strLogoFilePath, strLogoFilePath),
+            strOperatingLicense = COALESCE(@strOperatingLicense, strOperatingLicense)
+        WHERE intFoodTruckID = @intFoodTruckID;
+
+        COMMIT TRANSACTION;  
+    END TRY
+    BEGIN CATCH
+        ROLLBACK TRANSACTION;  
+        THROW;
+    END CATCH
+END
+GO
+
+-- testing update food truck
+
+--select * from TFoodTrucks where intFoodTruckID = 1;
+
+--EXEC uspUpdateFoodTruck 
+--    @intFoodTruckID = 1,                   
+--    @intUserID = 3,                     
+--    @strOperatingLicense = 'dfgdgd57'
+ 
+
+--select * from TFoodTrucks where intFoodTruckID = 1;
+
+
+
+
+-- GET USER
+CREATE PROCEDURE uspGetUser
+    @intUserID INT
+AS
+BEGIN
+    SET NOCOUNT ON;  
+
+    SELECT 
+        intUserTypeID,
+        strFirstName,
+        strLastName,
+        strPassword,
+        strEmail,
+        strPhone,
+        dtDateCreated,
+        dtLastLogin
+    FROM TUsers
+    WHERE intUserID = @intUserID;
+END
+
+GO
+
+--testing get user
+--EXEC uspGetUser @intUserID = 1;
+
+
+
+
+-- GET FOODTRUCK 
+CREATE PROCEDURE uspGetFoodTruck
+    @intFoodTruckID INT
+AS
+BEGIN
+    SET NOCOUNT ON;  
+
+    SELECT 
+        intUserID,
+        intCuisineTypeID,
+        strTruckName,
+        monMinPrice,
+        monMaxPrice,
+        strLogoFilePath,
+        strOperatingLicense
+    FROM TFoodTrucks
+    WHERE intFoodTruckID = @intFoodTruckID;
+END
+
+GO
+-- testing get foodtruck
+--EXEC uspGetFoodTruck @intFoodTruckID = 1;
+
+
+
+-- GET EVENT
+CREATE PROCEDURE uspGetEvent
+    @intEventID INT
+AS
+BEGIN
+    SET NOCOUNT ON;  
+
+    SELECT 
+        intUserID,
+        strEventName,
+        dtDateOfEvent,
+        dtSetUpTime,
+        strLocation,
+        intTotalSpaces,
+        intAvailableSpaces,
+        monPricePerSpace,
+        intExpectedGuests,
+        intStatusID,
+        strLogoFilePath,
+        monTotalRevenue
+    FROM TEvents
+    WHERE intEventID = @intEventID;
+END
+
+GO
+-- testing get event
+--EXEC uspGetEvent @intEventID = 1;
+
+
+
+
