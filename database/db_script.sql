@@ -9,15 +9,7 @@
 -- --------------------------------------------------------------------------------
 -- Options
 -- --------------------------------------------------------------------------------
-USE dbTruckSpot; -- ** make sure your local database is also called dbTruckSpot **
-				 -- 1. Right click on databases in object explorer, new database, 
-				 -- name it dbTruckSpot, click ok 
-				 -- 2. Before running make sure to the left of the "Execute" button
-				 -- you have the correct database selected when you run the script
-				 -- 3. Sometimes the server will give errors when running it all 
-				 -- together such as "xyz table already exists", if this happens
-				 -- try running it in chunks. For example run all drop statements,
-				 -- then run create tables and so on. Usually solves the issue
+USE truckspot; 
 
 SET NOCOUNT ON; 
 
