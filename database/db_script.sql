@@ -52,6 +52,10 @@ IF OBJECT_ID( 'uspUpdateUser')	    IS NOT NULL DROP PROCEDURE  uspUpdateUser
 IF OBJECT_ID( 'uspUpdateEvent')	    IS NOT NULL DROP PROCEDURE  uspUpdateEvent
 IF OBJECT_ID( 'uspUpdateFoodTruck')	IS NOT NULL DROP PROCEDURE  uspUpdateFoodTruck
 
+IF OBJECT_ID( 'uspGetUser')			IS NOT NULL DROP PROCEDURE  uspGetUser
+IF OBJECT_ID( 'uspGetFoodTruck')	IS NOT NULL DROP PROCEDURE  uspGetFoodTruck
+IF OBJECT_ID( 'uspGetEvent')		IS NOT NULL DROP PROCEDURE  uspGetEvent
+
 
 -- --------------------------------------------------------------------------------
 -- Tables
@@ -831,7 +835,86 @@ GO
 
 
 
+-- GET USER
+CREATE PROCEDURE uspGetUser
+    @intUserID INT
+AS
+BEGIN
+    SET NOCOUNT ON;  
 
+    SELECT 
+        intUserTypeID,
+        strFirstName,
+        strLastName,
+        strPassword,
+        strEmail,
+        strPhone,
+        dtDateCreated,
+        dtLastLogin
+    FROM TUsers
+    WHERE intUserID = @intUserID;
+END
+
+GO
+
+--testing get user
+--EXEC uspGetUser @intUserID = 1;
+
+
+
+
+-- GET FOODTRUCK 
+CREATE PROCEDURE uspGetFoodTruck
+    @intFoodTruckID INT
+AS
+BEGIN
+    SET NOCOUNT ON;  
+
+    SELECT 
+        intUserID,
+        intCuisineTypeID,
+        strTruckName,
+        monMinPrice,
+        monMaxPrice,
+        strLogoFilePath,
+        strOperatingLicense
+    FROM TFoodTrucks
+    WHERE intFoodTruckID = @intFoodTruckID;
+END
+
+GO
+-- testing get foodtruck
+--EXEC uspGetFoodTruck @intFoodTruckID = 1;
+
+
+
+-- GET EVENT
+CREATE PROCEDURE uspGetEvent
+    @intEventID INT
+AS
+BEGIN
+    SET NOCOUNT ON;  
+
+    SELECT 
+        intUserID,
+        strEventName,
+        dtDateOfEvent,
+        dtSetUpTime,
+        strLocation,
+        intTotalSpaces,
+        intAvailableSpaces,
+        monPricePerSpace,
+        intExpectedGuests,
+        intStatusID,
+        strLogoFilePath,
+        monTotalRevenue
+    FROM TEvents
+    WHERE intEventID = @intEventID;
+END
+
+GO
+-- testing get event
+--EXEC uspGetEvent @intEventID = 1;
 
 
 
