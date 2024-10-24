@@ -4,8 +4,6 @@
 -- Team C 
 -- Megan Noel, Seth Lubic, Testimony Awuzie & Apiwat Anachai
 --
--- Last update: Added uspCreateUser, uspCreateFoodTruck, uspCreateEvent. Modified 
--- uspLoginUser to update last login to current session
 --
 -- --------------------------------------------------------------------------------
 -- --------------------------------------------------------------------------------
@@ -28,7 +26,7 @@ SET NOCOUNT ON;
 -- --------------------------------------------------------------------------------
 -- Drop statements (Tables, Procedures)
 -- --------------------------------------------------------------------------------
- 
+IF OBJECT_ID('TMenus')				IS NOT NULL DROP TABLE TMenus; 
 IF OBJECT_ID('TFoodTruckEvents')	IS NOT NULL DROP TABLE TFoodTruckEvents;     
 IF OBJECT_ID('TReservations')		IS NOT NULL DROP TABLE TReservations;        
 IF OBJECT_ID('TPayments')			IS NOT NULL DROP TABLE TPayments;            
@@ -192,6 +190,16 @@ CREATE TABLE TFoodTruckEvents
 	,FOREIGN KEY ( intEventID ) REFERENCES TEvents ( intEventID ) 
 	,FOREIGN KEY ( intFoodTruckID ) REFERENCES TFoodTrucks ( intFoodTruckID )
 	,CONSTRAINT chk_TotalRevenue CHECK (monTotalRevenue >= 0) 
+);
+
+CREATE TABLE TMenus (
+     intMenuID				INTEGER  IDENTITY		NOT NULL
+    ,intFoodTruckEventID	INTEGER					NOT NULL         
+    ,strItem				VARCHAR(255)			NOT NULL         
+    ,monPrice				MONEY					NOT NULL         
+    ,intUnitsSold			INTEGER					NULL                    
+    ,CONSTRAINT TMenus_PK PRIMARY KEY ( intMenuID )
+    ,FOREIGN KEY ( intFoodTruckEventID ) REFERENCES TFoodTruckEvents ( intFoodTruckEventID )
 );
 
 CREATE TABLE TEventSponsors
@@ -819,6 +827,11 @@ GO
  
 
 --select * from TFoodTrucks where intFoodTruckID = 1;
+
+
+
+
+
 
 
 
