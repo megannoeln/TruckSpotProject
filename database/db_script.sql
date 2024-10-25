@@ -11,6 +11,8 @@
 -- --------------------------------------------------------------------------------
 USE truckspot; 
 
+--USE dbTruckSpot;
+
 SET NOCOUNT ON; 
 
  
@@ -31,34 +33,32 @@ IF OBJECT_ID('TSponsors')			IS NOT NULL DROP TABLE TSponsors;
 IF OBJECT_ID('TCuisineTypes')		IS NOT NULL DROP TABLE TCuisineTypes;  
 IF OBJECT_ID('TVendors')			IS NOT NULL DROP TABLE TVendors; 
 IF OBJECT_ID('TOrganizers')			IS NOT NULL DROP TABLE TOrganizers; 
---IF OBJECT_ID('TUsers')			IS NOT NULL DROP TABLE TUsers;               
---IF OBJECT_ID('TUserTypes')		IS NOT NULL DROP TABLE TUserTypes;  
 IF OBJECT_ID('TStatuses')			IS NOT NULL DROP TABLE TStatuses; 
 
 IF OBJECT_ID( 'uspLoginUser' )	    IS NOT NULL DROP PROCEDURE  uspLoginUser
 
-IF OBJECT_ID( 'uspCreateUser' )	    IS NOT NULL DROP PROCEDURE  uspCreateUser
+IF OBJECT_ID( 'uspCreateVendor' )	 IS NOT NULL DROP PROCEDURE  uspCreateVendor
+IF OBJECT_ID( 'uspCreateOrganizer' ) IS NOT NULL DROP PROCEDURE  uspCreateOrganizer
 IF OBJECT_ID( 'uspCreateFoodTruck')	IS NOT NULL DROP PROCEDURE  uspCreateFoodTruck
 IF OBJECT_ID( 'uspCreateEvent')	    IS NOT NULL DROP PROCEDURE  uspCreateEvent
 
-IF OBJECT_ID( 'uspUpdateUser')	    IS NOT NULL DROP PROCEDURE  uspUpdateUser
+IF OBJECT_ID( 'uspUpdateVendor')	    IS NOT NULL DROP PROCEDURE  uspUpdateVendor
+IF OBJECT_ID( 'uspUpdateOrganizer')	    IS NOT NULL DROP PROCEDURE  uspUpdateOrganizer
 IF OBJECT_ID( 'uspUpdateEvent')	    IS NOT NULL DROP PROCEDURE  uspUpdateEvent
 IF OBJECT_ID( 'uspUpdateFoodTruck')	IS NOT NULL DROP PROCEDURE  uspUpdateFoodTruck
 
-IF OBJECT_ID( 'uspGetUser')			IS NOT NULL DROP PROCEDURE  uspGetUser
+IF OBJECT_ID( 'uspGetVendor')			IS NOT NULL DROP PROCEDURE  uspGetVendor
+IF OBJECT_ID( 'uspGetOrganizer')			IS NOT NULL DROP PROCEDURE  uspGetOrganizer
 IF OBJECT_ID( 'uspGetFoodTruck')	IS NOT NULL DROP PROCEDURE  uspGetFoodTruck
 IF OBJECT_ID( 'uspGetEvent')		IS NOT NULL DROP PROCEDURE  uspGetEvent
+
+IF OBJECT_ID( 'uspDeleteVendor')			IS NOT NULL DROP PROCEDURE  uspDeleteVendor
+IF OBJECT_ID( 'uspDeleteOrganizer')			IS NOT NULL DROP PROCEDURE  uspDeleteOrganizer
 
 
 -- --------------------------------------------------------------------------------
 -- Tables
 -- --------------------------------------------------------------------------------
---CREATE TABLE TUserTypes
---(
---	 intUserTypeID			INTEGER	IDENTITY		NOT NULL
---	,strUserType			VARCHAR(50)				NOT NULL
---	,CONSTRAINT TUserTypes_PK PRIMARY KEY ( intUserTypeID )
---);
 
 CREATE TABLE TCuisineTypes
 (
@@ -73,21 +73,6 @@ CREATE TABLE TStatuses
     ,strStatus        VARCHAR(50)				NOT NULL
     ,CONSTRAINT TStatuses_PK PRIMARY KEY (intStatusID)
 );
-
---CREATE TABLE TUsers
---(
---	 intUserID				INTEGER	IDENTITY		NOT NULL
---	,intUserTypeID			INTEGER					NOT NULL
---	,strFirstName			VARCHAR(50)				NOT NULL
---	,strLastName			VARCHAR(50)				NOT NULL
---	,strPassword			VARCHAR(50)				NOT NULL
---	,strEmail				VARCHAR(50)				NOT NULL UNIQUE
---	,strPhone				VARCHAR(50)				NOT NULL
---	,dtDateCreated			DATETIME				NOT NULL
---	,dtLastLogin			DATETIME				NOT NULL
---	,CONSTRAINT TUsers_PK PRIMARY KEY ( intUserID )
---	,FOREIGN KEY ( intUserTypeID ) REFERENCES TUserTypes ( intUserTypeID )
---);
 
 CREATE TABLE TVendors
 (
@@ -251,13 +236,6 @@ CREATE TABLE TPayments
 -- Populate
 -- --------------------------------------------------------------------------------
 
--- TUserTypes
---INSERT INTO TUserTypes (strUserType)
---VALUES 
---('Vendor'), -- id 1
---('Organizer'); -- id 2
-
-
 -- TCuisineTypes
 INSERT INTO TCuisineTypes (strCuisineType)
 VALUES 
@@ -276,32 +254,34 @@ VALUES
 ('Scheduled'), -- id 1
 ('Completed'); -- id 2
 
+-- TVendors
+INSERT INTO TVendors (strFirstName, strLastName, strPassword, strEmail, strPhone, dtDateCreated, dtLastLogin) 
+VALUES 
+('Alice', 'Smith',  'password111', 'alice@gmail.com', '123-456-7890', GETDATE(), GETDATE()), -- id 1
+('Evan', 'Johnson', 'password222', 'evan@gmail.com', '123-456-7891', GETDATE(), GETDATE()), -- id 2
+('Charlie', 'Williams',  'password333', 'charlie@gmail.com', '123-456-7892', GETDATE(), GETDATE()), -- id 3
+('Jimmy', 'Brown',  'password444', 'jimmy@gmail.com', '123-456-7893', GETDATE(), GETDATE()), -- id 4
+('Eva', 'Jones', 'password555', 'eva@gmail.com', '123-456-7894', GETDATE(), GETDATE()); -- id 5
 
--- TUsers
---INSERT INTO TUsers (intUserTypeID, strFirstName, strLastName, strPassword, strEmail, strPhone, dtDateCreated, dtLastLogin) 
---VALUES 
-----vendors
---(1, 'Alice', 'Smith',  'password111', 'alice@gmail.com', '123-456-7890', GETDATE(), GETDATE()), -- id 1
---(1, 'Evan', 'Johnson', 'password222', 'evan@gmail.com', '123-456-7891', GETDATE(), GETDATE()), -- id 2
---(1, 'Charlie', 'Williams',  'password333', 'charlie@gmail.com', '123-456-7892', GETDATE(), GETDATE()), -- id 3
---(1, 'Jimmy', 'Brown',  'password444', 'jimmy@gmail.com', '123-456-7893', GETDATE(), GETDATE()), -- id 4
---(1, 'Eva', 'Jones', 'password555', 'eva@gmail.com', '123-456-7894', GETDATE(), GETDATE()), -- id 5
-----organizers 
---(2, 'Lola', 'Garcia', 'password666', 'lola@gmail.com', '123-456-7895', GETDATE(), GETDATE()), -- id 6
---(2, 'Grace', 'Martinez',  'password777', 'grace@gmail.com', '123-456-7896', GETDATE(), GETDATE()), -- id 7
---(2, 'Steph', 'Davis',  'password888', 'steph@gmail.com', '123-456-7897', GETDATE(), GETDATE()), -- id 8
---(2, 'Isabella', 'Rodriguez',  'password999', 'isabella@gmail.com', '123-456-7898', GETDATE(), GETDATE()), -- id 9
---(2, 'Jack', 'Odell', 'password000', 'jack@gmail.com', '123-456-7899', GETDATE(), GETDATE()); -- id 10
+
+-- TOrganizers
+INSERT INTO TOrganizers (strFirstName, strLastName, strPassword, strEmail, strPhone, dtDateCreated, dtLastLogin) 
+VALUES 
+('Lola', 'Garcia', 'password666', 'lola@gmail.com', '123-456-7895', GETDATE(), GETDATE()), -- id 1
+('Grace', 'Martinez',  'password777', 'grace@gmail.com', '123-456-7896', GETDATE(), GETDATE()), -- id 2
+('Steph', 'Davis',  'password888', 'steph@gmail.com', '123-456-7897', GETDATE(), GETDATE()), -- id 3
+('Isabella', 'Rodriguez',  'password999', 'isabella@gmail.com', '123-456-7898', GETDATE(), GETDATE()), -- id 4
+('Jack', 'Odell', 'password000', 'jack@gmail.com', '123-456-7899', GETDATE(), GETDATE()); -- id 5
 
 
 -- TEvents
 INSERT INTO TEvents (intOrganizerID, strEventName, dtDateOfEvent, dtSetUpTime, strLocation, intTotalSpaces, intAvailableSpaces, monPricePerSpace, intExpectedGuests, intStatusID, strLogoFilePath, monTotalRevenue)
 VALUES 
-(6, 'Halloween Festival', '2024-11-01', '2024-11-01 09:00:00', 'City Park', 10, 5, 10.00, 500, 1, 'images/sample.jpg', null), -- id 1
-(7, 'Street Food Fair', '2024-11-15', '2024-11-15 09:00:00', 'Downtown', 15, 15, 15.00, 450, 1, 'images/sample.jpg', null), -- id 2
-(8, 'Local Farmers Market', '2024-11-22', '2024-11-22 08:00:00', 'Main Square', 20, 18, 20.00, 100, 1, 'images/sample.jpg', null), -- id 3
-(9, 'Winter Wonderland', '2023-12-05', '2023-12-05 09:00:00', 'Ice Rink', 20, 8, 13.00, 80, 2, 'images/sample.jpg', 3000.00), -- id 4  **past event**
-(10, 'Summer Splash', '2024-07-10', '2024-07-10 09:00:00', 'Community Pool', 30, 12, 20.00, 600, 2, 'images/sample.jpg', 5000.00); -- id 5  **past event**
+(1, 'Halloween Festival', '2024-11-01', '2024-11-01 09:00:00', 'City Park', 10, 5, 10.00, 500, 1, 'images/sample.jpg', null), -- id 1
+(2, 'Street Food Fair', '2024-11-15', '2024-11-15 09:00:00', 'Downtown', 15, 15, 15.00, 450, 1, 'images/sample.jpg', null), -- id 2
+(3, 'Local Farmers Market', '2024-11-22', '2024-11-22 08:00:00', 'Main Square', 20, 18, 20.00, 100, 1, 'images/sample.jpg', null), -- id 3
+(4, 'Winter Wonderland', '2023-12-05', '2023-12-05 09:00:00', 'Ice Rink', 20, 8, 13.00, 80, 2, 'images/sample.jpg', 3000.00), -- id 4  **past event**
+(5, 'Summer Splash', '2024-07-10', '2024-07-10 09:00:00', 'Community Pool', 30, 12, 20.00, 600, 2, 'images/sample.jpg', 5000.00); -- id 5  **past event**
 
 
 -- TFoodTrucks
@@ -417,87 +397,86 @@ GO
 -- if it doesn't return a record their credentials weren't a match
 CREATE PROCEDURE uspLoginUser
     @strEmail    VARCHAR(50),
-    @strPassword VARCHAR(50)
+    @strPassword VARCHAR(50),
+    @UserID      INT OUTPUT 
 AS
 BEGIN
     SET NOCOUNT ON;
     SET XACT_ABORT ON;
     
-    DECLARE @VendorID INT = NULL;
-    DECLARE @OrganizerID INT = NULL;
-
     BEGIN TRANSACTION;
     BEGIN TRY
        
-        SELECT @VendorID = intVendorID
+        SELECT @UserID = intVendorID
         FROM TVendors
         WHERE strEmail = @strEmail AND strPassword = @strPassword;
         
-        IF @VendorID IS NOT NULL
+      
+        IF @UserID IS NOT NULL
         BEGIN
-          
             UPDATE TVendors
             SET dtLastLogin = GETDATE()
-            WHERE intVendorID = @VendorID;
+            WHERE intVendorID = @UserID;
             
             COMMIT TRANSACTION;
-            RETURN 1;
+            RETURN; 
         END
 
         
-        SELECT @OrganizerID = intOrganizerID
+        SELECT @UserID = intOrganizerID
         FROM TOrganizers
         WHERE strEmail = @strEmail AND strPassword = @strPassword;
         
-        IF @OrganizerID IS NOT NULL
+        
+        IF @UserID IS NOT NULL
         BEGIN
-           
             UPDATE TOrganizers
             SET dtLastLogin = GETDATE()
-            WHERE intOrganizerID = @OrganizerID;
+            WHERE intOrganizerID = @UserID;
             
             COMMIT TRANSACTION;
-            RETURN 2; 
+            RETURN;
         END
         
-        
+       
         ROLLBACK TRANSACTION;
-        RETURN 0;
+        SET @UserID = NULL;
 
     END TRY
     BEGIN CATCH
+      
         ROLLBACK TRANSACTION;
-        THROW; 
+        
+        SET @UserID = NULL;
     END CATCH
 END
 GO
 -- testing login procedure
--- Execute uspLoginUser 'alice@gmail.com', 'password111';
+--DECLARE @UserID INT;
+--EXEC uspLoginUser @strEmail = 'alice@gmail.com', @strPassword = 'password111', @UserID = @UserID OUTPUT;
+--SELECT @UserID AS UserID;
 
 
 
 
 
-
--- CREATE USER
--- this will return the primary key of the new user
-CREATE PROCEDURE uspCreateUser
-    @intUserID AS INTEGER OUTPUT,        
-    @intUserTypeID AS INTEGER,
+-- CREATE ORGANIZER
+-- returns organizer id
+CREATE PROCEDURE uspCreateOrganizer
+    @intOrganizerID AS INT OUTPUT,
     @strFirstName AS VARCHAR(50),
     @strLastName AS VARCHAR(50),
     @strPassword AS VARCHAR(50),
     @strEmail AS VARCHAR(50),
-    @strPhone AS VARCHAR(50)
+    @strPhone AS VARCHAR(15)
 AS
-SET NOCOUNT ON        
-SET XACT_ABORT ON     
+BEGIN
+    SET NOCOUNT ON;
+    SET XACT_ABORT ON;
 
-BEGIN TRANSACTION
+    BEGIN TRANSACTION;
 
-    
-    INSERT INTO TUsers WITH (TABLOCKX) (
-        intUserTypeID,
+    INSERT INTO TOrganizers WITH (TABLOCKX) (
         strFirstName,
         strLastName,
         strPassword,
@@ -507,42 +486,85 @@ BEGIN TRANSACTION
         dtLastLogin
     )
     VALUES (
-        @intUserTypeID,
         @strFirstName,
         @strLastName,
         @strPassword,
         @strEmail,
         @strPhone,
         GETDATE(),       
-        GETDATE()        
+        GETDATE()
     );
 
-    
-    SET @intUserID = SCOPE_IDENTITY();
+ 
+    SET @intOrganizerID = SCOPE_IDENTITY();
 
-COMMIT TRANSACTION
-
+    COMMIT TRANSACTION;
+END
 GO
--- testing create user
---select * From TUsers
+-- testing uspCreateOrganizer
+--SELECT * FROM TOrganizers 
 
---DECLARE @UserID INT;
+--DECLARE @OrganizerID INT;
 
---EXEC uspCreateUser
---    @intUserID = @UserID OUTPUT,
---    @intUserTypeID = 1,
+
+--EXEC uspCreateOrganizer
+--    @intOrganizerID = @OrganizerID OUTPUT,
 --    @strFirstName = 'John',
 --    @strLastName = 'Doe',
 --    @strPassword = 'johnspassword',
 --    @strEmail = 'johndoe@gmail.com',
 --    @strPhone = '123-456-7890';
 
---SELECT @UserID AS NewUserID;
+
+--SELECT @OrganizerID AS NewOrganizerID;
 
 
---select * From TUsers
+--SELECT * FROM TOrganizers;
 
 
+
+
+-- CREATE VENDOR
+-- returns vendor id
+CREATE PROCEDURE uspCreateVendor
+    @intVendorID AS INT OUTPUT,
+    @strFirstName AS VARCHAR(50),
+    @strLastName AS VARCHAR(50),
+    @strPassword AS VARCHAR(50),
+    @strEmail AS VARCHAR(50),
+    @strPhone AS VARCHAR(15)
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET XACT_ABORT ON;
+
+    BEGIN TRANSACTION;
+
+    INSERT INTO TVendors WITH (TABLOCKX) (
+        strFirstName,
+        strLastName,
+        strPassword,
+        strEmail,
+        strPhone,
+        dtDateCreated,
+        dtLastLogin
+    )
+    VALUES (
+        @strFirstName,
+        @strLastName,
+        @strPassword,
+        @strEmail,
+        @strPhone,
+        GETDATE(),       
+        GETDATE()
+    );
+
+
+    SET @intVendorID = SCOPE_IDENTITY();
+
+    COMMIT TRANSACTION;
+END
+GO
 
 
 
@@ -550,7 +572,7 @@ GO
 -- will return primary key of new food truck
 CREATE PROCEDURE uspCreateFoodTruck
     @intFoodTruckID AS INTEGER OUTPUT,       
-    @intUserID AS INTEGER,
+    @intVendorID AS INTEGER,
     @intCuisineTypeID AS INTEGER,
     @strTruckName AS VARCHAR(50),
     @monMinPrice AS MONEY,
@@ -564,7 +586,7 @@ SET XACT_ABORT ON
 BEGIN TRANSACTION
 
     INSERT INTO TFoodTrucks WITH (TABLOCKX) (
-        intUserID,
+        intVendorID,
         intCuisineTypeID,
         strTruckName,
         monMinPrice,
@@ -573,7 +595,7 @@ BEGIN TRANSACTION
         strOperatingLicense
     )
     VALUES (
-        @intUserID,
+        @intVendorID,
         @intCuisineTypeID,
         @strTruckName,
         @monMinPrice,
@@ -594,7 +616,7 @@ GO
 
 --EXEC uspCreateFoodTruck
 --    @intFoodTruckID = @NewFoodTruckID OUTPUT,
---    @intUserID = 1,
+--    @intVendorID = 1,
 --    @intCuisineTypeID = 2,
 --    @strTruckName = 'Tasty Tacos',
 --    @monMinPrice = 5.00,
@@ -614,7 +636,7 @@ GO
 -- also auto populates TEventSpaces with correct number of available spaces, and they're all set to "available" initially
 CREATE PROCEDURE uspCreateEvent
     @intEventID AS INTEGER OUTPUT,       
-    @intUserID AS INTEGER,
+    @intOrganizerID AS INTEGER,
     @strEventName AS VARCHAR(50),
     @dtDateOfEvent AS DATETIME,
     @dtSetUpTime AS DATETIME,
@@ -634,7 +656,7 @@ BEGIN TRANSACTION
 
   
     INSERT INTO TEvents WITH (TABLOCKX) (
-        intUserID,
+        intOrganizerID,
         strEventName,
         dtDateOfEvent,
         dtSetUpTime,
@@ -648,7 +670,7 @@ BEGIN TRANSACTION
         monTotalRevenue
     )
     VALUES (
-        @intUserID,
+        @intOrganizerID,
         @strEventName,
         @dtDateOfEvent,
         @dtSetUpTime,
@@ -691,7 +713,7 @@ GO
 
 --EXEC uspCreateEvent
 --    @intEventID = @NewEventID OUTPUT,
---    @intUserID = 5,
+--    @intOrganizerID = 5,
 --    @strEventName = 'New Event',
 --    @dtDateOfEvent = '2024-12-15',
 --    @dtSetUpTime = '2024-12-15 09:00:00',
@@ -712,16 +734,14 @@ GO
 
 
 
-
--- UPDATE USER 
-CREATE PROCEDURE uspUpdateUser
-    @intUserID INT,
-    @intUserTypeID INT = NULL,
+-- UPDATE VENDOR
+CREATE PROCEDURE uspUpdateVendor
+    @intVendorID INT,
     @strFirstName VARCHAR(50) = NULL,
     @strLastName VARCHAR(50) = NULL,
     @strPassword VARCHAR(50) = NULL,
     @strEmail VARCHAR(50) = NULL,
-    @strPhone VARCHAR(50) = NULL
+    @strPhone VARCHAR(15) = NULL
 AS
 BEGIN
     SET NOCOUNT ON;  
@@ -731,15 +751,14 @@ BEGIN
 
     BEGIN TRY
         
-        UPDATE TUsers
+        UPDATE TVendors
         SET 
-            intUserTypeID = COALESCE(@intUserTypeID, intUserTypeID),
             strFirstName = COALESCE(@strFirstName, strFirstName),
             strLastName = COALESCE(@strLastName, strLastName),
             strPassword = COALESCE(@strPassword, strPassword),
             strEmail = COALESCE(@strEmail, strEmail),
             strPhone = COALESCE(@strPhone, strPhone)
-        WHERE intUserID = @intUserID;
+        WHERE intVendorID = @intVendorID;
 
         COMMIT TRANSACTION;  
     END TRY
@@ -747,33 +766,79 @@ BEGIN
         ROLLBACK TRANSACTION;  
     END CATCH
 END
-
 GO
--- testing update user
---select * from TUsers where intUserID = 1;
+-- testing uspUpdateVendor
+-- SELECT * FROM TVendors WHERE intVendorID = 1; 
 
---DECLARE @intUserID INT = 1; 
+--DECLARE @intVendorID INT = 1; 
 
---EXEC uspUpdateUser 
---    @intUserID = @intUserID, 
---    @intUserTypeID = NULL,         
+--EXEC uspUpdateVendor 
+--    @intVendorID = @intVendorID, 
 --    @strFirstName = NULL,          
 --    @strLastName = 'Johnson',       
 --    @strPassword = NULL,           
 --    @strEmail = NULL,               
---    @strPhone = NULL                     
+--    @strPhone = NULL;                     
 
-
---select * from TUsers where intUserID = 1;
-
+-- SELECT * FROM TVendors WHERE intVendorID = 1; 
 
 
 
+-- UPDATE ORGANIZER
+CREATE PROCEDURE uspUpdateOrganizer
+    @intOrganizerID INT,
+    @strFirstName VARCHAR(50) = NULL,
+    @strLastName VARCHAR(50) = NULL,
+    @strPassword VARCHAR(50) = NULL,
+    @strEmail VARCHAR(50) = NULL,
+    @strPhone VARCHAR(15) = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;  
+    SET XACT_ABORT ON;  
+
+    BEGIN TRANSACTION; 
+
+    BEGIN TRY
+        
+        UPDATE TOrganizers
+        SET 
+            strFirstName = COALESCE(@strFirstName, strFirstName),
+            strLastName = COALESCE(@strLastName, strLastName),
+            strPassword = COALESCE(@strPassword, strPassword),
+            strEmail = COALESCE(@strEmail, strEmail),
+            strPhone = COALESCE(@strPhone, strPhone)
+        WHERE intOrganizerID = @intOrganizerID;
+
+        COMMIT TRANSACTION;  
+    END TRY
+    BEGIN CATCH
+        ROLLBACK TRANSACTION;  
+    END CATCH
+END
+GO
+-- testing uspUpdateOrganizer
+-- SELECT * FROM TOrganizers WHERE intOrganizerID = 1; 
+
+--DECLARE @intOrganizerID INT = 1; 
+
+--EXEC uspUpdateOrganizer 
+--    @intOrganizerID = @intOrganizerID, 
+--    @strFirstName = NULL,          
+--    @strLastName = 'Williams',       
+--    @strPassword = NULL,           
+--    @strEmail = NULL,               
+--    @strPhone = NULL;                     
+
+-- SELECT * FROM TOrganizers WHERE intOrganizerID = 1; 
+
+
+GO
 
 -- UPDATE EVENT
 CREATE PROCEDURE uspUpdateEvent
     @intEventID INT,
-    @intUserID INT = NULL,
+    @intOrganizerID INT = NULL,
     @strEventName VARCHAR(50) = NULL,
     @dtDateOfEvent DATETIME = NULL,
     @dtSetUpTime DATETIME = NULL,
@@ -795,7 +860,7 @@ BEGIN
     BEGIN TRY
         UPDATE TEvents
         SET 
-            intUserID = COALESCE(@intUserID, intUserID),
+            intOrganizerID = COALESCE(@intOrganizerID, intOrganizerID),
             strEventName = COALESCE(@strEventName, strEventName),
             dtDateOfEvent = COALESCE(@dtDateOfEvent, dtDateOfEvent),
             dtSetUpTime = COALESCE(@dtSetUpTime, dtSetUpTime),
@@ -822,7 +887,7 @@ GO
 
 --EXEC uspUpdateEvent 
 --    @intEventID = 1,                   
---    @intUserID = 6,                     
+--    @intOrganizerID = 1,                     
 --    @strEventName = 'Halloween Fest'
  
 
@@ -835,7 +900,7 @@ GO
 -- UPDATE FOODTRUCK
 CREATE PROCEDURE uspUpdateFoodTruck
     @intFoodTruckID INT,
-    @intUserID INT = NULL,
+    @intVendorID INT = NULL,
     @intCuisineTypeID INT = NULL,
     @strTruckName VARCHAR(50) = NULL,
     @monMinPrice MONEY = NULL,
@@ -852,7 +917,7 @@ BEGIN
     BEGIN TRY
         UPDATE TFoodTrucks
         SET 
-            intUserID = COALESCE(@intUserID, intUserID),
+            intVendorID = COALESCE(@intVendorID, intVendorID),
             intCuisineTypeID = COALESCE(@intCuisineTypeID, intCuisineTypeID),
             strTruckName = COALESCE(@strTruckName, strTruckName),
             monMinPrice = COALESCE(@monMinPrice, monMinPrice),
@@ -876,24 +941,23 @@ GO
 
 --EXEC uspUpdateFoodTruck 
 --    @intFoodTruckID = 1,                   
---    @intUserID = 3,                     
+--    @intVendorID = 1,                     
 --    @strOperatingLicense = 'dfgdgd57'
  
 
 --select * from TFoodTrucks where intFoodTruckID = 1;
 
 
+GO
 
-
--- GET USER
-CREATE PROCEDURE uspGetUser
-    @intUserID INT
+-- GET VENDOR
+CREATE PROCEDURE uspGetVendor
+    @intVendorID INT
 AS
 BEGIN
     SET NOCOUNT ON;  
 
     SELECT 
-        intUserTypeID,
         strFirstName,
         strLastName,
         strPassword,
@@ -901,18 +965,44 @@ BEGIN
         strPhone,
         dtDateCreated,
         dtLastLogin
-    FROM TUsers
-    WHERE intUserID = @intUserID;
+    FROM TVendors
+    WHERE intVendorID = @intVendorID;
 END
+GO
+-- testing uspGetVendor
+--EXEC uspGetVendor @intVendorID = 1; 
 
 GO
 
---testing get user
---EXEC uspGetUser @intUserID = 1;
+
+
+-- GET ORGANIZER
+CREATE PROCEDURE uspGetOrganizer
+    @intOrganizerID INT
+AS
+BEGIN
+    SET NOCOUNT ON;  
+
+    SELECT 
+        strFirstName,
+        strLastName,
+        strPassword,
+        strEmail,
+        strPhone,
+        dtDateCreated,
+        dtLastLogin
+    FROM TOrganizers
+    WHERE intOrganizerID = @intOrganizerID;
+END
+GO
+-- testing uspGetOrganizer
+--EXEC uspGetOrganizer @intOrganizerID = 1; 
 
 
 
 
+
+GO
 -- GET FOODTRUCK 
 CREATE PROCEDURE uspGetFoodTruck
     @intFoodTruckID INT
@@ -921,7 +1011,7 @@ BEGIN
     SET NOCOUNT ON;  
 
     SELECT 
-        intUserID,
+        intVendorID,
         intCuisineTypeID,
         strTruckName,
         monMinPrice,
@@ -946,7 +1036,7 @@ BEGIN
     SET NOCOUNT ON;  
 
     SELECT 
-        intUserID,
+        intOrganizerID,
         strEventName,
         dtDateOfEvent,
         dtSetUpTime,
@@ -968,4 +1058,46 @@ GO
 
 
 
+-- DELETE VENDOR
+CREATE PROCEDURE uspDeleteVendor
+    @intVendorID INT
+AS
+BEGIN
+    SET NOCOUNT ON;  
+    SET XACT_ABORT ON;  
 
+    BEGIN TRANSACTION;
+
+    DELETE FROM TVendors
+    WHERE intVendorID = @intVendorID;
+
+    COMMIT TRANSACTION;  
+END
+GO
+-- testing uspDeleteVendor
+--select * from TVendors;
+--EXEC uspDeleteVendor @intVendorID = 2;
+--select * from TVendors;
+
+
+
+-- DELETE ORGANIZER
+CREATE PROCEDURE uspDeleteOrganizer
+    @intOrganizerID INT
+AS
+BEGIN
+    SET NOCOUNT ON;  
+    SET XACT_ABORT ON;  
+
+    BEGIN TRANSACTION;
+
+    DELETE FROM TOrganizers
+    WHERE intOrganizerID = @intOrganizerID;
+
+    COMMIT TRANSACTION;  
+END
+GO
+-- testing uspDeleteOrganizer
+--select* from TOrganizers;
+--EXEC uspDeleteOrganizer @intOrganizerID = 1;
+--select* from TOrganizers;
