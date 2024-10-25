@@ -54,6 +54,8 @@ IF OBJECT_ID( 'uspGetEvent')		IS NOT NULL DROP PROCEDURE  uspGetEvent
 
 IF OBJECT_ID( 'uspDeleteVendor')			IS NOT NULL DROP PROCEDURE  uspDeleteVendor
 IF OBJECT_ID( 'uspDeleteOrganizer')			IS NOT NULL DROP PROCEDURE  uspDeleteOrganizer
+IF OBJECT_ID( 'uspDeleteFoodTruck')			IS NOT NULL DROP PROCEDURE  uspDeleteOrganizer
+IF OBJECT_ID( 'uspDeleteEvent')			IS NOT NULL DROP PROCEDURE  uspDeleteOrganizer
 
 
 -- --------------------------------------------------------------------------------
@@ -1101,3 +1103,50 @@ GO
 --select* from TOrganizers;
 --EXEC uspDeleteOrganizer @intOrganizerID = 1;
 --select* from TOrganizers;
+
+
+
+
+-- DELETE EVENT
+CREATE PROCEDURE uspDeleteEvent
+    @intEventID INT
+AS
+BEGIN
+    SET NOCOUNT ON;  
+    SET XACT_ABORT ON;  
+
+    BEGIN TRANSACTION;
+
+    DELETE FROM TEvents
+    WHERE intEventID = @intEventID;
+
+    COMMIT TRANSACTION;  
+END
+GO
+-- testing uspDeleteEvent
+--select * from TEvents;
+--EXEC uspDeleteEvent @intEventID = 2;
+--select * from TEvents;
+
+GO
+
+-- DELETE FOOD TRUCK
+CREATE PROCEDURE uspDeleteFoodTruck
+    @intFoodTruckID INT
+AS
+BEGIN
+    SET NOCOUNT ON;  
+    SET XACT_ABORT ON;  
+
+    BEGIN TRANSACTION;
+
+    DELETE FROM TFoodTrucks
+    WHERE intFoodTruckID = @intFoodTruckID;
+
+    COMMIT TRANSACTION;  
+END
+GO
+-- testing uspDeleteFoodTruck
+--select * from TFoodTrucks;
+--EXEC uspDeleteFoodTruck @intFoodTruckID = 1;
+--select * from TFoodTrucks;
