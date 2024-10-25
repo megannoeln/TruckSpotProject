@@ -28,11 +28,12 @@ IF OBJECT_ID('TEventSpaces')		IS NOT NULL DROP TABLE TEventSpaces;
 IF OBJECT_ID('TEvents')				IS NOT NULL DROP TABLE TEvents;              
 IF OBJECT_ID('TFoodTrucks')			IS NOT NULL DROP TABLE TFoodTrucks;         
 IF OBJECT_ID('TSponsors')			IS NOT NULL DROP TABLE TSponsors;            
-IF OBJECT_ID('TCuisineTypes')		IS NOT NULL DROP TABLE TCuisineTypes;        
-IF OBJECT_ID('TUsers')				IS NOT NULL DROP TABLE TUsers;               
-IF OBJECT_ID('TUserTypes')			IS NOT NULL DROP TABLE TUserTypes;  
+IF OBJECT_ID('TCuisineTypes')		IS NOT NULL DROP TABLE TCuisineTypes;  
+IF OBJECT_ID('TVendors')			IS NOT NULL DROP TABLE TVendors; 
+IF OBJECT_ID('TOrganizers')			IS NOT NULL DROP TABLE TOrganizers; 
+--IF OBJECT_ID('TUsers')			IS NOT NULL DROP TABLE TUsers;               
+--IF OBJECT_ID('TUserTypes')		IS NOT NULL DROP TABLE TUserTypes;  
 IF OBJECT_ID('TStatuses')			IS NOT NULL DROP TABLE TStatuses; 
-
 
 IF OBJECT_ID( 'uspLoginUser' )	    IS NOT NULL DROP PROCEDURE  uspLoginUser
 
@@ -52,12 +53,12 @@ IF OBJECT_ID( 'uspGetEvent')		IS NOT NULL DROP PROCEDURE  uspGetEvent
 -- --------------------------------------------------------------------------------
 -- Tables
 -- --------------------------------------------------------------------------------
-CREATE TABLE TUserTypes
-(
-	 intUserTypeID			INTEGER	IDENTITY		NOT NULL
-	,strUserType			VARCHAR(50)				NOT NULL
-	,CONSTRAINT TUserTypes_PK PRIMARY KEY ( intUserTypeID )
-);
+--CREATE TABLE TUserTypes
+--(
+--	 intUserTypeID			INTEGER	IDENTITY		NOT NULL
+--	,strUserType			VARCHAR(50)				NOT NULL
+--	,CONSTRAINT TUserTypes_PK PRIMARY KEY ( intUserTypeID )
+--);
 
 CREATE TABLE TCuisineTypes
 (
@@ -73,11 +74,24 @@ CREATE TABLE TStatuses
     ,CONSTRAINT TStatuses_PK PRIMARY KEY (intStatusID)
 );
 
+--CREATE TABLE TUsers
+--(
+--	 intUserID				INTEGER	IDENTITY		NOT NULL
+--	,intUserTypeID			INTEGER					NOT NULL
+--	,strFirstName			VARCHAR(50)				NOT NULL
+--	,strLastName			VARCHAR(50)				NOT NULL
+--	,strPassword			VARCHAR(50)				NOT NULL
+--	,strEmail				VARCHAR(50)				NOT NULL UNIQUE
+--	,strPhone				VARCHAR(50)				NOT NULL
+--	,dtDateCreated			DATETIME				NOT NULL
+--	,dtLastLogin			DATETIME				NOT NULL
+--	,CONSTRAINT TUsers_PK PRIMARY KEY ( intUserID )
+--	,FOREIGN KEY ( intUserTypeID ) REFERENCES TUserTypes ( intUserTypeID )
+--);
 
-CREATE TABLE TUsers
+CREATE TABLE TVendors
 (
-	 intUserID				INTEGER	IDENTITY		NOT NULL
-	,intUserTypeID			INTEGER					NOT NULL
+	 intVendorID			INTEGER	IDENTITY		NOT NULL
 	,strFirstName			VARCHAR(50)				NOT NULL
 	,strLastName			VARCHAR(50)				NOT NULL
 	,strPassword			VARCHAR(50)				NOT NULL
@@ -85,14 +99,26 @@ CREATE TABLE TUsers
 	,strPhone				VARCHAR(50)				NOT NULL
 	,dtDateCreated			DATETIME				NOT NULL
 	,dtLastLogin			DATETIME				NOT NULL
-	,CONSTRAINT TUsers_PK PRIMARY KEY ( intUserID )
-	,FOREIGN KEY ( intUserTypeID ) REFERENCES TUserTypes ( intUserTypeID )
+	,CONSTRAINT TVendors_PK PRIMARY KEY ( intVendorID )
+);
+
+CREATE TABLE TOrganizers
+(
+	 intOrganizerID			INTEGER	IDENTITY		NOT NULL
+	,strFirstName			VARCHAR(50)				NOT NULL
+	,strLastName			VARCHAR(50)				NOT NULL
+	,strPassword			VARCHAR(50)				NOT NULL
+	,strEmail				VARCHAR(50)				NOT NULL UNIQUE
+	,strPhone				VARCHAR(50)				NOT NULL
+	,dtDateCreated			DATETIME				NOT NULL
+	,dtLastLogin			DATETIME				NOT NULL
+	,CONSTRAINT TOrganizers_PK PRIMARY KEY ( intOrganizerID )
 );
 
 CREATE TABLE TEvents
 (
 	 intEventID				INTEGER	IDENTITY		NOT NULL
-	,intUserID				INTEGER					NOT NULL
+	,intOrganizerID				INTEGER				NOT NULL
 	,strEventName			VARCHAR(50)				NOT NULL
 	,dtDateOfEvent			DATETIME				NOT NULL
 	,dtSetUpTime			DATETIME				NOT NULL
@@ -105,7 +131,7 @@ CREATE TABLE TEvents
 	,strLogoFilePath		VARCHAR(500)      -- will be a relative file path in our project. ex: "images/logo.gif"
 	,monTotalRevenue		MONEY
 	,CONSTRAINT TEvents_PK PRIMARY KEY ( intEventID )
-	,FOREIGN KEY ( intUserID ) REFERENCES TUsers ( intUserID ) 
+	,FOREIGN KEY ( intOrganizerID ) REFERENCES TOrganizers ( intOrganizerID ) ON DELETE CASCADE
 	,FOREIGN KEY ( intStatusID ) REFERENCES TStatuses ( intStatusID )
 	,CONSTRAINT chk_monPricePerSpace CHECK (monPricePerSpace > 0)
 	,CONSTRAINT chk_TotalSpaces CHECK (intTotalSpaces >= 0)
@@ -119,7 +145,7 @@ CREATE TABLE TEventCuisines
    ,intCuisineTypeID        INTEGER					NOT NULL
    ,intLimit				INTEGER					NOT NULL
     ,CONSTRAINT TEventCuisines_PK PRIMARY KEY (intEventCuisineID)
-    ,FOREIGN KEY (intEventID) REFERENCES TEvents (intEventID) 
+    ,FOREIGN KEY (intEventID) REFERENCES TEvents (intEventID) ON DELETE CASCADE
     ,FOREIGN KEY (intCuisineTypeID) REFERENCES TCuisineTypes (intCuisineTypeID)
    ,CONSTRAINT chk_LimitPerCuisine CHECK (intLimit > 0)
 );
@@ -127,15 +153,15 @@ CREATE TABLE TEventCuisines
 CREATE TABLE TFoodTrucks
 (
 	 intFoodTruckID			INTEGER	IDENTITY		NOT NULL
-	,intUserID				INTEGER					NOT NULL
+	,intVendorID			INTEGER					NOT NULL
 	,intCuisineTypeID		INTEGER					NOT NULL
 	,strTruckName			VARCHAR(50)				NOT NULL
 	,monMinPrice			MONEY					NOT NULL -- min and max price are for finding price range 															 
 	,monMaxPrice			MONEY					NOT NULL 
 	,strLogoFilePath		VARCHAR(500)				    -- will be a relative file path in our project. ex: "images/logo.gif"
 	,strOperatingLicense	VARCHAR(50)				NOT NULL
-	,CONSTRAINT TFoodTrucks_PK PRIMARY KEY ( intFoodTruckID )
-	,FOREIGN KEY ( intUserID ) REFERENCES TUsers ( intUserID )
+	,CONSTRAINT TFoodTrucks_PK PRIMARY KEY ( intFoodTruckID ) 
+	,FOREIGN KEY ( intVendorID ) REFERENCES TVendors ( intVendorID ) ON DELETE CASCADE
 	,FOREIGN KEY ( intCuisineTypeID ) REFERENCES TCuisineTypes ( intCuisineTypeID )
 	,CONSTRAINT chk_MinMaxPrice CHECK (monMinPrice <= monMaxPrice)  
     ,CONSTRAINT chk_PositivePrices CHECK (monMinPrice > 0 AND monMaxPrice > 0)
@@ -147,7 +173,7 @@ CREATE TABLE TSponsors
 	,strSponsorName			VARCHAR(50)				NOT NULL
 	,strEmail				VARCHAR(50)				NOT NULL UNIQUE
 	,strPhone				VARCHAR(50)				NOT NULL
-	,CONSTRAINT TSponsors_PK PRIMARY KEY ( intSponsorID )
+	,CONSTRAINT TSponsors_PK PRIMARY KEY ( intSponsorID ) 
 );
 
 CREATE TABLE TEventSpaces
@@ -158,7 +184,7 @@ CREATE TABLE TEventSpaces
 	,strSize				VARCHAR(50)				NOT NULL
 	,boolIsAvailable		BIT						NOT NULL -- 1 for available, 0 for not available
 	,CONSTRAINT TEventSpaces_PK PRIMARY KEY ( intEventSpaceID ) 
-	,FOREIGN KEY ( intEventID ) REFERENCES TEvents ( intEventID ) 
+	,FOREIGN KEY ( intEventID ) REFERENCES TEvents ( intEventID ) ON DELETE CASCADE
 );
 
 CREATE TABLE TReservations
@@ -167,10 +193,10 @@ CREATE TABLE TReservations
 	,intEventSpaceID		INTEGER					NOT NULL
 	,intFoodTruckID			INTEGER					NOT NULL
 	,dtReservationDate		DATETIME				NOT NULL -- the date they made the reservation, not the date of the event that it's for lol
-	,intStatusID			INTEGER				NOT NULL
+	,intStatusID			INTEGER					NOT NULL
 	,CONSTRAINT TReservations_PK PRIMARY KEY ( intReservationID )
-	,FOREIGN KEY ( intEventSpaceID ) REFERENCES TEventSpaces ( intEventSpaceID )
-	,FOREIGN KEY ( intFoodTruckID ) REFERENCES TFoodTrucks ( intFoodTruckID ) 
+	,FOREIGN KEY ( intEventSpaceID ) REFERENCES TEventSpaces ( intEventSpaceID ) ON DELETE CASCADE
+	,FOREIGN KEY ( intFoodTruckID ) REFERENCES TFoodTrucks ( intFoodTruckID ) ON DELETE CASCADE
 	,FOREIGN KEY ( intStatusID ) REFERENCES TStatuses ( intStatusID )
 );
 
@@ -183,8 +209,8 @@ CREATE TABLE TFoodTruckEvents
 	,intRating				INTEGER					 -- vendor rating the event
 	,strVendorComment		VARCHAR(500)			 -- vendor comment on event
 	,CONSTRAINT TFoodTruckEvents_PK PRIMARY KEY ( intFoodTruckEventID )
-	,FOREIGN KEY ( intEventID ) REFERENCES TEvents ( intEventID ) 
-	,FOREIGN KEY ( intFoodTruckID ) REFERENCES TFoodTrucks ( intFoodTruckID )
+	,FOREIGN KEY ( intEventID ) REFERENCES TEvents ( intEventID ) ON DELETE CASCADE
+	,FOREIGN KEY ( intFoodTruckID ) REFERENCES TFoodTrucks ( intFoodTruckID ) ON DELETE CASCADE
 	,CONSTRAINT chk_TotalRevenue CHECK (monTotalRevenue >= 0) 
 );
 
@@ -195,7 +221,7 @@ CREATE TABLE TMenus (
     ,monPrice				MONEY					NOT NULL         
     ,intUnitsSold			INTEGER					NULL                    
     ,CONSTRAINT TMenus_PK PRIMARY KEY ( intMenuID )
-    ,FOREIGN KEY ( intFoodTruckEventID ) REFERENCES TFoodTruckEvents ( intFoodTruckEventID )
+    ,FOREIGN KEY ( intFoodTruckEventID ) REFERENCES TFoodTruckEvents ( intFoodTruckEventID ) ON DELETE CASCADE
 );
 
 CREATE TABLE TEventSponsors
@@ -205,8 +231,8 @@ CREATE TABLE TEventSponsors
 	,intSponsorID			INTEGER					NOT NULL
 	,monSponsorAmount		MONEY					NOT NULL
 	,CONSTRAINT TEventSponsors_PK PRIMARY KEY ( intEventSponsorID )
-	,FOREIGN KEY ( intEventID ) REFERENCES TEvents ( intEventID ) 
-	,FOREIGN KEY ( intSponsorID ) REFERENCES TSponsors ( intSponsorID ) 
+	,FOREIGN KEY ( intEventID ) REFERENCES TEvents ( intEventID ) ON DELETE CASCADE
+	,FOREIGN KEY ( intSponsorID ) REFERENCES TSponsors ( intSponsorID ) ON DELETE CASCADE
 	,CONSTRAINT chk_SponsorAmount CHECK (monSponsorAmount >= 0) 
 );
 
@@ -217,7 +243,7 @@ CREATE TABLE TPayments
 	,monAmountPaid			MONEY					NOT NULL
 	,dtPaymentDate			DATETIME				NOT NULL
 	,CONSTRAINT TPayments_PK PRIMARY KEY ( intPaymentID )
-	,FOREIGN KEY ( intReservationID ) REFERENCES TReservations ( intReservationID ) 
+	,FOREIGN KEY ( intReservationID ) REFERENCES TReservations ( intReservationID ) ON DELETE CASCADE
 	,CONSTRAINT chk_AmountPaid CHECK (monAmountPaid >= 0) 
 );
 
@@ -226,10 +252,10 @@ CREATE TABLE TPayments
 -- --------------------------------------------------------------------------------
 
 -- TUserTypes
-INSERT INTO TUserTypes (strUserType)
-VALUES 
-('Vendor'), -- id 1
-('Organizer'); -- id 2
+--INSERT INTO TUserTypes (strUserType)
+--VALUES 
+--('Vendor'), -- id 1
+--('Organizer'); -- id 2
 
 
 -- TCuisineTypes
@@ -252,24 +278,24 @@ VALUES
 
 
 -- TUsers
-INSERT INTO TUsers (intUserTypeID, strFirstName, strLastName, strPassword, strEmail, strPhone, dtDateCreated, dtLastLogin) 
-VALUES 
---vendors
-(1, 'Alice', 'Smith',  'password111', 'alice@gmail.com', '123-456-7890', GETDATE(), GETDATE()), -- id 1
-(1, 'Evan', 'Johnson', 'password222', 'evan@gmail.com', '123-456-7891', GETDATE(), GETDATE()), -- id 2
-(1, 'Charlie', 'Williams',  'password333', 'charlie@gmail.com', '123-456-7892', GETDATE(), GETDATE()), -- id 3
-(1, 'Jimmy', 'Brown',  'password444', 'jimmy@gmail.com', '123-456-7893', GETDATE(), GETDATE()), -- id 4
-(1, 'Eva', 'Jones', 'password555', 'eva@gmail.com', '123-456-7894', GETDATE(), GETDATE()), -- id 5
---organizers 
-(2, 'Lola', 'Garcia', 'password666', 'lola@gmail.com', '123-456-7895', GETDATE(), GETDATE()), -- id 6
-(2, 'Grace', 'Martinez',  'password777', 'grace@gmail.com', '123-456-7896', GETDATE(), GETDATE()), -- id 7
-(2, 'Steph', 'Davis',  'password888', 'steph@gmail.com', '123-456-7897', GETDATE(), GETDATE()), -- id 8
-(2, 'Isabella', 'Rodriguez',  'password999', 'isabella@gmail.com', '123-456-7898', GETDATE(), GETDATE()), -- id 9
-(2, 'Jack', 'Odell', 'password000', 'jack@gmail.com', '123-456-7899', GETDATE(), GETDATE()); -- id 10
+--INSERT INTO TUsers (intUserTypeID, strFirstName, strLastName, strPassword, strEmail, strPhone, dtDateCreated, dtLastLogin) 
+--VALUES 
+----vendors
+--(1, 'Alice', 'Smith',  'password111', 'alice@gmail.com', '123-456-7890', GETDATE(), GETDATE()), -- id 1
+--(1, 'Evan', 'Johnson', 'password222', 'evan@gmail.com', '123-456-7891', GETDATE(), GETDATE()), -- id 2
+--(1, 'Charlie', 'Williams',  'password333', 'charlie@gmail.com', '123-456-7892', GETDATE(), GETDATE()), -- id 3
+--(1, 'Jimmy', 'Brown',  'password444', 'jimmy@gmail.com', '123-456-7893', GETDATE(), GETDATE()), -- id 4
+--(1, 'Eva', 'Jones', 'password555', 'eva@gmail.com', '123-456-7894', GETDATE(), GETDATE()), -- id 5
+----organizers 
+--(2, 'Lola', 'Garcia', 'password666', 'lola@gmail.com', '123-456-7895', GETDATE(), GETDATE()), -- id 6
+--(2, 'Grace', 'Martinez',  'password777', 'grace@gmail.com', '123-456-7896', GETDATE(), GETDATE()), -- id 7
+--(2, 'Steph', 'Davis',  'password888', 'steph@gmail.com', '123-456-7897', GETDATE(), GETDATE()), -- id 8
+--(2, 'Isabella', 'Rodriguez',  'password999', 'isabella@gmail.com', '123-456-7898', GETDATE(), GETDATE()), -- id 9
+--(2, 'Jack', 'Odell', 'password000', 'jack@gmail.com', '123-456-7899', GETDATE(), GETDATE()); -- id 10
 
 
 -- TEvents
-INSERT INTO TEvents (intUserID, strEventName, dtDateOfEvent, dtSetUpTime, strLocation, intTotalSpaces, intAvailableSpaces, monPricePerSpace, intExpectedGuests, intStatusID, strLogoFilePath, monTotalRevenue)
+INSERT INTO TEvents (intOrganizerID, strEventName, dtDateOfEvent, dtSetUpTime, strLocation, intTotalSpaces, intAvailableSpaces, monPricePerSpace, intExpectedGuests, intStatusID, strLogoFilePath, monTotalRevenue)
 VALUES 
 (6, 'Halloween Festival', '2024-11-01', '2024-11-01 09:00:00', 'City Park', 10, 5, 10.00, 500, 1, 'images/sample.jpg', null), -- id 1
 (7, 'Street Food Fair', '2024-11-15', '2024-11-15 09:00:00', 'Downtown', 15, 15, 15.00, 450, 1, 'images/sample.jpg', null), -- id 2
@@ -279,7 +305,7 @@ VALUES
 
 
 -- TFoodTrucks
-INSERT INTO TFoodTrucks (intUserID, intCuisineTypeID, strTruckName, monMinPrice, monMaxPrice, strLogoFilePath, strOperatingLicense)
+INSERT INTO TFoodTrucks (intVendorID, intCuisineTypeID, strTruckName, monMinPrice, monMaxPrice, strLogoFilePath, strOperatingLicense)
 VALUES 
 (1, 2, 'Taco Truck Inc', 5.00, 15.00, 'images/sample.jpg', 'TACOS1234'), -- id 1
 (2, 3, 'Burgers on Wheels', 6.00, 12.00, 'images/sample.jpg', 'BURGERS1234'), -- id 2
@@ -319,7 +345,7 @@ VALUES
 (1, 1, null, null, null),  
 (1, 2, null, null, null), 
 (2, 1, null, null, null),  
-(2, 3, null , null, null),  
+(2, 3, null, null, null),  
 (3, 2, null, null, null),  
 (3, 1, null, null, null),   
 (3, 4, null, null, null),  
@@ -390,28 +416,60 @@ GO
 -- if this returns a record, log user in
 -- if it doesn't return a record their credentials weren't a match
 CREATE PROCEDURE uspLoginUser
-	@strEmail			AS VARCHAR( 50 )
-   ,@strPassword		AS VARCHAR( 50 )
+    @strEmail    VARCHAR(50),
+    @strPassword VARCHAR(50)
 AS
-SET NOCOUNT ON		
-SET XACT_ABORT ON
+BEGIN
+    SET NOCOUNT ON;
+    SET XACT_ABORT ON;
+    
+    DECLARE @VendorID INT = NULL;
+    DECLARE @OrganizerID INT = NULL;
 
-BEGIN TRANSACTION
-
-	Select intUserID from TUsers
-	Where strEmail = @strEmail and strPassword = @strPassword
-
-
-	-- update this as their most recent login
-    IF @@ROWCOUNT > 0
-    BEGIN
-        UPDATE TUsers
-        SET dtLastLogin = GETDATE()
+    BEGIN TRANSACTION;
+    BEGIN TRY
+       
+        SELECT @VendorID = intVendorID
+        FROM TVendors
         WHERE strEmail = @strEmail AND strPassword = @strPassword;
-    END
+        
+        IF @VendorID IS NOT NULL
+        BEGIN
+          
+            UPDATE TVendors
+            SET dtLastLogin = GETDATE()
+            WHERE intVendorID = @VendorID;
+            
+            COMMIT TRANSACTION;
+            RETURN 1;
+        END
 
-COMMIT TRANSACTION
+        
+        SELECT @OrganizerID = intOrganizerID
+        FROM TOrganizers
+        WHERE strEmail = @strEmail AND strPassword = @strPassword;
+        
+        IF @OrganizerID IS NOT NULL
+        BEGIN
+           
+            UPDATE TOrganizers
+            SET dtLastLogin = GETDATE()
+            WHERE intOrganizerID = @OrganizerID;
+            
+            COMMIT TRANSACTION;
+            RETURN 2; 
+        END
+        
+        
+        ROLLBACK TRANSACTION;
+        RETURN 0;
 
+    END TRY
+    BEGIN CATCH
+        ROLLBACK TRANSACTION;
+        THROW; 
+    END CATCH
+END
 GO
 -- testing login procedure
 -- Execute uspLoginUser 'alice@gmail.com', 'password111';
