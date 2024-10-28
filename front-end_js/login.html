@@ -1,55 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../style/style.css">
-    <script src="../back-end_js/script.js"></script>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../style/style.css" />
     <title>Login</title>
-</head>
-<body>
+  </head>
+  <body>
     <nav>
-        <div class="nav-container">
-            <a href="index.html" class="logo">
-                <img src="../images/logo.jpg" alt="Logo" class="logo-image">
-            </a>
-            <div class="nav-links">
-                <div class="menu-items">
-                <a href="../front-end_js/index.html">Home</a>
-                <a href="../front-end_js/events.html">Event</a>
-                <a href="../front-end_js/my_reservation.html">My Reservation</a>
-                <a href="#">Contact Support</a>
-                </div>
-            </div>
-            <a href="../front-end_js/create_acct.html" class="login-link">Create an account</a>
+      <div class="nav-container">
+        <a href="index.html" class="logo">
+          <img src="../images/logo.jpg" alt="Logo" class="logo-image" />
+        </a>
+        <div class="nav-links">
+          <div class="menu-items">
+            <a href="../front-end_js/index.html">Home</a>
+            <a href="../front-end_js/events.html">Event</a>
+            <a href="../front-end_js/my_reservation.html">My Reservation</a>
+            <a href="#">Contact Support</a>
+          </div>
         </div>
+        <a href="../front-end_js/create_acct.html" class="login-link"
+          >Create an account</a
+        >
+      </div>
     </nav>
 
     <main>
-        <div class="login-container">
+      <div class="login-container">
         <h1 class="login-header">Log in</h1>
-            <div>
-                <form action="#">
-                    <label for="strEmail">Email address</label> <br>
-                    <input type="email" id="strEmail" name="strEmail" required> <br>
+        <div>
+          <form id="loginForm">
+            <label for="strEmail">Email address</label> <br />
+            <input type="email" id="strEmail" name="strEmail" required /> <br />
 
-                    <div>
-                        <label for="strPassword">Password</label> <br>
-                        <input type="password" id="strPassword" name="strPassword" required> <br>
-                    </div>
+            <label for="strPassword">Password</label> <br />
+            <input
+              type="password"
+              id="strPassword"
+              name="strPassword"
+              required
+            />
+            <br />
 
-                    <button type="submit">Log in</button>
-                </form>
+            <button type="submit">Log in</button>
+          </form>
 
-                <a href="#">Forgot Password?</a>
-            </div>
-                <h2>OR</h2>
-                <div class="continue-btns">
-                    <button>Continue with Google</button>
-                    <button>Continue with Facebook</button>
-                    <button>Sign up with email</button>
-                </div>
+          <a href="#">Forgot Password?</a>
         </div>
+        <h2>OR</h2>
+        <div class="continue-btns">
+          <button>Continue with Google</button>
+          <button>Continue with Facebook</button>
+          <button>Sign up with email</button>
+        </div>
+      </div>
     </main>
-</body>
+    <script src="../back-end_js/script.js"></script>
+  </body>
 </html>
