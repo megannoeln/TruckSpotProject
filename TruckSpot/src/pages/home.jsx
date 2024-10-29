@@ -2,7 +2,7 @@ import React from 'react'
 import Navbar from '../components/Navbar/Navbar'
 import SeachBox from '../components/SearchBox/SeachBox'
 
-import BigCard from '../components/Cards/Bigcard'
+import BigCard from '../components/Cards/BigCard'
 import MediumCard from '../components/Cards/MediumCard'
 
 function home() {
