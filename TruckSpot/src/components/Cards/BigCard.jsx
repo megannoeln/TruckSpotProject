@@ -1,21 +1,22 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 
 function BigCard() {
   return (
     <div className="lg:col-span-2 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-      <a href="#">
+      <Link to="/eventinformation">
         <img 
           className="rounded-t-lg w-full h-[300px] object-cover" 
           src="./src/assets/sample.jpg" 
           alt="Main event" 
         />
-      </a>
+      </Link>
       <div className="p-4">
-        <a href="#">
+        <Link to="/eventinformation">
           <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
             Event Title
           </h5>
-        </a>
+        </Link>
         <p className="mb-3 font-normal text-gray-700 dark:text-gray-400 line-clamp-2">
           Lorem ipsum dolor sit amet consectetur adipisicing elit. Officia perferendis mollitia tenetur ipsum. Non, fugiat.
         </p>

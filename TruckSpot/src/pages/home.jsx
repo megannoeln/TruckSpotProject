@@ -8,22 +8,20 @@ import MediumCard from '../components/Cards/MediumCard'
 function home() {
   return (
     <>
-        <Navbar/>
-        <SeachBox/>
-      <div className="container mx-auto px-4">
-        <div className="grid grid-cols-2 lg:grid-rows-2 gap-6">
+      <Navbar/>
+      <SeachBox/>
+      <div className="grid lg:grid-cols-2 md:grid-cols-2 px-40 py-5 gap-8">
           {/* Big card takes 2 columns */}
-          <div className="lg:col-span-2">
+          <div className="col-span-2">
             <BigCard title="1st Upcoming Event"/>
           </div>
           {/* Each medium card takes 1 column */}
-          <div className="lg:col-span-1">
+          <div>
             <MediumCard title="2nd Upcoming Event"/>
           </div>
-          <div className="lg:cold-span-1">
+          <div>
             <MediumCard title="3rd Upcoming Event"/>
           </div>
-        </div>
       </div>  
     </>
     

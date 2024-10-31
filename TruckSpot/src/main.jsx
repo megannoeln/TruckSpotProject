@@ -11,6 +11,10 @@ import Signup from './pages/signup.jsx';
 import Event from './pages/event.jsx';
 import Home from './pages/home.jsx';
 import Reservation from './pages/reservation.jsx';
+import MyAccount from './pages/MyAccount.jsx';
+import UpdateAccount from './pages/UpdateAccount.jsx';
+import EventInformation from './pages/EventInformation.jsx';
+import Dashboard from './pages/Dashboard.jsx';
 
 const router = createBrowserRouter([
   {
@@ -37,6 +41,23 @@ const router = createBrowserRouter([
     path: "reservation",
     element: <Reservation/>
   },
+  {
+    path: "myaccount",
+    element: <MyAccount/>
+  },
+  {
+    path: "updateaccount",
+    element: <UpdateAccount/>
+  },
+  {
+    path: "eventinformation",
+    element: <EventInformation/>
+  }
+  ,
+  {
+    path: "dashboard",
+    element: <Dashboard/>
+  }
 ])
 
 

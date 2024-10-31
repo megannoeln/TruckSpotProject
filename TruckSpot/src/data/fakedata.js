@@ -15,6 +15,18 @@ export const services = [
       title: "Youtuber",
       image: "https://source.unsplash.com/random?wallpapers",
     },
+    {
+      title: "Youtuber",
+      image: "https://source.unsplash.com/random?wallpapers",
+    },
+    {
+      title: "Youtuber",
+      image: "https://source.unsplash.com/random?wallpapers",
+    },
+    {
+      title: "Youtuber",
+      image: "https://source.unsplash.com/random?wallpapers",
+    },
   ];
   export const experiences = [
     {
