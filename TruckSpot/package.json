@@ -4,7 +4,9 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "concurrently \"vite\" \"cd ../back-end_js && npx nodemon server.js\"",
+    "frontend": "vite",
+    "backend": "cd ../back-end_js && server.js",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"
@@ -20,6 +22,7 @@
     "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^4.3.3",
     "autoprefixer": "^10.4.20",
+    "concurrently": "^9.0.1",
     "daisyui": "^4.12.14",
     "eslint": "^9.13.0",
     "eslint-plugin-react": "^7.37.1",

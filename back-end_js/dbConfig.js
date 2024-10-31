@@ -8,6 +8,8 @@ const config = {
   options: {
     encrypt: true, // Required for Azure connections
     trustServerCertificate: true, // Use only for development
+    enableArithAbort: true,
+    trustedConnection: false
   },
 };
 
