@@ -2,7 +2,8 @@ function Validation(values) {
   let errors = {};
   const email_pattern = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
   const phone_pattern = /^[0-9]{10}$/;
-
+  const password_pattern =
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
   if (!values.strFirstName.trim()) {
     errors.firstname = "Please fill your first name";
@@ -23,9 +24,6 @@ function Validation(values) {
   } else if (!email_pattern.test(values.strEmail)) {
     errors.email = "Invalid email address";
   }
-
-  const password_pattern =
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
   if (!values.strPassword || values.strPassword === "") {
     errors.password = "Please fill your password";
