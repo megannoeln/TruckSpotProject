@@ -400,7 +400,8 @@ GO
 CREATE PROCEDURE uspLoginUser
     @strEmail    VARCHAR(50),
     @strPassword VARCHAR(50),
-    @UserID      INT OUTPUT 
+    @UserID      INT OUTPUT,
+    @UserType    INT OUTPUT  -- 1 for vendor, 2 for organizer
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -408,30 +409,36 @@ BEGIN
     
     BEGIN TRANSACTION;
     BEGIN TRY
-       
+        
         SELECT @UserID = intVendorID
         FROM TVendors
         WHERE strEmail = @strEmail AND strPassword = @strPassword;
         
-      
         IF @UserID IS NOT NULL
         BEGIN
+           
+            SET @UserType = 1; -- was a vendor 
+
+           
             UPDATE TVendors
             SET dtLastLogin = GETDATE()
             WHERE intVendorID = @UserID;
             
             COMMIT TRANSACTION;
-            RETURN; 
+            RETURN;
         END
 
-        
+       
         SELECT @UserID = intOrganizerID
         FROM TOrganizers
         WHERE strEmail = @strEmail AND strPassword = @strPassword;
         
-        
         IF @UserID IS NOT NULL
         BEGIN
+            
+            SET @UserType = 2; --was a organizer
+
+         
             UPDATE TOrganizers
             SET dtLastLogin = GETDATE()
             WHERE intOrganizerID = @UserID;
@@ -439,24 +446,27 @@ BEGIN
             COMMIT TRANSACTION;
             RETURN;
         END
+
         
-       
         ROLLBACK TRANSACTION;
         SET @UserID = NULL;
+        SET @UserType = 0;
 
     END TRY
     BEGIN CATCH
-      
-        ROLLBACK TRANSACTION;
         
+        ROLLBACK TRANSACTION;
         SET @UserID = NULL;
+        SET @UserType = 0;
     END CATCH
 END
 GO
--- testing login procedure
+--testing login procedure
 --DECLARE @UserID INT;
---EXEC uspLoginUser @strEmail = 'alice@gmail.com', @strPassword = 'password111', @UserID = @UserID OUTPUT;
+--DECLARE @UserType INT;
+--EXEC uspLoginUser @strEmail = 'alice@gmail.com', @strPassword = 'password111', @UserID = @UserID OUTPUT, @UserType = @UserType OUTPUT;
 --SELECT @UserID AS UserID;
+--SELECT @UserID AS UserID, @UserType AS UserType;
 
 
 
