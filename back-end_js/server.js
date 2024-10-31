@@ -1,93 +1,98 @@
-const express = require('express');
-const cors = require('cors');
-const sql = require('mssql');
-const bcrypt = require('bcrypt');
+const express                 = require('express');
+const cors                    = require('cors');
+const sqlConnectionToServer   = require('mssql');
+const bcrypt                  = require('bcrypt');
+const config                  = require("./dbConfig");
+const Vendor                  = require("./vendors")
 
+
+const API_PORT = process.env.PORT || 5000;
+  
 const app = express();
-app.use(cors()); 
+
+app.use(cors({
+  origin: 'http://localhost:5173', // Vite default port
+    credentials: true
+})); 
 app.use(express.json()); 
+app.use(express.urlencoded({ extended: true }));
 
-const dbConfig = {
-    user: "truckspotadmin",
-    password: "Cstate2024!",
-    server: "truckspot.database.windows.net",
-    database: "truckspot",
-    port: 1433,
-    pool: {
-      max: 10,
-      min: 0,
-      idleTimeoutMillis: 30000
-    },
-    options: {
-      encrypt: true,
-      trustServerCertificate: true
-    }
-  };
 
-  async function getDbConnection() {
-    try {
-      await sql.connect(dbConfig);
-      console.log('Connected to database');
-    } catch (err) {
-      console.error('Database connection failed:', err);
-      throw err;
-    }
-  }
+app.post('/signup', async (req, res) => {
+  try {
+      const { 
+          strFirstName,
+          strLastName,
+          strEmail,
+          strPhone,
+          strPassword
+      } = req.body;
 
-  app.post('/api/signup', async (req, res) => {
-    try {
-      const { firstname, lastname, email, phone, password } = req.body;
-  
-      // Hash password
-      const saltRounds = 10;
-      const hashedPassword = await bcrypt.hash(password, saltRounds);
-  
-      // Connect to database
-      await getDbConnection();
-  
-      // Check if user already exists
-      const checkResult = await sql.query`
-        SELECT strEmail FROM TVendors 
-        WHERE strEmail = ${email}
-      `;
-  
-      if (checkResult.recordset.length > 0) {
-        return res.status(400).json({ error: 'Email already registered' });
+      const vendorData = {
+        strFirstName,
+        strLastName,
+        strEmail,
+        strPhone,
+        strPassword
       }
-      
-      const currentDate = new Date().toISOString();
-
-      // Insert new user
-      const result = await sql.query`
-            INSERT INTO TVendors (
-                strFirstName, 
-                strLastName, 
-                strEmail, 
-                strPhone, 
-                strPassword,
-                dtDateCreated,
-                dtLastLogin
-            )
-            VALUES (
-                ${firstname}, 
-                ${lastname}, 
-                ${email}, 
-                ${phone}, 
-                ${hashedPassword},
-                ${currentDate},
-                ${currentDate}
-            )
-        `;
-  
-      res.status(201).json({ message: 'User registered successfully' });
-  
-    } catch (err) {
-      console.error('Error in signup:', err);
-      res.status(500).json({ error: 'Server error' });
+      insertUser(vendorData);
+    res.status(200).json({
+        success: true,
+        message: 'Signup data received successfully',
+        user: {
+          strFirstName: req.body.strFirstName,
+          strLastName: req.body.strLastName,
+          strEmail: req.body.strEmail,
+          strPhone: req.body.strPhone,
+          strPassword : req.body.strPassword
+        }
+    });
+    } catch (error) {
+        console.error('Error in signup:', error);
+        res.status(500).json({
+            success: false,
+            message: 'An error occurred during signup',
+            error: error.message
+        });
     }
-  });
-  
-  const PORT = process.env.PORT || 5000;
-  app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-  });
+    
+});
+
+// const getUser = async () => {
+//   try {
+//     let pool = await sqlConnectionToServer.connect(config);
+//     let users = pool.request().query("SELECT * FROM TVendors")
+//     return users;
+//   } catch(error){
+//     console.log(error);
+//   }
+// }
+
+const insertUser = async (NewVendor) => {
+  const currentDate = new Date().toISOString();
+  try {
+    let pool = await sqlConnectionToServer.connect(config);
+    let users = pool.request().query(`INSERT INTO TVendors (
+                    strFirstName,
+                    strLastName,
+                    strEmail,
+                    strPhone,
+                    strPassword,
+                    dtDateCreated,
+                    dtLastLogin
+                ) VALUES 
+      ('${NewVendor.strFirstName}', '${NewVendor.strLastName}','${NewVendor.strEmail}','${NewVendor.strPhone}','${NewVendor.strPassword}', '${currentDate}', '${currentDate}')
+      `)
+  } catch (error){
+    console.log('Insert error:', error);
+    throw error;
+  }
+}
+
+
+
+
+
+// console.log(newvendor);
+
+app.listen(API_PORT, () => {console.log(`Server running on port ${API_PORT}`);});

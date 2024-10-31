@@ -1,7 +1,7 @@
 import React from "react";
 import Navbar from "../components/Navbar/Navbar";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom"; // Import useNavigate hook
+import { useNavigate } from "react-router-dom";
 import Validation from "./SignupValidation";
 import axios from "axios";
 
@@ -13,56 +13,63 @@ const api = axios.create({
 });
 
 const SignUpForm = () => {
-  // Fixed typo in firstname
   const [values, setValues] = useState({
-    firstname: "", // Changed from fistname to firstname
-    lastname: "",
-    email: "",
-    phone: "",
-    password: "",
-    confirmPassword: "", // New field added
+    strFirstName: "", 
+    strLastName: "",
+    strEmail: "",
+    strPhone: "",
+    strPassword: "",
+    confirmPassword: "", 
   });
 
   const [errors, setErrors] = useState({});
   const [submitError, setSubmitError] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
 
   const handleInput = (event) => {
     const { name, value } = event.target;
     setValues((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: value
     }));
+    console.log(value);
   };
+
+
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const validationErrors = Validation(values);
-    setErrors(validationErrors);
-
-    if (Object.keys(validationErrors).length === 0) {
-      try {
-        setIsLoading(true);
-        setSubmitError("");
-
-        const response = await axios.post(
-          "http://localhost:5000/api/signup",
-          values
-        );
-
-        console.log("Registration successful:", response.data);
-        alert("Registration successful!"); // Change to login page after
-      } catch (error) {
-        console.error("Registration error:", error);
-        setSubmitError(
-          error.response?.data?.error ||
-            "Registration failed. Please try again."
-        );
-      } finally {
-        setIsLoading(false);
+    // const validationErrors = Validation(values);
+    // setErrors(validationErrors);
+    console.log('Form values before submission:', values);
+    try {
+      const response = await axios.post('http://localhost:5000/signup', values, {
+          headers: {
+              'Content-Type': 'application/json'
+          }
+      });
+      console.log('Server response:', response.data);
+      if (response.data.success) {
+          alert('Signup successful!');
+      } else {
+          alert(response.data.message || 'Something went wrong');
       }
-    }
-  };
+      } catch (error) {
+          console.error('Error details:', error);
+          if (error.response) {
+              // Server responded with error
+              console.log('Error response:', error.response.data);
+              alert(error.response.data.message || 'Server error occurred');
+          } else if (error.request) {
+              // Request made but no response
+              console.log('No response received');
+              alert('No response from server. Please try again.');
+          } else {
+              // Error in request setup
+              console.log('Error setting up request:', error.message);
+              alert('Error setting up request. Please try again.');
+          }
+      }
+};
 
   return (
     <div className="font-[sans-serif] bg-white md:h-screen">
@@ -76,34 +83,23 @@ const SignUpForm = () => {
         </div>
 
         <div className="flex items-center md:p-8 p-6 bg-[#0C172C] h-full lg:w-11/12 lg:ml-auto">
-          {/* Loading and Error States */}
-          {isLoading && (
-            <div className="absolute top-4 right-4 text-yellow-400">
-              Registering...
-            </div>
-          )}
-
-          {submitError && (
-            <div className="absolute top-4 right-4 text-red-500">
-              {submitError}
-            </div>
-          )}
+          
           {/* Form Start Here */}
-          <form onSubmit={handleSubmit} class="max-w-lg w-full mx-auto">
-            <div class="mb-12">
-              <h3 class="text-3xl font-bold text-yellow-400">
+          <form onSubmit={handleSubmit} className="max-w-lg w-full mx-auto">
+            <div className="mb-12">
+              <h3 className="text-3xl font-bold text-yellow-400">
                 Create an account
               </h3>
             </div>
 
             <div>
-              <label class="text-white text-xs block mb-2">First Name</label>
-              <div class="relative flex items-center">
+              <label className="text-white text-xs block mb-2">First Name</label>
+              <div className="relative flex items-center">
                 <input
-                  name="firstname"
+                  name="strFirstName"
                   type="text"
                   onChange={handleInput}
-                  class="w-full bg-transparent text-sm text-white border-b border-gray-300 focus:border-yellow-400 px-2 py-3 outline-none"
+                  className="w-full bg-transparent text-sm text-white border-b border-gray-300 focus:border-yellow-400 px-2 py-3 outline-none"
                   placeholder="Enter first name"
                 />
               </div>
@@ -114,14 +110,14 @@ const SignUpForm = () => {
               )}
             </div>
 
-            <div class="mt-8">
-              <label class="text-white text-xs block mb-2">Last Name</label>
-              <div class="relative flex items-center">
+            <div className="mt-8">
+              <label className="text-white text-xs block mb-2">Last Name</label>
+              <div className="relative flex items-center">
                 <input
-                  name="lastname"
+                  name="strLastName"
                   type="text"
                   onChange={handleInput}
-                  class="w-full bg-transparent text-sm text-white border-b border-gray-300 focus:border-yellow-400 px-2 py-3 outline-none"
+                  className="w-full bg-transparent text-sm text-white border-b border-gray-300 focus:border-yellow-400 px-2 py-3 outline-none"
                   placeholder="Enter last name"
                 />
               </div>
@@ -132,14 +128,14 @@ const SignUpForm = () => {
               )}
             </div>
 
-            <div class="mt-8">
-              <label class="text-white text-xs block mb-2">Phone Number</label>
-              <div class="relative flex items-center">
+            <div className="mt-8">
+              <label className="text-white text-xs block mb-2">Phone Number</label>
+              <div className="relative flex items-center">
                 <input
-                  name="phone"
+                  name="strPhone"
                   type="text"
                   onChange={handleInput}
-                  class="w-full bg-transparent text-sm text-white border-b border-gray-300 focus:border-yellow-400 px-2 py-3 outline-none"
+                  className="w-full bg-transparent text-sm text-white border-b border-gray-300 focus:border-yellow-400 px-2 py-3 outline-none"
                   placeholder="Enter phone number"
                 />
               </div>
@@ -150,14 +146,14 @@ const SignUpForm = () => {
               )}
             </div>
 
-            <div class="mt-8">
-              <label class="text-white text-xs block mb-2">Email</label>
-              <div class="relative flex items-center">
+            <div className="mt-8">
+              <label className="text-white text-xs block mb-2">Email</label>
+              <div className="relative flex items-center">
                 <input
-                  name="email"
+                  name="strEmail"
                   type="text"
                   onChange={handleInput}
-                  class="w-full bg-transparent text-sm text-white border-b border-gray-300 focus:border-yellow-400 px-2 py-3 outline-none"
+                  className="w-full bg-transparent text-sm text-white border-b border-gray-300 focus:border-yellow-400 px-2 py-3 outline-none"
                   placeholder="Enter email"
                 />
               </div>
@@ -168,14 +164,14 @@ const SignUpForm = () => {
               )}
             </div>
 
-            <div class="mt-8">
-              <label class="text-white text-xs block mb-2">Password</label>
-              <div class="relative flex items-center">
+            <div className="mt-8">
+              <label className="text-white text-xs block mb-2">Password</label>
+              <div className="relative flex items-center">
                 <input
-                  name="password"
+                  name="strPassword"
                   type="password"
                   onChange={handleInput}
-                  class="w-full bg-transparent text-sm text-white border-b border-gray-300 focus:border-yellow-400 px-2 py-3 outline-none"
+                  className="w-full bg-transparent text-sm text-white border-b border-gray-300 focus:border-yellow-400 px-2 py-3 outline-none"
                   placeholder="Enter password"
                 />
               </div>
@@ -186,16 +182,16 @@ const SignUpForm = () => {
               )}
             </div>
 
-            <div class="mt-8">
-              <label class="text-white text-xs block mb-2">
+            <div className="mt-8">
+              <label className="text-white text-xs block mb-2">
                 Confirm Password
               </label>
-              <div class="relative flex items-center">
+              <div className="relative flex items-center">
                 <input
                   name="confirmPassword"
                   type="password"
                   onChange={handleInput}
-                  class="w-full bg-transparent text-sm text-white border-b border-gray-300 focus:border-yellow-400 px-2 py-3 outline-none"
+                  className="w-full bg-transparent text-sm text-white border-b border-gray-300 focus:border-yellow-400 px-2 py-3 outline-none"
                   placeholder="Confirm password"
                 />
               </div>
@@ -206,18 +202,18 @@ const SignUpForm = () => {
               )}
             </div>
 
-            <div class="mt-12">
+            <div className="mt-12">
               <button
                 type="submit"
-                class="w-max shadow-xl py-3 px-6 text-sm text-gray-800 font-semibold rounded-md bg-transparent bg-yellow-400 hover:bg-yellow-500 focus:outline-none"
+                className="w-max shadow-xl py-3 px-6 text-sm text-gray-800 font-semibold rounded-md bg-transparent bg-yellow-400 hover:bg-yellow-500 focus:outline-none"
               >
                 Register
               </button>
-              <p class="text-sm text-white mt-8">
+              <p className="text-sm text-white mt-8">
                 Already have an account?{" "}
                 <a
                   href="/login"
-                  class="text-yellow-400 font-semibold hover:underline ml-1"
+                  className="text-yellow-400 font-semibold hover:underline ml-1"
                 >
                   Login here
                 </a>
