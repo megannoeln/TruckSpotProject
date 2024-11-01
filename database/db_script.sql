@@ -111,7 +111,7 @@ CREATE TABLE TEvents
 	,dtSetUpTime			DATETIME				NOT NULL
 	,strLocation			VARCHAR(50)				NOT NULL
 	,intTotalSpaces			INTEGER					NOT NULL
-	,intAvailableSpaces		INTEGER					NOT NULL
+	,intAvailableSpaces		INTEGER						NULL
 	,monPricePerSpace		MONEY					NOT NULL
 	,intExpectedGuests		INTEGER					NOT NULL
 	,intStatusID			INTEGER					NOT NULL             
@@ -131,6 +131,7 @@ CREATE TABLE TEventCuisines
     ,intEventID				INTEGER					NOT NULL
    ,intCuisineTypeID        INTEGER					NOT NULL
    ,intLimit				INTEGER					NOT NULL
+   ,intAvailable			INTEGER				    NOT NULL
     ,CONSTRAINT TEventCuisines_PK PRIMARY KEY (intEventCuisineID)
     ,FOREIGN KEY (intEventID) REFERENCES TEvents (intEventID) ON DELETE CASCADE
     ,FOREIGN KEY (intCuisineTypeID) REFERENCES TCuisineTypes (intCuisineTypeID)
@@ -297,28 +298,28 @@ VALUES
 
 
 -- TEventCuisines
-INSERT INTO TEventCuisines (intEventID, intCuisineTypeID, intLimit) VALUES
-(1, 1, 2),  -- halloween fest allowing 2 italian trucks
-(1, 2, 4),  -- halloween fest allowing 4 mexican trucks
-(1, 7, 6),  -- halloween fest allowing 6 bakery/desert trucks
-(2, 3, 2), -- street food fair allowing 2 american food trucks
-(3, 6, 5), -- local farmers market allowing 5 bakery/dessert trucks
-(3, 2, 5), -- local farmers market allowing 5 "other" trucks
-(4, 1, 2),  -- winter wonderland allowing 2 italian trucks
-(4, 6, 4); -- winter wonderland allowing 4 bakery/dessert trucks
+INSERT INTO TEventCuisines (intEventID, intCuisineTypeID, intLimit, intAvailable) VALUES
+(1, 1, 2, 2),  -- halloween fest allowing 2 italian trucks
+(1, 2, 4, 4),  -- halloween fest allowing 4 mexican trucks
+(1, 7, 6, 6),  -- halloween fest allowing 6 bakery/desert trucks
+(2, 3, 2, 2), -- street food fair allowing 2 american food trucks
+(3, 6, 5, 5), -- local farmers market allowing 5 bakery/dessert trucks
+(3, 2, 5, 5), -- local farmers market allowing 5 "other" trucks
+(4, 1, 2, 2),  -- winter wonderland allowing 2 italian trucks
+(4, 6, 4, 4); -- winter wonderland allowing 4 bakery/dessert trucks
 
 
 -- TEventSpaces
 INSERT INTO TEventSpaces (intEventID, strSpaceNum, strSize, boolIsAvailable) 
 VALUES
-(1, 'A1', '10x10', 1 ),
+(1, 'A1', '10x10', 1),
 (1, 'A2', '10x10', 1),
 (1, 'A3', '10x20', 1),
 (2, 'A4', '10x20', 1),
 (2, 'B1', '10x10', 1),
 (3, 'B2', '10x10', 1),
-(4, 'B3', '10x20', 2),
-(5, 'B4', '10x20', 2);
+(4, 'B3', '10x20', 0),
+(5, 'B4', '10x20', 0);
 
 
 -- TFoodTruckEvents
@@ -654,7 +655,7 @@ CREATE PROCEDURE uspCreateEvent
     @dtSetUpTime AS DATETIME,
     @strLocation AS VARCHAR(50),
     @intTotalSpaces AS INTEGER,
-    @intAvailableSpaces AS INTEGER,
+    @intAvailableSpaces AS INTEGER = NULL,
     @monPricePerSpace AS MONEY,
     @intExpectedGuests AS INTEGER,
     @intStatusID AS INTEGER,
