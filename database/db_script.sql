@@ -1056,24 +1056,27 @@ BEGIN
     SET NOCOUNT ON;  
 
     SELECT 
-        intOrganizerID,
-        strEventName,
-		strDescription,
-        dtDateOfEvent,
-        dtSetUpTime,
-        strLocation,
-        intTotalSpaces,
-        intAvailableSpaces,
-        monPricePerSpace,
-        intExpectedGuests,
-        intStatusID,
-        strLogoFilePath,
-        monTotalRevenue
-    FROM TEvents
-    WHERE intEventID = @intEventID;
-END
-
-GO
+        TEvents.intOrganizerID,
+        TOrganizers.strEmail,
+        TEvents.strEventName,
+        TEvents.strDescription,
+        TEvents.dtDateOfEvent,
+        TEvents.dtSetUpTime,
+        TEvents.strLocation,
+        TEvents.intTotalSpaces,
+        TEvents.intAvailableSpaces,
+        TEvents.monPricePerSpace,
+        TEvents.intExpectedGuests,
+        TEvents.intStatusID,
+        TEvents.strLogoFilePath,
+        TEvents.monTotalRevenue
+    FROM 
+        TEvents
+    INNER JOIN 
+        TOrganizers ON TEvents.intOrganizerID = TOrganizers.intOrganizerID
+    WHERE 
+        TEvents.intEventID = @intEventID;
+END;
 -- testing get event
 --EXEC uspGetEvent @intEventID = 1;
 
