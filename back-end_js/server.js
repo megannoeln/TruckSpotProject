@@ -143,15 +143,16 @@ app.get('/api/events/:eventId', async (req, res) => {
           .input('eventId', sqlConnectionToServer.Int, eventId)
           .query(`
               SELECT 
-                  e.intEventID,
+              e.intEventID,
                   e.strEventName,
                   e.strDescription,
                   e.dtDateOfEvent,
                   e.strLocation,
-                  v.strFirstName + ' ' + v.strLastName as strOrganizerName,
-                  v.strPhone as strContact
+                  o.strFirstName + ' ' + o.strLastName as strOrganizerName,
+                  o.strPhone as strContact,
+				  o.strEmail
               FROM TEvents e
-              LEFT JOIN TVendors v ON e.intOrganizerID = v.intVendorID
+              LEFT JOIN TOrganizers as O ON e.intOrganizerID = O.intOrganizerID
               WHERE e.intEventID = @eventId
           `);
 
