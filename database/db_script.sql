@@ -9,9 +9,9 @@
 -- --------------------------------------------------------------------------------
 -- Options
 -- --------------------------------------------------------------------------------
---USE truckspot; 
+USE truckspot; 
 
-USE dbTruckSpot;
+--USE dbTruckSpot;
 
 SET NOCOUNT ON; 
 
@@ -285,7 +285,8 @@ VALUES
 (2, 'Street Food Fair', 'A chance to try some great local food', '2024-11-15', '2024-11-15 09:00:00', 'Downtown', 15, 15, 15.00, 450, 1, 'images/sample.jpg', null), -- id 2
 (3, 'Local Farmers Market', 'Showcasing many local food vendors and their homemade food','2024-11-22', '2024-11-22 08:00:00', 'Main Square', 20, 18, 20.00, 100, 1, 'images/sample.jpg', null), -- id 3
 (4, 'Winter Wonderland', 'Get ready for the holidays in a winter wonderland','2023-12-05', '2023-12-05 09:00:00', 'Ice Rink', 20, 8, 13.00, 80, 2, 'images/sample.jpg', 3000.00), -- id 4  **past event**
-(5, 'Summer Splash', 'Come cool off and enjoy some local food vendors at Summer Splash','2024-07-10', '2024-07-10 09:00:00', 'Community Pool', 30, 12, 20.00, 600, 2, 'images/sample.jpg', 5000.00); -- id 5  **past event**
+(5, 'Summer Splash', 'Come cool off and enjoy some local food vendors at Summer Splash','2024-07-10', '2024-07-10 09:00:00', 'Community Pool', 30, 12, 20.00, 600, 2, 'images/sample.jpg', 5000.00), -- id 5  **past event**
+(1, 'New Years Eve Celebration', 'Ring in the new year with music, food, and a spectacular fireworks show', '2024-12-31', '2024-12-31 18:00:00', 'City Plaza', 25, 25, 25.00, 1000, 1, 'images/sample.jpg', null);
 
 
 -- TFoodTrucks
