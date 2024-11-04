@@ -3,23 +3,28 @@ const cors                    = require('cors');
 const sqlConnectionToServer   = require('mssql');
 const bcrypt                  = require('bcrypt');
 const config                  = require("./dbConfig");
-const Vendor                  = require("./vendors")
+const router                  = express.Router();
 
-
+const app = express();
 const API_PORT = process.env.PORT || 5000;
   
-const app = express();
-
 app.use(cors({
-  origin: 'http://localhost:5173', // Vite default port
+  origin: 'http://localhost:5173', 
     credentials: true
 })); 
 app.use(express.json()); 
 app.use(express.urlencoded({ extended: true }));
 
+app.get('/test', (req, res) => {
+  console.log('Test route hit');
+  res.json({ message: 'Server is running' });
+});
 
+
+// Get post data from signup page
 app.post('/signup', async (req, res) => {
   try {
+    
       const { 
           strFirstName,
           strLastName,
@@ -58,17 +63,9 @@ app.post('/signup', async (req, res) => {
     
 });
 
-// const getUser = async () => {
-//   try {
-//     let pool = await sqlConnectionToServer.connect(config);
-//     let users = pool.request().query("SELECT * FROM TVendors")
-//     return users;
-//   } catch(error){
-//     console.log(error);
-//   }
-// }
-
+// Insert Function To Vendor Signup
 const insertUser = async (NewVendor) => {
+  
   const currentDate = new Date().toISOString();
   try {
     let pool = await sqlConnectionToServer.connect(config);
@@ -90,9 +87,26 @@ const insertUser = async (NewVendor) => {
 }
 
 
+// Get events sorted by date
+app.get('/api/events', async (req, res) => {
+  try {
+       const pool = await sqlConnectionToServer.connect(config);
+        const result = await pool.request().query`
+      SELECT TOP 3 *
+      FROM TEvents
+      WHERE dtDateOfEvent >= GETDATE()
+      ORDER BY dtDateOfEvent ASC`;   
+      res.json(result.recordset);
+      console.log('Root route accessed');
+  } catch (err) {
+      console.error(err);
+      res.status(500).send('Server Error');
+  } finally {
+
+  }
+});
 
 
 
-// console.log(newvendor);
 
 app.listen(API_PORT, () => {console.log(`Server running on port ${API_PORT}`);});
