@@ -36,6 +36,7 @@ BEGIN
     SELECT 
         intEventID,
         strEventName,
+		strDescription,
         dtDateOfEvent,
         strLocation,
         strLogoFilePath  

@@ -9,9 +9,9 @@
 -- --------------------------------------------------------------------------------
 -- Options
 -- --------------------------------------------------------------------------------
-USE truckspot; 
+--USE truckspot; 
 
---USE dbTruckSpot;
+USE dbTruckSpot;
 
 SET NOCOUNT ON; 
 
@@ -107,6 +107,7 @@ CREATE TABLE TEvents
 	 intEventID				INTEGER	IDENTITY		NOT NULL
 	,intOrganizerID				INTEGER				NOT NULL
 	,strEventName			VARCHAR(50)				NOT NULL
+	,strDescription			VARCHAR(255)				
 	,dtDateOfEvent			DATETIME				NOT NULL
 	,dtSetUpTime			DATETIME				NOT NULL
 	,strLocation			VARCHAR(50)				NOT NULL
@@ -278,13 +279,13 @@ VALUES
 
 
 -- TEvents
-INSERT INTO TEvents (intOrganizerID, strEventName, dtDateOfEvent, dtSetUpTime, strLocation, intTotalSpaces, intAvailableSpaces, monPricePerSpace, intExpectedGuests, intStatusID, strLogoFilePath, monTotalRevenue)
+INSERT INTO TEvents (intOrganizerID, strEventName, strDescription, dtDateOfEvent, dtSetUpTime, strLocation, intTotalSpaces, intAvailableSpaces, monPricePerSpace, intExpectedGuests, intStatusID, strLogoFilePath, monTotalRevenue)
 VALUES 
-(1, 'Halloween Festival', '2024-11-01', '2024-11-01 09:00:00', 'City Park', 10, 5, 10.00, 500, 1, 'images/sample.jpg', null), -- id 1
-(2, 'Street Food Fair', '2024-11-15', '2024-11-15 09:00:00', 'Downtown', 15, 15, 15.00, 450, 1, 'images/sample.jpg', null), -- id 2
-(3, 'Local Farmers Market', '2024-11-22', '2024-11-22 08:00:00', 'Main Square', 20, 18, 20.00, 100, 1, 'images/sample.jpg', null), -- id 3
-(4, 'Winter Wonderland', '2023-12-05', '2023-12-05 09:00:00', 'Ice Rink', 20, 8, 13.00, 80, 2, 'images/sample.jpg', 3000.00), -- id 4  **past event**
-(5, 'Summer Splash', '2024-07-10', '2024-07-10 09:00:00', 'Community Pool', 30, 12, 20.00, 600, 2, 'images/sample.jpg', 5000.00); -- id 5  **past event**
+(1, 'Halloween Festival', 'Lively fest celebrating halloween', '2024-11-01', '2024-11-01 09:00:00', 'City Park', 10, 5, 10.00, 500, 1, 'images/sample.jpg', null), -- id 1
+(2, 'Street Food Fair', 'A chance to try some great local food', '2024-11-15', '2024-11-15 09:00:00', 'Downtown', 15, 15, 15.00, 450, 1, 'images/sample.jpg', null), -- id 2
+(3, 'Local Farmers Market', 'Showcasing many local food vendors and their homemade food','2024-11-22', '2024-11-22 08:00:00', 'Main Square', 20, 18, 20.00, 100, 1, 'images/sample.jpg', null), -- id 3
+(4, 'Winter Wonderland', 'Get ready for the holidays in a winter wonderland','2023-12-05', '2023-12-05 09:00:00', 'Ice Rink', 20, 8, 13.00, 80, 2, 'images/sample.jpg', 3000.00), -- id 4  **past event**
+(5, 'Summer Splash', 'Come cool off and enjoy some local food vendors at Summer Splash','2024-07-10', '2024-07-10 09:00:00', 'Community Pool', 30, 12, 20.00, 600, 2, 'images/sample.jpg', 5000.00); -- id 5  **past event**
 
 
 -- TFoodTrucks
@@ -651,6 +652,7 @@ CREATE PROCEDURE uspCreateEvent
     @intEventID AS INTEGER OUTPUT,       
     @intOrganizerID AS INTEGER,
     @strEventName AS VARCHAR(50),
+	@strDescription AS VARCHAR(255),
     @dtDateOfEvent AS DATETIME,
     @dtSetUpTime AS DATETIME,
     @strLocation AS VARCHAR(50),
@@ -671,6 +673,7 @@ BEGIN TRANSACTION
     INSERT INTO TEvents WITH (TABLOCKX) (
         intOrganizerID,
         strEventName,
+		strDescription,
         dtDateOfEvent,
         dtSetUpTime,
         strLocation,
@@ -685,6 +688,7 @@ BEGIN TRANSACTION
     VALUES (
         @intOrganizerID,
         @strEventName,
+		@strDescription,
         @dtDateOfEvent,
         @dtSetUpTime,
         @strLocation,
@@ -853,6 +857,7 @@ CREATE PROCEDURE uspUpdateEvent
     @intEventID INT,
     @intOrganizerID INT = NULL,
     @strEventName VARCHAR(50) = NULL,
+	@strDescription VARCHAR(255) = NULL,
     @dtDateOfEvent DATETIME = NULL,
     @dtSetUpTime DATETIME = NULL,
     @strLocation VARCHAR(50) = NULL,
@@ -875,6 +880,7 @@ BEGIN
         SET 
             intOrganizerID = COALESCE(@intOrganizerID, intOrganizerID),
             strEventName = COALESCE(@strEventName, strEventName),
+			strDescription = COALESCE(@strDescription, strDescription),
             dtDateOfEvent = COALESCE(@dtDateOfEvent, dtDateOfEvent),
             dtSetUpTime = COALESCE(@dtSetUpTime, dtSetUpTime),
             strLocation = COALESCE(@strLocation, strLocation),
@@ -1051,6 +1057,7 @@ BEGIN
     SELECT 
         intOrganizerID,
         strEventName,
+		strDescription,
         dtDateOfEvent,
         dtSetUpTime,
         strLocation,
