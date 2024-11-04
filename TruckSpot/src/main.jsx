@@ -15,7 +15,6 @@ import MyAccount from './pages/MyAccount.jsx';
 import UpdateAccount from './pages/UpdateAccount.jsx';
 import EventInformation from './pages/EventInformation.jsx';
 import Dashboard from './pages/Dashboard.jsx';
-import TestComponent from './pages/TestComponent.jsx';
 
 const router = createBrowserRouter([
   {
@@ -51,18 +50,12 @@ const router = createBrowserRouter([
     element: <UpdateAccount/>
   },
   {
-    path: "eventinformation",
+    path: "eventinformation/:eventId",
     element: <EventInformation/>
-  }
-  ,
+  },
   {
     path: "dashboard",
     element: <Dashboard/>
-  }
-  ,
-  {
-    path: "testcomponent",
-    element: <TestComponent/>
   }
 ])
 

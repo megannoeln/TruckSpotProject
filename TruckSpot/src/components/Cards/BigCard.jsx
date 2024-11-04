@@ -18,10 +18,10 @@ function BigCard({ title, description, image, eventId, date }) {
                   </h5>
               </Link>
               <p className="mb-2 text-sm text-gray-500">
-                  Date {new Date(date).toLocaleDateString()}
+                  {new Date(date).toLocaleDateString()}
               </p>
               <p className="mb-3 font-normal text-gray-700 dark:text-gray-400 line-clamp-2">
-                  Description{description}
+                  {description}
               </p>
               <Link 
                   to={`/eventinformation/${eventId}`}
