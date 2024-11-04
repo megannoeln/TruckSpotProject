@@ -107,11 +107,12 @@ CREATE TABLE TEvents
 	 intEventID				INTEGER	IDENTITY		NOT NULL
 	,intOrganizerID				INTEGER				NOT NULL
 	,strEventName			VARCHAR(50)				NOT NULL
+	,strDescription			VARCHAR(255)				
 	,dtDateOfEvent			DATETIME				NOT NULL
 	,dtSetUpTime			DATETIME				NOT NULL
 	,strLocation			VARCHAR(50)				NOT NULL
 	,intTotalSpaces			INTEGER					NOT NULL
-	,intAvailableSpaces		INTEGER					NOT NULL
+	,intAvailableSpaces		INTEGER						NULL
 	,monPricePerSpace		MONEY					NOT NULL
 	,intExpectedGuests		INTEGER					NOT NULL
 	,intStatusID			INTEGER					NOT NULL             
@@ -131,6 +132,7 @@ CREATE TABLE TEventCuisines
     ,intEventID				INTEGER					NOT NULL
    ,intCuisineTypeID        INTEGER					NOT NULL
    ,intLimit				INTEGER					NOT NULL
+   ,intAvailable			INTEGER				    NOT NULL
     ,CONSTRAINT TEventCuisines_PK PRIMARY KEY (intEventCuisineID)
     ,FOREIGN KEY (intEventID) REFERENCES TEvents (intEventID) ON DELETE CASCADE
     ,FOREIGN KEY (intCuisineTypeID) REFERENCES TCuisineTypes (intCuisineTypeID)
@@ -277,13 +279,14 @@ VALUES
 
 
 -- TEvents
-INSERT INTO TEvents (intOrganizerID, strEventName, dtDateOfEvent, dtSetUpTime, strLocation, intTotalSpaces, intAvailableSpaces, monPricePerSpace, intExpectedGuests, intStatusID, strLogoFilePath, monTotalRevenue)
+INSERT INTO TEvents (intOrganizerID, strEventName, strDescription, dtDateOfEvent, dtSetUpTime, strLocation, intTotalSpaces, intAvailableSpaces, monPricePerSpace, intExpectedGuests, intStatusID, strLogoFilePath, monTotalRevenue)
 VALUES 
-(1, 'Halloween Festival', '2024-11-01', '2024-11-01 09:00:00', 'City Park', 10, 5, 10.00, 500, 1, 'images/sample.jpg', null), -- id 1
-(2, 'Street Food Fair', '2024-11-15', '2024-11-15 09:00:00', 'Downtown', 15, 15, 15.00, 450, 1, 'images/sample.jpg', null), -- id 2
-(3, 'Local Farmers Market', '2024-11-22', '2024-11-22 08:00:00', 'Main Square', 20, 18, 20.00, 100, 1, 'images/sample.jpg', null), -- id 3
-(4, 'Winter Wonderland', '2023-12-05', '2023-12-05 09:00:00', 'Ice Rink', 20, 8, 13.00, 80, 2, 'images/sample.jpg', 3000.00), -- id 4  **past event**
-(5, 'Summer Splash', '2024-07-10', '2024-07-10 09:00:00', 'Community Pool', 30, 12, 20.00, 600, 2, 'images/sample.jpg', 5000.00); -- id 5  **past event**
+(1, 'Halloween Festival', 'Lively fest celebrating halloween', '2024-11-01', '2024-11-01 09:00:00', 'City Park', 10, 5, 10.00, 500, 1, 'images/sample.jpg', null), -- id 1
+(2, 'Street Food Fair', 'A chance to try some great local food', '2024-11-15', '2024-11-15 09:00:00', 'Downtown', 15, 15, 15.00, 450, 1, 'images/sample.jpg', null), -- id 2
+(3, 'Local Farmers Market', 'Showcasing many local food vendors and their homemade food','2024-11-22', '2024-11-22 08:00:00', 'Main Square', 20, 18, 20.00, 100, 1, 'images/sample.jpg', null), -- id 3
+(4, 'Winter Wonderland', 'Get ready for the holidays in a winter wonderland','2023-12-05', '2023-12-05 09:00:00', 'Ice Rink', 20, 8, 13.00, 80, 2, 'images/sample.jpg', 3000.00), -- id 4  **past event**
+(5, 'Summer Splash', 'Come cool off and enjoy some local food vendors at Summer Splash','2024-07-10', '2024-07-10 09:00:00', 'Community Pool', 30, 12, 20.00, 600, 2, 'images/sample.jpg', 5000.00), -- id 5  **past event**
+(1, 'New Years Eve Celebration', 'Ring in the new year with music, food, and a spectacular fireworks show', '2024-12-31', '2024-12-31 18:00:00', 'City Plaza', 25, 25, 25.00, 1000, 1, 'images/sample.jpg', null);
 
 
 -- TFoodTrucks
@@ -297,28 +300,28 @@ VALUES
 
 
 -- TEventCuisines
-INSERT INTO TEventCuisines (intEventID, intCuisineTypeID, intLimit) VALUES
-(1, 1, 2),  -- halloween fest allowing 2 italian trucks
-(1, 2, 4),  -- halloween fest allowing 4 mexican trucks
-(1, 7, 6),  -- halloween fest allowing 6 bakery/desert trucks
-(2, 3, 2), -- street food fair allowing 2 american food trucks
-(3, 6, 5), -- local farmers market allowing 5 bakery/dessert trucks
-(3, 2, 5), -- local farmers market allowing 5 "other" trucks
-(4, 1, 2),  -- winter wonderland allowing 2 italian trucks
-(4, 6, 4); -- winter wonderland allowing 4 bakery/dessert trucks
+INSERT INTO TEventCuisines (intEventID, intCuisineTypeID, intLimit, intAvailable) VALUES
+(1, 1, 2, 2),  -- halloween fest allowing 2 italian trucks
+(1, 2, 4, 4),  -- halloween fest allowing 4 mexican trucks
+(1, 7, 6, 6),  -- halloween fest allowing 6 bakery/desert trucks
+(2, 3, 2, 2), -- street food fair allowing 2 american food trucks
+(3, 6, 5, 5), -- local farmers market allowing 5 bakery/dessert trucks
+(3, 2, 5, 5), -- local farmers market allowing 5 "other" trucks
+(4, 1, 2, 2),  -- winter wonderland allowing 2 italian trucks
+(4, 6, 4, 4); -- winter wonderland allowing 4 bakery/dessert trucks
 
 
 -- TEventSpaces
 INSERT INTO TEventSpaces (intEventID, strSpaceNum, strSize, boolIsAvailable) 
 VALUES
-(1, 'A1', '10x10', 1 ),
+(1, 'A1', '10x10', 1),
 (1, 'A2', '10x10', 1),
 (1, 'A3', '10x20', 1),
 (2, 'A4', '10x20', 1),
 (2, 'B1', '10x10', 1),
 (3, 'B2', '10x10', 1),
-(4, 'B3', '10x20', 2),
-(5, 'B4', '10x20', 2);
+(4, 'B3', '10x20', 0),
+(5, 'B4', '10x20', 0);
 
 
 -- TFoodTruckEvents
@@ -400,7 +403,8 @@ GO
 CREATE PROCEDURE uspLoginUser
     @strEmail    VARCHAR(50),
     @strPassword VARCHAR(50),
-    @UserID      INT OUTPUT 
+    @UserID      INT OUTPUT,
+    @UserType    INT OUTPUT  -- 1 for vendor, 2 for organizer
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -408,30 +412,36 @@ BEGIN
     
     BEGIN TRANSACTION;
     BEGIN TRY
-       
+        
         SELECT @UserID = intVendorID
         FROM TVendors
         WHERE strEmail = @strEmail AND strPassword = @strPassword;
         
-      
         IF @UserID IS NOT NULL
         BEGIN
+           
+            SET @UserType = 1; -- was a vendor 
+
+           
             UPDATE TVendors
             SET dtLastLogin = GETDATE()
             WHERE intVendorID = @UserID;
             
             COMMIT TRANSACTION;
-            RETURN; 
+            RETURN;
         END
 
-        
+       
         SELECT @UserID = intOrganizerID
         FROM TOrganizers
         WHERE strEmail = @strEmail AND strPassword = @strPassword;
         
-        
         IF @UserID IS NOT NULL
         BEGIN
+            
+            SET @UserType = 2; --was a organizer
+
+         
             UPDATE TOrganizers
             SET dtLastLogin = GETDATE()
             WHERE intOrganizerID = @UserID;
@@ -439,24 +449,27 @@ BEGIN
             COMMIT TRANSACTION;
             RETURN;
         END
+
         
-       
         ROLLBACK TRANSACTION;
         SET @UserID = NULL;
+        SET @UserType = 0;
 
     END TRY
     BEGIN CATCH
-      
-        ROLLBACK TRANSACTION;
         
+        ROLLBACK TRANSACTION;
         SET @UserID = NULL;
+        SET @UserType = 0;
     END CATCH
 END
 GO
--- testing login procedure
+--testing login procedure
 --DECLARE @UserID INT;
---EXEC uspLoginUser @strEmail = 'alice@gmail.com', @strPassword = 'password111', @UserID = @UserID OUTPUT;
+--DECLARE @UserType INT;
+--EXEC uspLoginUser @strEmail = 'alice@gmail.com', @strPassword = 'password111', @UserID = @UserID OUTPUT, @UserType = @UserType OUTPUT;
 --SELECT @UserID AS UserID;
+--SELECT @UserID AS UserID, @UserType AS UserType;
 
 
 
@@ -640,11 +653,12 @@ CREATE PROCEDURE uspCreateEvent
     @intEventID AS INTEGER OUTPUT,       
     @intOrganizerID AS INTEGER,
     @strEventName AS VARCHAR(50),
+	@strDescription AS VARCHAR(255),
     @dtDateOfEvent AS DATETIME,
     @dtSetUpTime AS DATETIME,
     @strLocation AS VARCHAR(50),
     @intTotalSpaces AS INTEGER,
-    @intAvailableSpaces AS INTEGER,
+    @intAvailableSpaces AS INTEGER = NULL,
     @monPricePerSpace AS MONEY,
     @intExpectedGuests AS INTEGER,
     @intStatusID AS INTEGER,
@@ -660,6 +674,7 @@ BEGIN TRANSACTION
     INSERT INTO TEvents WITH (TABLOCKX) (
         intOrganizerID,
         strEventName,
+		strDescription,
         dtDateOfEvent,
         dtSetUpTime,
         strLocation,
@@ -674,6 +689,7 @@ BEGIN TRANSACTION
     VALUES (
         @intOrganizerID,
         @strEventName,
+		@strDescription,
         @dtDateOfEvent,
         @dtSetUpTime,
         @strLocation,
@@ -842,6 +858,7 @@ CREATE PROCEDURE uspUpdateEvent
     @intEventID INT,
     @intOrganizerID INT = NULL,
     @strEventName VARCHAR(50) = NULL,
+	@strDescription VARCHAR(255) = NULL,
     @dtDateOfEvent DATETIME = NULL,
     @dtSetUpTime DATETIME = NULL,
     @strLocation VARCHAR(50) = NULL,
@@ -864,6 +881,7 @@ BEGIN
         SET 
             intOrganizerID = COALESCE(@intOrganizerID, intOrganizerID),
             strEventName = COALESCE(@strEventName, strEventName),
+			strDescription = COALESCE(@strDescription, strDescription),
             dtDateOfEvent = COALESCE(@dtDateOfEvent, dtDateOfEvent),
             dtSetUpTime = COALESCE(@dtSetUpTime, dtSetUpTime),
             strLocation = COALESCE(@strLocation, strLocation),
@@ -1040,6 +1058,7 @@ BEGIN
     SELECT 
         intOrganizerID,
         strEventName,
+		strDescription,
         dtDateOfEvent,
         dtSetUpTime,
         strLocation,

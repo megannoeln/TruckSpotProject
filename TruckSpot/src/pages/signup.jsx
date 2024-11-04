@@ -14,12 +14,12 @@ const api = axios.create({
 
 const SignUpForm = () => {
   const [values, setValues] = useState({
-    strFirstName: "", 
+    strFirstName: "",
     strLastName: "",
     strEmail: "",
     strPhone: "",
     strPassword: "",
-    confirmPassword: "", 
+    confirmPassword: "",
   });
 
   const [errors, setErrors] = useState({});
@@ -29,47 +29,54 @@ const SignUpForm = () => {
     const { name, value } = event.target;
     setValues((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
     console.log(value);
   };
 
-
-
   const handleSubmit = async (event) => {
     event.preventDefault();
-    // const validationErrors = Validation(values);
-    // setErrors(validationErrors);
-    console.log('Form values before submission:', values);
-    try {
-      const response = await axios.post('http://localhost:5000/signup', values, {
-          headers: {
-              'Content-Type': 'application/json'
+    const validationErrors = Validation(values);
+    setErrors(validationErrors);
+
+    console.log("Form values before submission:", values);
+    if (Object.keys(validationErrors).length === 0) {
+      try {
+        const response = await axios.post(
+          "http://localhost:5000/signup",
+          values,
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
           }
-      });
-      console.log('Server response:', response.data);
-      if (response.data.success) {
-          alert('Signup successful!');
-      } else {
-          alert(response.data.message || 'Something went wrong');
-      }
+        );
+        console.log("Server response:", response.data);
+        if (response.data.success) {
+          alert("Registration successful! Redirecting to Login..."); // Change to login page after
+          // Navigate to Login Page on Success
+          navigate("./login");
+        } else {
+          alert(response.data.message || "Something went wrong");
+        }
       } catch (error) {
-          console.error('Error details:', error);
-          if (error.response) {
-              // Server responded with error
-              console.log('Error response:', error.response.data);
-              alert(error.response.data.message || 'Server error occurred');
-          } else if (error.request) {
-              // Request made but no response
-              console.log('No response received');
-              alert('No response from server. Please try again.');
-          } else {
-              // Error in request setup
-              console.log('Error setting up request:', error.message);
-              alert('Error setting up request. Please try again.');
-          }
+        console.error("Error details:", error);
+        if (error.response) {
+          // Server responded with error
+          console.log("Error response:", error.response.data);
+          alert(error.response.data.message || "Server error occurred");
+        } else if (error.request) {
+          // Request made but no response
+          console.log("No response received");
+          alert("No response from server. Please try again.");
+        } else {
+          // Error in request setup
+          console.log("Error setting up request:", error.message);
+          alert("Error setting up request. Please try again.");
+        }
       }
-};
+    }
+  };
 
   return (
     <div className="font-[sans-serif] bg-white md:h-screen">
@@ -83,7 +90,6 @@ const SignUpForm = () => {
         </div>
 
         <div className="flex items-center md:p-8 p-6 bg-[#0C172C] h-full lg:w-11/12 lg:ml-auto">
-          
           {/* Form Start Here */}
           <form onSubmit={handleSubmit} className="max-w-lg w-full mx-auto">
             <div className="mb-12">
@@ -93,7 +99,9 @@ const SignUpForm = () => {
             </div>
 
             <div>
-              <label className="text-white text-xs block mb-2">First Name</label>
+              <label className="text-white text-xs block mb-2">
+                First Name
+              </label>
               <div className="relative flex items-center">
                 <input
                   name="strFirstName"
@@ -129,7 +137,9 @@ const SignUpForm = () => {
             </div>
 
             <div className="mt-8">
-              <label className="text-white text-xs block mb-2">Phone Number</label>
+              <label className="text-white text-xs block mb-2">
+                Phone Number
+              </label>
               <div className="relative flex items-center">
                 <input
                   name="strPhone"
