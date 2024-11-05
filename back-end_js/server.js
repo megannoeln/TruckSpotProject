@@ -23,6 +23,7 @@ app.get('/test', (req, res) => {
 
 // API Server for signup get data from signup.jsx post to this server
 app.post('/signup', async (req, res) => {
+
   try {
     
       const { 
@@ -43,11 +44,11 @@ app.post('/signup', async (req, res) => {
         accountType
       }
       if (accountType == "vendor") {
-      insertUser(vendorData);
-    } else if (accountType == "organizer")
-    {
-      insertOrganizer(vendorData);
-    }
+        insertUser(vendorData);
+      } else if (accountType == "organizer")
+      {
+        insertOrganizer(vendorData);
+      }
     res.status(200).json({
         success: true,
         message: 'Signup data received successfully',
@@ -91,7 +92,7 @@ const insertUser = async (NewVendor) => {
     throw error;
   }
 }
-
+// Insert Organizer function
 const insertOrganizer = async (NewVendor) => {
   const currentDate = new Date().toISOString();
   try {
@@ -192,6 +193,138 @@ app.get('/api/allevents', async (req, res) => {
       });
   }
 });
+
+// Fetch data from frontend login form
+// app.post('/login', async (req, res) => {
+//   console.log('Request body:', req.body);
+//   try {
+//       const { 
+//         strEmail, 
+//         strPassword,
+//         accountType } = req.body;
+//       const userData = {
+//         strEmail, 
+//         strPassword,
+//         accountType
+//       };
+//       const pool = await sql.connect(config);
+//       let query;
+//         if (accountType === 'vendor') {
+//             query = `
+//                 SELECT intVendorID 
+//                 FROM TVendors 
+//                 WHERE strEmail = @strEmail 
+//                 AND strPassword = @strPassword
+//             `;
+//         } else if (accountType === 'organizer') {
+//             query = `
+//                 SELECT intOrganizerID 
+//                 FROM TOrganizers 
+//                 WHERE strEmail = @strEmail 
+//                 AND strPassword = @strPassword
+//             `;
+//         } else {
+//             throw new Error('Invalid account type');
+//         }
+//         console.log('Database result:', result);
+
+//         // Execute query
+//         const result = await request.query(query);
+        
+//         console.log('Database result:', result);
+
+//           // Check if user exists
+//           if (result.recordset.length > 0) {
+//             const user = result.recordset[0];
+            
+//             res.status(200).json({
+//                 success: true,
+//                 message: 'Login successful',
+//                 user: {
+//                     id: accountType === 'vendor' ? user.VendorID : user.OrganizerID,
+//                     name: accountType === 'vendor' ? user.strVendorName : user.strOrganizerName,
+//                     email: user.strEmail,
+//                     accountType
+//                 }
+//             });
+//           } else {
+//             res.status(401).json({
+//                 success: false,
+//                 message: 'Invalid email or password'
+//             });
+//           }
+
+//           } catch (error) {
+//           console.error('Error in login:', error);
+//           res.status(500).json({
+//             success: false,
+//             message: 'An error occurred during login',
+//             error: error.message
+//           });
+//           }
+// });
+
+
+app.post('/login', async (req, res) => {
+  const strEmail = req.body.strEmail;
+  const strPassword = req.body.strPassword;
+  const accountType = req.body.accountType;
+  let LoginQuery = '';
+
+  if (accountType === "vendor") {
+      LoginQuery = `
+          SELECT *
+          FROM TVendors
+          WHERE strEmail = '${strEmail}'
+          AND strPassword = '${strPassword}'`;
+  } else if (accountType === "organizer") {
+      LoginQuery = `
+          SELECT *
+          FROM TOrganizers
+          WHERE strEmail = '${strEmail}'
+          AND strPassword = '${strPassword}'`;
+  }
+
+    console.log('Account Type:', accountType);
+    console.log('Email:', strEmail);
+    console.log('Query:', LoginQuery);
+
+  try {
+    const pool = await sqlConnectionToServer.connect(config);
+    const result = await pool.request()
+        .query(LoginQuery);
+        console.log('Query result:', result); // Add this for debugging
+
+    if (result.recordset.length > 0) {
+        // User found - send success response
+        res.status(200).json({
+            success: true,
+            message: 'Login successful',
+            user: result.recordset[0]
+        });
+    } else {
+        // No user found
+        res.status(401).json({ 
+            success: false,
+            message: 'Invalid email or password' 
+        });
+    }
+  } catch (err) {
+      console.error('Database error:', err);
+      res.status(500).json({
+          success: false,
+          error: 'Database error',
+          message: err.message
+      });
+  } finally {
+      // Close the connection
+      try {
+          await sqlConnectionToServer.close();
+      } catch (err) {
+          console.error('Error closing connection:', err);
+      }
+  }
+})
 
 
 app.listen(API_PORT, () => {console.log(`Server running on port ${API_PORT}`);});
