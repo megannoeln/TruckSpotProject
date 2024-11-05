@@ -30,7 +30,8 @@ app.post('/signup', async (req, res) => {
           strLastName,
           strEmail,
           strPhone,
-          strPassword
+          strPassword,
+          accountType
       } = req.body;
 
       const vendorData = {
@@ -38,9 +39,15 @@ app.post('/signup', async (req, res) => {
         strLastName,
         strEmail,
         strPhone,
-        strPassword
+        strPassword,
+        accountType
       }
+      if (accountType == "vendor") {
       insertUser(vendorData);
+    } else if (accountType == "organizer")
+    {
+      insertOrganizer(vendorData);
+    }
     res.status(200).json({
         success: true,
         message: 'Signup data received successfully',
@@ -63,13 +70,33 @@ app.post('/signup', async (req, res) => {
     
 });
 
-// Insert user function
+// Insert Vendor function
 const insertUser = async (NewVendor) => {
-  
   const currentDate = new Date().toISOString();
   try {
     let pool = await sqlConnectionToServer.connect(config);
     let users = pool.request().query(`INSERT INTO TVendors (
+                    strFirstName,
+                    strLastName,
+                    strEmail,
+                    strPhone,
+                    strPassword,
+                    dtDateCreated,
+                    dtLastLogin
+                ) VALUES 
+      ('${NewVendor.strFirstName}', '${NewVendor.strLastName}','${NewVendor.strEmail}','${NewVendor.strPhone}','${NewVendor.strPassword}', '${currentDate}', '${currentDate}')
+      `)
+  } catch (error){
+    console.log('Insert error:', error);
+    throw error;
+  }
+}
+
+const insertOrganizer = async (NewVendor) => {
+  const currentDate = new Date().toISOString();
+  try {
+    let pool = await sqlConnectionToServer.connect(config);
+    let users = pool.request().query(`INSERT INTO TOrganizers (
                     strFirstName,
                     strLastName,
                     strEmail,
@@ -116,15 +143,16 @@ app.get('/api/events/:eventId', async (req, res) => {
           .input('eventId', sqlConnectionToServer.Int, eventId)
           .query(`
               SELECT 
-                  e.intEventID,
+              e.intEventID,
                   e.strEventName,
                   e.strDescription,
                   e.dtDateOfEvent,
                   e.strLocation,
-                  v.strFirstName + ' ' + v.strLastName as strOrganizerName,
-                  v.strPhone as strContact
+                  o.strFirstName + ' ' + o.strLastName as strOrganizerName,
+                  o.strPhone as strContact,
+				  o.strEmail
               FROM TEvents e
-              LEFT JOIN TVendors v ON e.intOrganizerID = v.intVendorID
+              LEFT JOIN TOrganizers as O ON e.intOrganizerID = O.intOrganizerID
               WHERE e.intEventID = @eventId
           `);
 
