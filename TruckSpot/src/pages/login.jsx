@@ -1,21 +1,130 @@
 import React from 'react'
-import Navbar from '../components/Navbar/Navbar'
+import Navbar from '../components/Navbar/Navbar';
+import { useNavigate } from 'react-router-dom';
+import { useState } from "react";
+import { useEffect } from "react";
+import axios from 'axios';
+import Validation from "./LoginValidation";
 
+
+// Collect input from user
 const LoginForm = () => {
+  
+  const [values, setValues] = useState({
+    strEmail:"",
+    strPassword:"",
+    accountType:""
+  })
+  const [errors, setErrors] = useState({});
+
+  const handleInput = (event) => {
+    const { name, value } = event.target;
+    setValues((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+    console.log(value);
+  };
+  
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    const validationErrors = Validation(values);
+    setErrors(validationErrors);
+
+    console.log("Form values before submission:", values);
+    if (Object.keys(validationErrors).length === 0) {
+      try {
+        const response = await axios.post(
+          "http://localhost:5000/login", values,
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        console.log("Server response:", response.data);
+        if (response.data.success) {
+          alert("Login Successful"); // Change to login page after
+          console.log("Server succesful:", response.data);
+        } else {
+          alert(response.data.message || "Something went wrong");
+        }
+      } catch (error) {
+        console.error("Error details:", error);
+        if (error.response) {
+          // Server responded with error
+          console.log("Error response:", error.response.data);
+          alert(error.response.data.message || "Server error occurred");
+        } else if (error.request) {
+          // Request made but no response
+          console.log("No response received");
+          alert("No response from server. Please try again.");
+        } else {
+          // Error in request setup
+          console.log("Error setting up request:", error.message);
+          alert("Error setting up request. Please try again.");
+        }
+
+      }
+    }
+  };
+
   return <div class="font-[sans-serif]">
   <div class="min-h-screen flex flex-col items-center justify-center">
     <div class="grid md:grid-cols-2 items-center gap-4 max-md:gap-8 max-w-6xl max-md:max-w-lg w-full p-4 m-4 shadow-[0_2px_10px_-3px_rgba(6,81,237,0.3)] rounded-md">
       <div class="md:max-w-md w-full px-4 py-4">
-        <form>
+        <form onSubmit={handleSubmit}>
           <div class="mb-12">
             <h3 class="text-gray-800 text-3xl font-extrabold">Sign in</h3>
             <p class="text-sm mt-4 text-gray-800">Don't have an account <a href="/signup" class="text-blue-600 font-semibold hover:underline ml-1 whitespace-nowrap">Register here</a></p>
           </div>
 
+          {/* Radio */}
+          <div className="mt-8 mb-2">
+            <label className="text-white text-xs block mb-2">Account Type</label>
+            <div className="flex gap-6 mt-2">
+            <div className="flex items-center">
+              <input
+                type="radio"
+                name="accountType"
+                value="vendor"
+                id="vendor"
+                onChange={handleInput}
+                className="w-4 h-4 text-yellow-400 bg-transparent border-gray-300 focus:ring-yellow-400"
+              />
+              <label htmlFor="vendor" className="text-white text-sm ml-2">
+                Vendor
+              </label>
+            </div>
+    
+            <div className="flex items-center mb-2">
+              <input
+                type="radio"
+                name="accountType"
+                value="organizer"
+                id="organizer"
+                onChange={handleInput}
+                className="w-4 h-4 text-yellow-400 bg-transparent border-gray-300 focus:ring-yellow-400"
+              />
+              <label htmlFor="organizer" className="text-white text-sm ml-2">
+                Organizer
+              </label>
+            </div>
+          </div>
+        </div>
+
           <div>
             <label class="text-gray-800 text-xs block mb-2">Email</label>
             <div class="relative flex items-center">
-              <input name="strEmail " type="text" required class="w-full text-gray-800 text-sm border-b border-gray-300 focus:border-blue-600 px-2 py-3 outline-none" placeholder="Enter email" />
+              <input 
+              name="strEmail" 
+              type="text" 
+              required class="w-full text-gray-800 text-sm border-b border-gray-300 focus:border-blue-600 px-2 py-3 outline-none" 
+              placeholder="Enter email" 
+              onChange={handleInput}
+              />
+              
               <svg xmlns="http://www.w3.org/2000/svg" fill="#bbb" stroke="#bbb" class="w-[18px] h-[18px] absolute right-2" viewBox="0 0 682.667 682.667">
                 <defs>
                   <clipPath id="a" clipPathUnits="userSpaceOnUse">
@@ -33,7 +142,12 @@ const LoginForm = () => {
           <div class="mt-8">
             <label class="text-gray-800 text-xs block mb-2">Password</label>
             <div class="relative flex items-center">
-              <input name="strPassword " type="password" required class="w-full text-gray-800 text-sm border-b border-gray-300 focus:border-blue-600 px-2 py-3 outline-none" placeholder="Enter password" />
+              <input name="strPassword" 
+              type="password" 
+              required class="w-full text-gray-800 text-sm border-b border-gray-300 focus:border-blue-600 px-2 py-3 outline-none" 
+              placeholder="Enter password"
+              onChange={handleInput}
+              />
               <svg xmlns="http://www.w3.org/2000/svg" fill="#bbb" stroke="#bbb" class="w-[18px] h-[18px] absolute right-2 cursor-pointer" viewBox="0 0 128 128">
                 <path d="M64 104C22.127 104 1.367 67.496.504 65.943a4 4 0 0 1 0-3.887C1.367 60.504 22.127 24 64 24s62.633 36.504 63.496 38.057a4 4 0 0 1 0 3.887C126.633 67.496 105.873 104 64 104zM8.707 63.994C13.465 71.205 32.146 96 64 96c31.955 0 50.553-24.775 55.293-31.994C114.535 56.795 95.854 32 64 32 32.045 32 13.447 56.775 8.707 63.994zM64 88c-13.234 0-24-10.766-24-24s10.766-24 24-24 24 10.766 24 24-10.766 24-24 24zm0-40c-8.822 0-16 7.178-16 16s7.178 16 16 16 16-7.178 16-16-7.178-16-16-16z" data-original="#000000"></path>
               </svg>
@@ -55,7 +169,7 @@ const LoginForm = () => {
           </div>
 
           <div class="mt-12">
-            <button type="button" class="w-full shadow-xl py-2.5 px-4 text-sm tracking-wide rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none">
+            <button type="submit" class="w-full shadow-xl py-2.5 px-4 text-sm tracking-wide rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none">
               Sign in
             </button>
           </div>
@@ -105,7 +219,7 @@ const LoginForm = () => {
       </div>
     </div>
   </div>
-</div>
+  </div>
 }
 
 function login() {
