@@ -9,7 +9,7 @@ import Validation from "./LoginValidation";
 
 // Collect input from user
 const LoginForm = () => {
-  
+  const navigate = useNavigate(); // Will be used to redirect the Page upon successful Login
   const [values, setValues] = useState({
     strEmail:"",
     strPassword:"",
@@ -45,7 +45,8 @@ const LoginForm = () => {
         );
         console.log("Server response:", response.data);
         if (response.data.success) {
-          alert("Login Successful"); // Change to login page after
+          alert("Login Successful");
+          navigate("/MyAccount"); // Redirect to MyAccount.jsx
           console.log("Server succesful:", response.data);
         } else {
           alert(response.data.message || "Something went wrong");
