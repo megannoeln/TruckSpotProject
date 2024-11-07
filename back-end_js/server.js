@@ -257,28 +257,70 @@ app.post("/login", async (req, res) => {
   }
 });
 
-// Middleware to verify token
-const verifyToken = (req, res, next) => {
-  const token = req.headers.authorization?.split(' ')[1];
-
-  if (!token) {
-    return res.status(403).json({ message: 'No token provided' });
-  }
-
+// Get user details endpoint
+app.get("/api/user-details", async (req, res) => {
+  // Get userID and userType from query parameters
+  const userID = req.query.userID;
+  const userType = req.query.userType;
+  
+  console.log('Received request:', { userID, userType });
+  
   try {
-    const decoded = jwt.verify(token, JWT_SECRET);
-    req.user = decoded;
-    next();
+    const pool = await sqlConnectionToServer.connect(config);
+    
+    let query;
+    if (userType === '1') {
+      query = `
+        SELECT strFirstName + ' ' + strLastname as fullName
+        FROM TVendors 
+        WHERE intVendorID = @userID
+      `;
+    } else if (userType === '2') {
+      query = `
+        SELECT strFirstName + ' ' + strLastname as fullName
+        FROM TOrganizers 
+        WHERE intOrganizerID = @userID
+      `;
+    } else {
+      throw new Error('Invalid user type');
+    }
+    // Execute query
+    const request = pool.request();
+    request.input('userID', sqlConnectionToServer.Int, parseInt(userID));
+    
+    const result = await request.query(query);
+
+    // Log the result
+    console.log('Query result:', result);
+
+     if (result && result.recordset && result.recordset.length > 0) {
+      res.json({
+        success: true,
+        userName: result.recordset[0].fullName
+      });
+    } else {
+      res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
   } catch (err) {
-    return res.status(401).json({ message: 'Invalid token' });
+    console.error("Database error:", err);
+    res.status(500).json({
+      success: false,
+      error: "Database error",
+      message: err.message,
+      details: err.stack // Add stack trace for debugging
+    });
+  } finally {
+    try {
+      await sqlConnectionToServer.close();
+    } catch (err) {
+      console.error("Error closing connection:", err);
+    }
   }
-};
-
-// Protected route example
-app.get('/protected', verifyToken, (req, res) => {
-  res.json({ user: req.user });
 });
-
 
 
 app.listen(API_PORT, () => {
