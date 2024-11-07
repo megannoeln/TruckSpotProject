@@ -9,7 +9,7 @@ import Validation from "./LoginValidation";
 
 // Collect input from user
 const LoginForm = () => {
-  const navigate = useNavigate(); // Will be used to redirect the Page upon successful Login
+  const navigate = useNavigate();
   const [values, setValues] = useState({
     strEmail:"",
     strPassword:"",
@@ -25,8 +25,6 @@ const LoginForm = () => {
     }));
     console.log(value);
   };
-  
-
   const handleSubmit = async (event) => {
     event.preventDefault();
     const validationErrors = Validation(values);
@@ -45,7 +43,17 @@ const LoginForm = () => {
         );
         console.log("Server response:", response.data);
         if (response.data.success) {
-          alert("Login Successful");
+
+          // // Store token and user data
+          sessionStorage.setItem('token', response.data.token);
+          sessionStorage.setItem('user', JSON.stringify(response.data.user));
+          sessionStorage.setItem('userType', response.data.user.userType);
+          sessionStorage.setItem('userID', response.data.user.userID);
+          sessionStorage.setItem('test', 1);
+
+          // axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
+
+          alert("Login Successful"); // Change to login page after
           navigate("/MyAccount"); // Redirect to MyAccount.jsx
           console.log("Server succesful:", response.data);
         } else {

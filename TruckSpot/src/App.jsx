@@ -9,7 +9,6 @@ function App() {
   return (
     <>
       <nav><Navbar/></nav>
-        
     </>
   )
 }

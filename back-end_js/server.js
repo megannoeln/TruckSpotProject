@@ -4,9 +4,11 @@ const sqlConnectionToServer = require("mssql");
 const bcrypt = require("bcrypt");
 const config = require("./dbConfig");
 const router = express.Router();
+const jwt = require('jsonwebtoken');
 
 const app = express();
 const API_PORT = process.env.PORT || 5000;
+const JWT_SECRET = 'your-secret-key';
 
 app.use(
   cors({
@@ -191,68 +193,6 @@ app.get("/api/allevents", async (req, res) => {
   }
 });
 
-// Fetch data from frontend login form
-/** app.post("/login", async (req, res) => {
-  const strEmail = req.body.strEmail;
-  const strPassword = req.body.strPassword;
-  const accountType = req.body.accountType;
-  let LoginQuery = "";
-
-  if (accountType === "vendor") {
-    LoginQuery = `
-          SELECT *
-          FROM TVendors
-          WHERE strEmail = '${strEmail}'
-          AND strPassword = '${strPassword}'`;
-  } else if (accountType === "organizer") {
-    LoginQuery = `
-          SELECT *
-          FROM TOrganizers
-          WHERE strEmail = '${strEmail}'
-          AND strPassword = '${strPassword}'`;
-  }
-
-  console.log("Account Type:", accountType);
-  console.log("Email:", strEmail);
-  console.log("Query:", LoginQuery);
-
-  try {
-    const pool = await sqlConnectionToServer.connect(config);
-    const result = await pool.request().query(LoginQuery);
-    console.log("Query result:", result); // Add this for debugging
-
-    if (result.recordset.length > 0) {
-      // User found - send success response
-      res.status(200).json({
-        success: true,
-        message: "Login successful",
-        user: result.recordset[0],
-      });
-    } else {
-      // No user found
-      res.status(401).json({
-        success: false,
-        message: "Invalid email or password",
-      });
-    }
-  } catch (err) {
-    console.error("Database error:", err);
-    res.status(500).json({
-      success: false,
-      error: "Database error",
-      message: err.message,
-    });
-  } finally {
-    // Close the connection
-    try {
-      await sqlConnectionToServer.close();
-    } catch (err) {
-      console.error("Error closing connection:", err);
-    }
-  }
-});
-
-*/
 app.post("/login", async (req, res) => {
   const strEmail = req.body.strEmail;
   const strPassword = req.body.strPassword;
@@ -263,11 +203,7 @@ app.post("/login", async (req, res) => {
     // Set up the request to call the stored procedure
     const request = pool.request();
     request.input("strEmail", sqlConnectionToServer.VarChar(50), strEmail);
-    request.input(
-      "strPassword",
-      sqlConnectionToServer.VarChar(50),
-      strPassword
-    );
+    request.input("strPassword",sqlConnectionToServer.VarChar(50),strPassword);
     request.output("UserID", sqlConnectionToServer.Int);
     request.output("UserType", sqlConnectionToServer.Int);
 
@@ -279,9 +215,19 @@ app.post("/login", async (req, res) => {
 
     if (userID) {
       // User found - send success response with user type
+      const token = jwt.sign(
+        { 
+          userID: userID, 
+          userType: userType 
+        },
+        JWT_SECRET,
+        { expiresIn: '24h' }
+      );
+
       res.status(200).json({
         success: true,
         message: "Login successful",
+        token,
         user: {
           userID,
           userType,
@@ -310,6 +256,30 @@ app.post("/login", async (req, res) => {
     }
   }
 });
+
+// Middleware to verify token
+const verifyToken = (req, res, next) => {
+  const token = req.headers.authorization?.split(' ')[1];
+
+  if (!token) {
+    return res.status(403).json({ message: 'No token provided' });
+  }
+
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    req.user = decoded;
+    next();
+  } catch (err) {
+    return res.status(401).json({ message: 'Invalid token' });
+  }
+};
+
+// Protected route example
+app.get('/protected', verifyToken, (req, res) => {
+  res.json({ user: req.user });
+});
+
+
 
 app.listen(API_PORT, () => {
   console.log(`Server running on port ${API_PORT}`);

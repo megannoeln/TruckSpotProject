@@ -8,26 +8,43 @@ function Navbar() {
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userType, setUserType] = useState(null);
+  const [userID, setUserID] = useState(null);
   const [userName, setUserName] = useState('');
 
   useEffect(() => {
-    // Check user authentication status
-    const userData = localStorage.getItem('userData');
-    if (userData) {
-      const parsedData = JSON.parse(userData);
+    // Check session storage for user data
+    const storedUserType = sessionStorage.getItem('userType');
+    const storedUserID = sessionStorage.getItem('userID');
+
+    if (storedUserType && storedUserID) {
       setIsLoggedIn(true);
-      setUserType(parsedData.accountType);
-      setUserName(`${parsedData.strFirstName} ${parsedData.strLastName}`);
+      setUserType(storedUserType);
+      setUserID(storedUserID);
+      console.log('Is Logged In set to:', true);
+    } else {
+      console.log('No session data found');
     }
+
   }, []);
 
+
+
   const handleLogout = () => {
-    localStorage.removeItem('userData');
-    setIsLoggedIn(false);
-    setUserType(null);
+    // Clear session storage
+    sessionStorage.removeItem('userType');
+    sessionStorage.removeItem('userID');
+
+     // Reset states
+     setIsLoggedIn(false);
+     setUserType(null);
+     setUserID(null);
+
     navigate('/login');
   };
+
+
   return (
+    <>
     <nav className="navbar bg-base-250">
   <div className="navbar-start">
     
@@ -40,6 +57,7 @@ function Navbar() {
             alt="Logo"
             className="h-12 w-auto object-contain" 
           />
+          <p>5555</p>
         </button>
   </div>
   <div className="navbar-center hidden lg:flex">
@@ -47,18 +65,15 @@ function Navbar() {
       <li><Link to='/home'>Home</Link></li>
       <li><Link to='/event'>Event</Link></li>
 
-      {/* Show Create Event only for organizers */}
-      {isLoggedIn && userType === 'organizer' && (
+      {/* Show Create Event only for organizers (userType === '2') */}
+          {isLoggedIn && userType === '2' && (
             <li><Link to='/create-event'>Create Event</Link></li>
           )}
           
-          {/* Show My Reservation only for vendors */}
-          {isLoggedIn && userType === 'vendor' && (
+          {/* Show My Reservation only for vendors (userType === '1') */}
+          {isLoggedIn && userType === '1' && (
             <li><Link to='/reservation'>My Reservation</Link></li>
-          )}
-
-
-      <li><Link to='/reservation'>My Reservation</Link></li>
+      )}
       <li><Link to='#'>Contact Support</Link></li>
     </ul>
   </div>
@@ -70,23 +85,23 @@ function Navbar() {
 </div>
       </div>
       <ul tabIndex={0} className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow">
-            {isLoggedIn ? (
+        {isLoggedIn ? (
               <>
-                <li className="text-sm text-gray-500 px-4 py-2 border-b">
-                  Signed in as<br />
-                  <span className="font-medium text-gray-800">{userName}</span>
+                <li className="text-sm text-gray-500 px-4 py-2">
+                  User ID: {userID}<br />
+                  <span className="font-medium text-gray-800">
+                    {userType === '1' ? 'Vendor' : 'Organizer'}
+                  </span>
                 </li>
                 <li><Link to="/myaccount">My Account</Link></li>
-                {userType === 'vendor' && (
+                {userType === '1' && (
                   <li><Link to="/reservation">My Reservations</Link></li>
                 )}
-                {userType === 'organizer' && (
+                {userType === '2' && (
                   <li><Link to="/my-events">My Events</Link></li>
                 )}
-                <li className="border-t">
-                  <button onClick={handleLogout} className="text-red-500 hover:text-red-700">
-                    Logout
-                  </button>
+                <li>
+                  <button onClick={handleLogout} className="text-red-500 hover:text-red-700">Logout</button>
                 </li>
               </>
             ) : (
@@ -99,9 +114,8 @@ function Navbar() {
     </div>
   </div>
   
-</nav>
-
-
+    </nav>
+</>
   )
 }
 
