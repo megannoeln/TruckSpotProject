@@ -38,7 +38,7 @@ BEGIN
     DECLARE event_cursor CURSOR FOR
     SELECT intEventID
     FROM TEvents
-	WHERE intStatusID = 1
+	WHERE dtDateOfEvent >= GETDATE()
     ORDER BY dtDateOfEvent ASC;  
 
     
