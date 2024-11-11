@@ -96,7 +96,6 @@ function Navbar() {
             alt="Logo"
             className="h-12 w-auto object-contain" 
           />
-          <p>5555</p>
         </button>
   </div>
   <div className="navbar-center hidden lg:flex">

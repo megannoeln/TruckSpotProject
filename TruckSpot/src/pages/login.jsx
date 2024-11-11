@@ -102,7 +102,7 @@ const LoginForm = () => {
                 onChange={handleInput}
                 className="w-4 h-4 text-yellow-400 bg-transparent border-gray-300 focus:ring-yellow-400"
               />
-              <label htmlFor="vendor" className="text-white text-sm ml-2">
+              <label htmlFor="vendor" className=" text-sm ml-2">
                 Vendor
               </label>
             </div>
@@ -116,7 +116,7 @@ const LoginForm = () => {
                 onChange={handleInput}
                 className="w-4 h-4 text-yellow-400 bg-transparent border-gray-300 focus:ring-yellow-400"
               />
-              <label htmlFor="organizer" className="text-white text-sm ml-2">
+              <label htmlFor="organizer" className="text-sm ml-2">
                 Organizer
               </label>
             </div>

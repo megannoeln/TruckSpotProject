@@ -257,9 +257,8 @@ app.post("/login", async (req, res) => {
   }
 });
 
-// Get user details endpoint
+// Get Method from NAV bar that send UserID and UserType from session
 app.get("/api/user-details", async (req, res) => {
-  // Get userID and userType from query parameters
   const userID = req.query.userID;
   const userType = req.query.userType;
   
@@ -289,9 +288,6 @@ app.get("/api/user-details", async (req, res) => {
     request.input('userID', sqlConnectionToServer.Int, parseInt(userID));
     
     const result = await request.query(query);
-
-    // Log the result
-    console.log('Query result:', result);
 
      if (result && result.recordset && result.recordset.length > 0) {
       res.json({
