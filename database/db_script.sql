@@ -590,10 +590,10 @@ CREATE PROCEDURE uspCreateFoodTruck
     @intVendorID AS INTEGER,
     @intCuisineTypeID AS INTEGER,
     @strTruckName AS VARCHAR(50),
-    @monMinPrice AS MONEY,
-    @monMaxPrice AS MONEY,
-    @strLogoFilePath AS VARCHAR(500) = NULL,  -- optional parameter so defaulting it to null unless provided
-    @strOperatingLicense AS VARCHAR(50)
+    @monMinPrice AS MONEY = NULL,
+    @monMaxPrice AS MONEY = NULL,
+    @strLogoFilePath AS VARCHAR(500) = NULL,  
+    @strOperatingLicense AS VARCHAR(50) = NULL
 AS
 SET NOCOUNT ON       
 SET XACT_ABORT ON    
