@@ -19,14 +19,14 @@ SET NOCOUNT ON;
 -- Drop
 -- --------------------------------------------------------------------------------
 
-IF OBJECT_ID( 'uspGetVendorsUpcomingReservations') IS NOT NULL DROP PROCEDURE  uspGetVendorsUpcomingReservations
+IF OBJECT_ID( 'uspGetVendorsPastReservations') IS NOT NULL DROP PROCEDURE  uspGetVendorsPastReservations
 
 
 
 GO
 
---gets all upcoming reservations for a specific vendor
-CREATE PROCEDURE uspGetVendorsUpcomingReservations
+--gets all past reservations for a specific vendor
+CREATE PROCEDURE uspGetVendorsPastReservations
     @intVendorID INT
 AS
 BEGIN
@@ -34,7 +34,6 @@ BEGIN
 
     DECLARE @intEventID INT;
 
-    
     DECLARE eventCursor CURSOR FOR
     SELECT 
         TEvents.intEventID
@@ -45,9 +44,9 @@ BEGIN
         JOIN TEvents ON TEvents.intEventID = TFoodTruckEvents.intEventID
     WHERE 
         TVendors.intVendorID = @intVendorID
-        AND TEvents.dtDateOfEvent > GETDATE() 
+        AND TEvents.dtDateOfEvent < GETDATE() 
     ORDER BY 
-        TEvents.dtDateOfEvent; 
+        TEvents.dtDateOfEvent DESC; 
 
     OPEN eventCursor;
     FETCH NEXT FROM eventCursor INTO @intEventID;
@@ -65,4 +64,5 @@ BEGIN
 END;
 GO
 
---EXECUTE uspGetVendorsUpcomingReservations 1
+
+--EXECUTE uspGetVendorsPastReservations 1
