@@ -12,28 +12,19 @@ function Navbar() {
   const [userID, setUserID] = useState(null);
   const [userName, setUserName] = useState('');
 
-  const fetchUserDetails = async () => {
-    console.log('1. Function started');
-    
+  const fetchUserDetails = async () => { 
     const storedUserType = sessionStorage.getItem('userType');
     const storedUserID = sessionStorage.getItem('userID');
-    
-    console.log('2. Session values:', { storedUserType, storedUserID });
-    
+
     try {
-      console.log('3. Before API call');
       const response = await axios.get('http://localhost:5000/api/user-details', {
         params: {
           userID: storedUserID,
           userType: storedUserType
         }
       });
-      console.log('4. API Response:', response.data);
-
       if (response.data.success) {
         setUserName(response.data.userName);
-        console.log('4.5 Show respon userName', response.data.userName);
-        console.log('5. Username set', {userName} , '.');
       }
     } catch (error) {
       console.error("Error details:", {
@@ -42,8 +33,6 @@ function Navbar() {
             status: error.response?.status,
             config: error.config});
     }
-
-    console.log('Out of try catch block');
 
   };
 
@@ -58,11 +47,6 @@ function Navbar() {
       setUserID(storedUserID);
       // Fetch user details when session exists
       fetchUserDetails();
-      console.log('Is Logged In set to:', storedUserType);
-      console.log('Is Logged In set to:', storedUserID);
-      
-      console.log('Is Logged In set to:', true);
-
     } else {
       console.log('No session data found');
     }

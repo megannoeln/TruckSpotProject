@@ -21,7 +21,7 @@ function MyAccount() {
                     {/* Profile Photo Section */}
                     <div className="flex items-start gap-8">
                         <div>
-                            <div className="w-48 h-64 bg-gray-200 rounded-lg mb-2 overflow-hidden">
+                            <div className="w-48 aspect-square bg-gray-200 rounded-lg mb-2 overflow-hidden">
                             <img 
                                 src="/placeholder-profile.jpg" 
                                 alt="Profile" 
