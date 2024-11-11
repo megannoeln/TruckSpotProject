@@ -44,7 +44,7 @@ BEGIN
         JOIN TEvents ON TEvents.intEventID = TFoodTruckEvents.intEventID
     WHERE 
         TVendors.intVendorID = @intVendorID
-        AND TEvents.dtDateOfEvent < GETDATE() 
+        AND TEvents.dtDateOfEvent <= GETDATE() 
     ORDER BY 
         TEvents.dtDateOfEvent DESC; 
 
