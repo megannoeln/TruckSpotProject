@@ -148,7 +148,7 @@ CREATE TABLE TFoodTrucks
 	,monMinPrice			MONEY							 -- min and max price are for finding price range 															 
 	,monMaxPrice			MONEY					 
 	,strLogoFilePath		VARCHAR(500)				     -- will be a relative file path in our project. ex: "images/logo.gif"
-	,strOperatingLicense	VARCHAR(50)				NOT NULL
+	,strOperatingLicense	VARCHAR(50)				
 	,CONSTRAINT TFoodTrucks_PK PRIMARY KEY ( intFoodTruckID ) 
 	,FOREIGN KEY ( intVendorID ) REFERENCES TVendors ( intVendorID ) ON DELETE CASCADE
 	,FOREIGN KEY ( intCuisineTypeID ) REFERENCES TCuisineTypes ( intCuisineTypeID )
