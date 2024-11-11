@@ -145,9 +145,9 @@ CREATE TABLE TFoodTrucks
 	,intVendorID			INTEGER					NOT NULL
 	,intCuisineTypeID		INTEGER					NOT NULL
 	,strTruckName			VARCHAR(50)				NOT NULL
-	,monMinPrice			MONEY					NOT NULL -- min and max price are for finding price range 															 
-	,monMaxPrice			MONEY					NOT NULL 
-	,strLogoFilePath		VARCHAR(500)				    -- will be a relative file path in our project. ex: "images/logo.gif"
+	,monMinPrice			MONEY							 -- min and max price are for finding price range 															 
+	,monMaxPrice			MONEY					 
+	,strLogoFilePath		VARCHAR(500)				     -- will be a relative file path in our project. ex: "images/logo.gif"
 	,strOperatingLicense	VARCHAR(50)				NOT NULL
 	,CONSTRAINT TFoodTrucks_PK PRIMARY KEY ( intFoodTruckID ) 
 	,FOREIGN KEY ( intVendorID ) REFERENCES TVendors ( intVendorID ) ON DELETE CASCADE
@@ -261,21 +261,21 @@ VALUES
 -- TVendors
 INSERT INTO TVendors (strFirstName, strLastName, strPassword, strEmail, strPhone, dtDateCreated, dtLastLogin) 
 VALUES 
-('Alice', 'Smith',  'password111', 'alice@gmail.com', '123-456-7890', GETDATE(), GETDATE()), -- id 1
-('Evan', 'Johnson', 'password222', 'evan@gmail.com', '123-456-7891', GETDATE(), GETDATE()), -- id 2
-('Charlie', 'Williams',  'password333', 'charlie@gmail.com', '123-456-7892', GETDATE(), GETDATE()), -- id 3
-('Jimmy', 'Brown',  'password444', 'jimmy@gmail.com', '123-456-7893', GETDATE(), GETDATE()), -- id 4
-('Eva', 'Jones', 'password555', 'eva@gmail.com', '123-456-7894', GETDATE(), GETDATE()); -- id 5
+('Alice', 'Smith',  'Password111!', 'alice@gmail.com', '123-456-7890', GETDATE(), GETDATE()), -- id 1
+('Evan', 'Johnson', 'Password222!', 'evan@gmail.com', '123-456-7891', GETDATE(), GETDATE()), -- id 2
+('Charlie', 'Williams',  'Password333!', 'charlie@gmail.com', '123-456-7892', GETDATE(), GETDATE()), -- id 3
+('Jimmy', 'Brown',  'Password444!', 'jimmy@gmail.com', '123-456-7893', GETDATE(), GETDATE()), -- id 4
+('Eva', 'Jones', 'Password555!', 'eva@gmail.com', '123-456-7894', GETDATE(), GETDATE()); -- id 5
 
 
 -- TOrganizers
 INSERT INTO TOrganizers (strFirstName, strLastName, strPassword, strEmail, strPhone, dtDateCreated, dtLastLogin) 
 VALUES 
-('Lola', 'Garcia', 'password666', 'lola@gmail.com', '123-456-7895', GETDATE(), GETDATE()), -- id 1
-('Grace', 'Martinez',  'password777', 'grace@gmail.com', '123-456-7896', GETDATE(), GETDATE()), -- id 2
-('Steph', 'Davis',  'password888', 'steph@gmail.com', '123-456-7897', GETDATE(), GETDATE()), -- id 3
-('Isabella', 'Rodriguez',  'password999', 'isabella@gmail.com', '123-456-7898', GETDATE(), GETDATE()), -- id 4
-('Jack', 'Odell', 'password000', 'jack@gmail.com', '123-456-7899', GETDATE(), GETDATE()); -- id 5
+('Lola', 'Garcia', 'Password666!', 'lola@gmail.com', '123-456-7895', GETDATE(), GETDATE()), -- id 1
+('Grace', 'Martinez',  'Password777!', 'grace@gmail.com', '123-456-7896', GETDATE(), GETDATE()), -- id 2
+('Steph', 'Davis',  'Password888!', 'steph@gmail.com', '123-456-7897', GETDATE(), GETDATE()), -- id 3
+('Isabella', 'Rodriguez',  'Password999!', 'isabella@gmail.com', '123-456-7898', GETDATE(), GETDATE()), -- id 4
+('Jack', 'Odell', 'Password000!', 'jack@gmail.com', '123-456-7899', GETDATE(), GETDATE()); -- id 5
 
 
 -- TEvents
