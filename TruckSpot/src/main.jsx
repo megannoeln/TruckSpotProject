@@ -15,7 +15,10 @@ import MyAccount from './pages/MyAccount.jsx';
 import UpdateAccount from './pages/UpdateAccount.jsx';
 import EventInformation from './pages/EventInformation.jsx';
 import Dashboard from './pages/Dashboard.jsx';
-
+import Trucks from './pages/Trucks.jsx';
+import AddTruck from './pages/AddTruck.jsx';
+import AddEvent from './pages/AddEvent.jsx';
+import MyEvent from './pages/MyEvent.jsx';
 const router = createBrowserRouter([
   {
     path: "/",
@@ -56,7 +59,28 @@ const router = createBrowserRouter([
   {
     path: "dashboard",
     element: <Dashboard/>
+  },
+  {
+    path: "trucks",
+    element: <Trucks/>
+  },
+  {
+    path: "addtruck",
+    element: <AddTruck/>
+  },
+  {
+    path: "addevent",
+    element: <AddEvent/>
   }
+  ,
+  {
+    path: "myevent",
+    element: <MyEvent/>
+  }
+
+
+
+  
 ])
 
 

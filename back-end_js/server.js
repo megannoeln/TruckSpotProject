@@ -5,6 +5,8 @@ const bcrypt = require("bcrypt");
 const config = require("./dbConfig");
 const router = express.Router();
 const jwt = require('jsonwebtoken');
+const multer = require('multer');
+const path = require('path');
 
 const app = express();
 const API_PORT = process.env.PORT || 5000;
@@ -24,6 +26,42 @@ app.get("/test", (req, res) => {
   console.log("Test route hit");
   res.json({ message: "Server is running" });
 });
+
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'public/uploads/eventlogos')
+    },
+    filename: function (req, file, cb) {
+        cb(null, 'logo-' + Date.now() + path.extname(file.originalname))
+    }
+});
+
+const upload = multer({
+  storage: storage,
+  limits: {
+      fileSize: 5 * 1024 * 1024 
+  },
+  fileFilter: function (req, file, cb) {
+      // Check file type
+      const filetypes = /jpeg|jpg|png/; 
+      const mimetype = filetypes.test(file.mimetype);
+      const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+
+      if (mimetype && extname) {
+          return cb(null, true);
+      }
+      cb(new Error('Only .jpeg, .jpg and .png format allowed!'));
+  }
+});
+
+  const fs = require('fs');
+  const uploadDir = path.join(__dirname, 'public', 'uploads', 'eventlogos');
+  if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+  }
+
+// Serve static files
+app.use('/public', express.static(path.join(__dirname, 'public')));
 
 // API Server for signup get data from signup.jsx post to this server
 app.post("/signup", async (req, res) => {
@@ -321,4 +359,69 @@ app.get("/api/user-details", async (req, res) => {
 
 app.listen(API_PORT, () => {
   console.log(`Server running on port ${API_PORT}`);
+});
+
+
+app.post("/addtruck", async (req, res) => {
+  try {
+    const {
+      strTruckName,
+      intCuisineTypeID,
+      intVendorID
+    } = req.body;
+    const truckData = {
+      strTruckName,
+      intCuisineTypeID,
+      intVendorID
+    };
+    res.status(200).json({
+      success: true,
+      message: "Signup data received successfully",
+      user: {
+        strTruckName: req.body.strTruckName,
+        intCuisineTypeID: req.body.intCuisineTypeID,
+        intVendorID: req.body.intVendorID
+      },
+    });
+  } catch (error) {
+    console.error("Error in signup:", error);
+    res.status(500).json({
+      success: false,
+      message: "An error occurred during signup",
+      error: error.message,
+    });
+  }
+});
+
+app.post('/addevent', upload.single('logo'), async (req, res) => {
+  try {
+      const eventData = req.body;
+      console.log('Received file:', req.file);
+      if (req.file) {
+        eventData.strLogoFilePath = `/public/uploads/eventlogos/${req.file.filename}`;
+    } else {
+        console.log('No file uploaded');
+    }
+
+    console.log('Event Details:', {
+      name: eventData.strEventName,
+      description: eventData.strDescription,
+      dateOfEvent: eventData.dtDateOfEvent,
+      setupTime: eventData.dtSetUpTime,
+      location: eventData.strLocation,
+      totalSpaces: eventData.intTotalSpaces,
+      expectedGuests: eventData.intExpectedGuests,
+      organizerID: eventData.intOrganizerID
+  });
+
+  console.log('Complete Event Data:', eventData);
+  res.json({ 
+    success: true, 
+    message: 'Event created successfully',
+    data: eventData
+});
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ success: false, message: 'Error creating event' });
+  }
 });
