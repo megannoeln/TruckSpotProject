@@ -9,9 +9,9 @@
 -- --------------------------------------------------------------------------------
 -- Options
 -- --------------------------------------------------------------------------------
-USE truckspot; 
+--USE truckspot; 
 
---USE dbTruckSpot;
+USE dbTruckSpot;
 
 SET NOCOUNT ON; 
 
@@ -288,6 +288,33 @@ VALUES
 (5, 'Summer Splash', 'Come cool off and enjoy some local food vendors at Summer Splash','2024-07-10', '2024-07-10 09:00:00', 'Community Pool', 30, 12, 20.00, 600, 2, 'images/sample.jpg', 5000.00), -- id 5  **past event**
 (1, 'New Years Eve Celebration', 'Ring in the new year with music, food, and a spectacular fireworks show', '2024-12-31', '2024-12-31 18:00:00', 'City Plaza', 25, 25, 25.00, 1000, 1, 'images/sample.jpg', null);
 
+-- Past events for organizer 1
+INSERT INTO TEvents (intOrganizerID, strEventName, strDescription, dtDateOfEvent, dtSetUpTime, strLocation, intTotalSpaces, intAvailableSpaces, monPricePerSpace, intExpectedGuests, intStatusID, strLogoFilePath, monTotalRevenue)
+VALUES 
+(1, 'Spring Carnival', 'Fun carnival games and food stalls', '2024-04-15', '2024-04-15 10:00:00', 'Central Park', 50, 0, 12.00, 400, 2, 'images/sample.jpg', 4820.00), 
+(1, 'Art and Craft Fair', 'Display of local crafts and art', '2024-05-10', '2024-05-10 08:00:00', 'Art District', 40, 0, 18.00, 300, 2, 'images/sample.jpg', 5400.00), 
+(1, 'Community Potluck', 'Bringing the community together for shared meals', '2024-03-20', '2024-03-20 12:00:00', 'Community Hall', 30, 0, 10.00, 250, 2, 'images/sample.jpg', 2500.00), 
+(1, 'Tech Expo', 'Showcase of innovative tech by local startups', '2024-02-25', '2024-02-25 09:00:00', 'Tech Hub', 100, 0, 15.00, 700, 2, 'images/sample.jpg', 15000.00), 
+(1, 'Historical Reenactment', 'Interactive event recreating historic moments', '2024-03-05', '2024-03-05 11:00:00', 'Museum Grounds', 20, 0, 22.00, 200, 2, 'images/sample.jpg', 4400.00), 
+(1, 'Jazz Night', 'Evening of live jazz music', '2024-06-01', '2024-06-01 19:00:00', 'Downtown Theatre', 60, 0, 30.00, 350, 2, 'images/sample.jpg', 10520.00), 
+(1, 'Charity Gala', 'Fundraiser with food and live entertainment', '2024-04-02', '2024-04-02 17:00:00', 'City Ballroom', 80, 0, 50.00, 500, 2, 'images/sample.jpg', 20000.00), 
+(1, 'Outdoor Film Screening', 'Watch a popular movie under the stars', '2024-05-22', '2024-05-22 20:00:00', 'Greenfield', 100, 0, 8.00, 600, 2, 'images/sample.jpg', 4800.00), 
+(1, 'Marathon Expo', 'Gathering for marathon participants and supporters', '2024-03-30', '2024-03-30 06:00:00', 'Marathon Grounds', 150, 0, 5.00, 1200, 2, 'images/sample.jpg', 6000.00), 
+(1, 'Book Fair', 'Large fair with local and international authors', '2024-02-15', '2024-02-15 10:00:00', 'Convention Center', 70, 0, 15.00, 500, 2, 'images/sample.jpg', 10500.00);
+
+-- Upcoming events for organizer 1
+INSERT INTO TEvents (intOrganizerID, strEventName, strDescription, dtDateOfEvent, dtSetUpTime, strLocation, intTotalSpaces, intAvailableSpaces, monPricePerSpace, intExpectedGuests, intStatusID, strLogoFilePath, monTotalRevenue)
+VALUES 
+(1, 'Winter Charity Concert', 'Concert to raise funds for local charities', '2024-12-20', '2024-12-20 18:00:00', 'Music Hall', 80, 60, 35.00, 500, 1, 'images/sample.jpg', null), 
+(1, 'Christmas Market', 'Festive market with local crafts and food', '2024-12-21', '2024-12-21 10:00:00', 'Town Square', 100, 80, 10.00, 800, 1, 'images/sample.jpg', null), 
+(1, 'New Year Countdown Party', 'Celebrate the new year with music and fireworks', '2024-12-31', '2024-12-31 21:00:00', 'Riverside Park', 200, 150, 20.00, 1000, 1, 'images/sample.jpg', null), 
+(1, 'Valentine’s Day Bash', 'Celebrate love with music and food', '2025-02-14', '2025-02-14 17:00:00', 'Love Park', 50, 45, 30.00, 300, 1, 'images/sample.jpg', null), 
+(1, 'Spring Music Festival', 'Outdoor music event for all ages', '2025-03-25', '2025-03-25 15:00:00', 'Open Field', 300, 250, 15.00, 1500, 1, 'images/sample.jpg', null), 
+(1, 'Food Truck Rally', 'Gathering of food trucks and street food vendors', '2025-01-10', '2025-01-10 11:00:00', 'Main Boulevard', 70, 50, 12.00, 700, 1, 'images/sample.jpg', null), 
+(1, 'Cultural Dance Festival', 'Performances by local dance groups', '2025-04-12', '2025-04-12 14:00:00', 'City Amphitheater', 150, 130, 25.00, 800, 1, 'images/sample.jpg', null), 
+(1, 'Local Author Meetup', 'Meet and greet with local authors', '2025-03-05', '2025-03-05 10:00:00', 'Library Hall', 30, 20, 5.00, 150, 1, 'images/sample.jpg', null), 
+(1, 'Art Exhibition', 'Showcase of local artwork', '2025-01-15', '2025-01-15 09:00:00', 'Art Gallery', 40, 30, 20.00, 300, 1, 'images/sample.jpg', null), 
+(1, 'Community Cleanup Day', 'Join us to help clean the park', '2025-02-20', '2025-02-20 08:00:00', 'Community Park', 100, 90, 10.00, 500, 1, 'images/sample.jpg', null);
 
 -- TFoodTrucks
 INSERT INTO TFoodTrucks (intVendorID, intCuisineTypeID, strTruckName, monMinPrice, monMaxPrice, strLogoFilePath, strOperatingLicense)
