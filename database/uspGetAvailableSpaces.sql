@@ -1,7 +1,7 @@
 -- --------------------------------------------------------------------------------
 -- Capstone Project Fall '24
 -- TruckSpot (FoodTruck & Event App)
--- Team C 
+-- Team C
 -- Megan Noel, Seth Lubic, Testimony Awuzie & Apiwat Anachai
 --
 --
@@ -9,19 +9,17 @@
 -- --------------------------------------------------------------------------------
 -- Options
 -- --------------------------------------------------------------------------------
-USE truckspot; 
+USE truckspot;
 
 --USE dbTruckSpot;
 
-SET NOCOUNT ON; 
+SET NOCOUNT ON;
 
 -- --------------------------------------------------------------------------------
 -- Drop
 -- --------------------------------------------------------------------------------
 
 IF OBJECT_ID( 'uspGetAvailableSpaces') IS NOT NULL DROP PROCEDURE  uspGetAvailableSpaces
-
-
 
 GO
 
@@ -32,13 +30,16 @@ AS
 BEGIN
     SET NOCOUNT ON;
 
-    SELECT 
-        strSpaceNum
- 
-    FROM 
+    SELECT
+        TEventSpaces.strSpaceNum
+    FROM
         TEventSpaces
-    WHERE 
-        intEventID = @intEventID AND boolIsAvailable = 1;
+    INNER JOIN
+        TEvents ON TEventSpaces.intEventID = TEvents.intEventID
+    WHERE
+        TEventSpaces.intEventID = @intEventID
+        AND TEventSpaces.boolIsAvailable = 1
+        AND TEvents.dtDateOfEvent >= GETDATE();
 END;
 
 GO
