@@ -19,6 +19,8 @@ SET NOCOUNT ON;
 -- Drop
 -- --------------------------------------------------------------------------------
 
+IF OBJECT_ID( 'uspReserveSpace') IS NOT NULL DROP PROCEDURE  uspReserveSpace
+
 GO
 
 CREATE PROCEDURE uspReserveSpace
