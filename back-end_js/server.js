@@ -231,6 +231,45 @@ app.get("/api/allevents", async (req, res) => {
   }
 });
 
+app.get("/api/myreservation", async (req, res) => {
+  const userID = req.query.userID;
+  console.log("Received userID:", userID, typeof userID); 
+  const parsedUserID = parseInt(userID, 10);
+  console.log("RparsedUserID:", parsedUserID, typeof parsedUserID); 
+  try {
+    const pool = await sqlConnectionToServer.connect(config);
+    console.log('attempting')
+    const result = await pool.request()
+    .query(`
+              SELECT 
+                  E.intEventID,
+                  E.strEventName,
+                  E.dtDateOfEvent,
+                  FT.intFoodTruckID,
+                  FT.strTruckName
+              FROM 
+                  TVendors V
+                  INNER JOIN TFoodTrucks FT ON V.intVendorID = FT.intVendorID
+                  INNER JOIN TFoodTruckEvents FTE ON FT.intFoodTruckID = FTE.intFoodTruckID
+                  INNER JOIN TEvents E ON FTE.intEventID = E.intEventID
+              WHERE 
+                  V.intVendorID = ${parsedUserID}
+              ORDER BY 
+                  E.dtDateOfEvent;
+                `);
+                
+    console.log(result.query);
+    console.log(`Found ${result.recordset.length} events`);
+    res.json(result.recordset);
+  } catch (err) {
+    console.error("Error fetching all events:", err);
+    res.status(500).json({
+      error: "Database error",
+      message: err.message,
+    });
+  }
+});
+
 app.post("/login", async (req, res) => {
   const strEmail = req.body.strEmail;
   const strPassword = req.body.strPassword;
@@ -357,9 +396,7 @@ app.get("/api/user-details", async (req, res) => {
 });
 
 
-app.listen(API_PORT, () => {
-  console.log(`Server running on port ${API_PORT}`);
-});
+
 
 
 app.post("/addtruck", async (req, res) => {
@@ -424,4 +461,8 @@ app.post('/addevent', upload.single('logo'), async (req, res) => {
       console.error(error);
       res.status(500).json({ success: false, message: 'Error creating event' });
   }
+});
+
+app.listen(API_PORT, () => {
+  console.log(`Server running on port ${API_PORT}`);
 });
