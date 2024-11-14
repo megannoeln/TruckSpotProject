@@ -9,9 +9,7 @@
 -- --------------------------------------------------------------------------------
 -- Options
 -- --------------------------------------------------------------------------------
-USE truckspot;
-
---USE dbTruckSpot;
+USE dbTruckSpot;
 
 SET NOCOUNT ON;
 
@@ -19,27 +17,23 @@ SET NOCOUNT ON;
 -- Drop
 -- --------------------------------------------------------------------------------
 
-IF OBJECT_ID( 'uspGetAvailableSpaces') IS NOT NULL DROP PROCEDURE  uspGetAvailableSpaces
+IF OBJECT_ID( 'uspGetTop5MostPopularEvents') IS NOT NULL DROP PROCEDURE  uspGetTop5MostPopularEvents
 
 GO
 
--- gets available spaces for an event
-CREATE PROCEDURE uspGetAvailableSpaces
-    @intEventID INT
+CREATE PROCEDURE uspGetTop5MostPopularEvents
+    @intOrganizerID INT
 AS
 BEGIN
     SET NOCOUNT ON;
 
-    SELECT
-        TEventSpaces.strSpaceNum
-    FROM
-        TEventSpaces
-    INNER JOIN
-        TEvents ON TEventSpaces.intEventID = TEvents.intEventID
-    WHERE
-        TEventSpaces.intEventID = @intEventID
-        AND TEventSpaces.boolIsAvailable = 1
-        AND TEvents.dtDateOfEvent >= GETDATE();
+    SELECT TOP 5 strEventName
+    FROM TEvents
+    WHERE intOrganizerID = @intOrganizerID
+          AND TEvents.dtDateOfEvent <= GETDATE()
+    ORDER BY intExpectedGuests DESC;
 END;
 
 GO
+
+-- EXEC uspGetTop5MostPopularEvents @intOrganizerID = 1

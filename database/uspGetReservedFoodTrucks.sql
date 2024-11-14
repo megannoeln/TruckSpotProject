@@ -19,44 +19,42 @@ SET NOCOUNT ON;
 -- Drop
 -- --------------------------------------------------------------------------------
 
-IF OBJECT_ID( 'uspGetAllEventThumbnails') IS NOT NULL DROP PROCEDURE  uspGetAllEventThumbnails
+IF OBJECT_ID( 'uspGetReservedFoodTrucks') IS NOT NULL DROP PROCEDURE uspGetReservedFoodTrucks
+
 
 
 GO
 
-
-
--- gets thumbnail for every event in order of date with most upcoming event first. past events are not included
-CREATE PROCEDURE uspGetAllEventThumbnails
+-- GET RESERVED FOODTRUCKS
+-- gets a thumbnail for every foodtruck reserved for a specific event
+CREATE PROCEDURE uspGetReservedFoodTrucks
+    @intEventID INT
 AS
 BEGIN
     SET NOCOUNT ON;
 
-    DECLARE @intEventID INT;
+    DECLARE @intFoodTruckID INT;
 
-    
-    DECLARE event_cursor CURSOR FOR
-    SELECT intEventID
-    FROM TEvents
-	WHERE dtDateOfEvent >= GETDATE()
-    ORDER BY dtDateOfEvent ASC;  
 
-    
-    OPEN event_cursor;
-    FETCH NEXT FROM event_cursor INTO @intEventID;
+    DECLARE foodTruckCursor CURSOR FOR
+    SELECT intFoodTruckID
+    FROM TFoodTruckEvents
+    WHERE intEventID = @intEventID;
+
+    OPEN foodTruckCursor;
+    FETCH NEXT FROM foodTruckCursor INTO @intFoodTruckID;
 
     WHILE @@FETCH_STATUS = 0
     BEGIN
+        -- execute the uspGetFoodTruckThumbnail procedure for each food truck
+        EXEC dbo.uspGetFoodTruckThumbnail @intFoodTruckID;
         
-        EXEC dbo.uspGetEventThumbnail @intEventID;
-
-        
-        FETCH NEXT FROM event_cursor INTO @intEventID;
+        FETCH NEXT FROM foodTruckCursor INTO @intFoodTruckID;
     END;
 
-  
-    CLOSE event_cursor;
-    DEALLOCATE event_cursor;
+    CLOSE foodTruckCursor;
+    DEALLOCATE foodTruckCursor;
 END;
-
 GO
+
+--EXECUTE uspGetReservedFoodTrucks 4

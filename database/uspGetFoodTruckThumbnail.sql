@@ -1,7 +1,7 @@
 -- --------------------------------------------------------------------------------
 -- Capstone Project Fall '24
 -- TruckSpot (FoodTruck & Event App)
--- Team C
+-- Team C 
 -- Megan Noel, Seth Lubic, Testimony Awuzie & Apiwat Anachai
 --
 --
@@ -9,37 +9,43 @@
 -- --------------------------------------------------------------------------------
 -- Options
 -- --------------------------------------------------------------------------------
-USE truckspot;
+USE truckspot; 
 
 --USE dbTruckSpot;
 
-SET NOCOUNT ON;
+SET NOCOUNT ON; 
 
 -- --------------------------------------------------------------------------------
 -- Drop
 -- --------------------------------------------------------------------------------
 
-IF OBJECT_ID( 'uspGetAvailableSpaces') IS NOT NULL DROP PROCEDURE  uspGetAvailableSpaces
+IF OBJECT_ID( 'uspGetFoodTruckThumbnail') IS NOT NULL DROP PROCEDURE uspGetFoodTruckThumbnail
+
+
 
 GO
 
--- gets available spaces for an event
-CREATE PROCEDURE uspGetAvailableSpaces
-    @intEventID INT
+-- GET FOODTRUCK THUMBNAIL
+-- for displaying the little thumbnails for foodtrucks
+CREATE PROCEDURE uspGetFoodTruckThumbnail
+    @intFoodTruckID INT
 AS
 BEGIN
     SET NOCOUNT ON;
 
-    SELECT
-        TEventSpaces.strSpaceNum
-    FROM
-        TEventSpaces
-    INNER JOIN
-        TEvents ON TEventSpaces.intEventID = TEvents.intEventID
-    WHERE
-        TEventSpaces.intEventID = @intEventID
-        AND TEventSpaces.boolIsAvailable = 1
-        AND TEvents.dtDateOfEvent >= GETDATE();
+    SELECT 
+        TFoodTrucks.intFoodTruckID,
+        TFoodTrucks.strTruckName,
+		TFoodTrucks.strLogoFilePath,
+		TCuisineTypes.strCuisineType
+
+    FROM 
+        TFoodTrucks 
+		join TCuisineTypes on TCuisineTypes.intCuisineTypeID = TFoodTrucks.intCuisineTypeID
+    WHERE 
+        intFoodTruckID = @intFoodTruckID;
 END;
 
 GO
+
+--EXECUTE uspGetFoodTruckThumbnail 1

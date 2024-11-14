@@ -19,15 +19,15 @@ SET NOCOUNT ON;
 -- Drop
 -- --------------------------------------------------------------------------------
 
-IF OBJECT_ID( 'uspGetAllEventThumbnails') IS NOT NULL DROP PROCEDURE  uspGetAllEventThumbnails
+IF OBJECT_ID( 'uspGetOrganizersPastEvents') IS NOT NULL DROP PROCEDURE  uspGetOrganizersPastEvents
+
 
 
 GO
 
-
-
--- gets thumbnail for every event in order of date with most upcoming event first. past events are not included
-CREATE PROCEDURE uspGetAllEventThumbnails
+--gets all past reservations for a specific organizer
+CREATE PROCEDURE uspGetOrganizersPastEvents
+    @intOrganizerID INT
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -35,28 +35,33 @@ BEGIN
     DECLARE @intEventID INT;
 
     
-    DECLARE event_cursor CURSOR FOR
-    SELECT intEventID
-    FROM TEvents
-	WHERE dtDateOfEvent >= GETDATE()
-    ORDER BY dtDateOfEvent ASC;  
+    DECLARE eventCursor CURSOR FOR
+    SELECT 
+        TEvents.intEventID
+    FROM 
+        TOrganizers
+        JOIN TEvents ON TOrganizers.intOrganizerID = TEvents.intOrganizerID
+    WHERE 
+        TOrganizers.intOrganizerID = @intOrganizerID
+        AND TEvents.dtDateOfEvent <= GETDATE() 
+    ORDER BY 
+        TEvents.dtDateOfEvent DESC; 
 
-    
-    OPEN event_cursor;
-    FETCH NEXT FROM event_cursor INTO @intEventID;
+    OPEN eventCursor;
+    FETCH NEXT FROM eventCursor INTO @intEventID;
 
     WHILE @@FETCH_STATUS = 0
     BEGIN
-        
+       
         EXEC dbo.uspGetEventThumbnail @intEventID;
-
         
-        FETCH NEXT FROM event_cursor INTO @intEventID;
+        FETCH NEXT FROM eventCursor INTO @intEventID;
     END;
 
-  
-    CLOSE event_cursor;
-    DEALLOCATE event_cursor;
+    CLOSE eventCursor;
+    DEALLOCATE eventCursor;
 END;
-
 GO
+
+
+--EXECUTE uspGetOrganizersPastEvents 1

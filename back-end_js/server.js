@@ -4,13 +4,13 @@ const sqlConnectionToServer = require("mssql");
 const bcrypt = require("bcrypt");
 const config = require("./dbConfig");
 const router = express.Router();
-const jwt = require('jsonwebtoken');
-const multer = require('multer');
-const path = require('path');
+const jwt = require("jsonwebtoken");
+const multer = require("multer");
+const path = require("path");
 
 const app = express();
 const API_PORT = process.env.PORT || 5000;
-const JWT_SECRET = 'your-secret-key';
+const JWT_SECRET = "your-secret-key";
 
 app.use(
   cors({
@@ -28,40 +28,42 @@ app.get("/test", (req, res) => {
 });
 
 const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, 'public/uploads/eventlogos')
-    },
-    filename: function (req, file, cb) {
-        cb(null, 'logo-' + Date.now() + path.extname(file.originalname))
-    }
+  destination: function (req, file, cb) {
+    cb(null, "public/uploads/eventlogos");
+  },
+  filename: function (req, file, cb) {
+    cb(null, "logo-" + Date.now() + path.extname(file.originalname));
+  },
 });
 
 const upload = multer({
   storage: storage,
   limits: {
-      fileSize: 5 * 1024 * 1024 
+    fileSize: 5 * 1024 * 1024,
   },
   fileFilter: function (req, file, cb) {
-      // Check file type
-      const filetypes = /jpeg|jpg|png/; 
-      const mimetype = filetypes.test(file.mimetype);
-      const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+    // Check file type
+    const filetypes = /jpeg|jpg|png/;
+    const mimetype = filetypes.test(file.mimetype);
+    const extname = filetypes.test(
+      path.extname(file.originalname).toLowerCase()
+    );
 
-      if (mimetype && extname) {
-          return cb(null, true);
-      }
-      cb(new Error('Only .jpeg, .jpg and .png format allowed!'));
-  }
+    if (mimetype && extname) {
+      return cb(null, true);
+    }
+    cb(new Error("Only .jpeg, .jpg and .png format allowed!"));
+  },
 });
 
-  const fs = require('fs');
-  const uploadDir = path.join(__dirname, 'public', 'uploads', 'eventlogos');
-  if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
-  }
+const fs = require("fs");
+const uploadDir = path.join(__dirname, "public", "uploads", "eventlogos");
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
 
 // Serve static files
-app.use('/public', express.static(path.join(__dirname, 'public')));
+app.use("/public", express.static(path.join(__dirname, "public")));
 
 // API Server for signup get data from signup.jsx post to this server
 app.post("/signup", async (req, res) => {
@@ -280,7 +282,11 @@ app.post("/login", async (req, res) => {
     // Set up the request to call the stored procedure
     const request = pool.request();
     request.input("strEmail", sqlConnectionToServer.VarChar(50), strEmail);
-    request.input("strPassword",sqlConnectionToServer.VarChar(50),strPassword);
+    request.input(
+      "strPassword",
+      sqlConnectionToServer.VarChar(50),
+      strPassword
+    );
     request.output("UserID", sqlConnectionToServer.Int);
     request.output("UserType", sqlConnectionToServer.Int);
 
@@ -293,12 +299,12 @@ app.post("/login", async (req, res) => {
     if (userID) {
       // User found - send success response with user type
       const token = jwt.sign(
-        { 
-          userID: userID, 
-          userType: userType 
+        {
+          userID: userID,
+          userType: userType,
         },
         JWT_SECRET,
-        { expiresIn: '24h' }
+        { expiresIn: "24h" }
       );
 
       res.status(200).json({
@@ -338,53 +344,57 @@ app.post("/login", async (req, res) => {
 app.get("/api/user-details", async (req, res) => {
   const userID = req.query.userID;
   const userType = req.query.userType;
-  
-  console.log('Received request:', { userID, userType });
-  
+
+  console.log("Received request:", { userID, userType });
+
   try {
     const pool = await sqlConnectionToServer.connect(config);
-    
-    let query;
-    if (userType === '1') {
-      query = `
-        SELECT strFirstName + ' ' + strLastname as fullName
-        FROM TVendors 
-        WHERE intVendorID = @userID
-      `;
-    } else if (userType === '2') {
-      query = `
-        SELECT strFirstName + ' ' + strLastname as fullName
-        FROM TOrganizers 
-        WHERE intOrganizerID = @userID
-      `;
-    } else {
-      throw new Error('Invalid user type');
-    }
-    // Execute query
     const request = pool.request();
-    request.input('userID', sqlConnectionToServer.Int, parseInt(userID));
-    
-    const result = await request.query(query);
 
-     if (result && result.recordset && result.recordset.length > 0) {
+    let result;
+
+    if (userType === "1") {
+      // Use uspGetVendor stored procedure
+      request.input("intVendorID", sqlConnectionToServer.Int, parseInt(userID));
+      result = await request.execute("uspGetVendor");
+    } else if (userType === "2") {
+      // Use uspGetOrganizer stored procedure
+      request.input(
+        "intOrganizerID",
+        sqlConnectionToServer.Int,
+        parseInt(userID)
+      );
+      result = await request.execute("uspGetOrganizer");
+    } else {
+      throw new Error("Invalid user type");
+    }
+
+    // Check if we have results
+    if (result && result.recordset && result.recordset.length > 0) {
+      const user = result.recordset[0];
+      const fullName = `${user.strFirstName} ${user.strLastName}`;
+      const phoneNumber = `${user.strPhone}`;
+      const email = `${user.strEmail}`;
+
       res.json({
         success: true,
-        userName: result.recordset[0].fullName
+        userName: fullName,
+        phoneNumber: phoneNumber,
+        email: email,
       });
     } else {
       res.status(404).json({
         success: false,
-        message: 'User not found'
+        message: "User not found",
       });
     }
-
   } catch (err) {
     console.error("Database error:", err);
     res.status(500).json({
       success: false,
       error: "Database error",
       message: err.message,
-      details: err.stack // Add stack trace for debugging
+      details: err.stack, // Stack trace for debugging
     });
   } finally {
     try {
@@ -395,21 +405,17 @@ app.get("/api/user-details", async (req, res) => {
   }
 });
 
-
-
-
+app.listen(API_PORT, () => {
+  console.log(`Server running on port ${API_PORT}`);
+});
 
 app.post("/addtruck", async (req, res) => {
   try {
-    const {
-      strTruckName,
-      intCuisineTypeID,
-      intVendorID
-    } = req.body;
+    const { strTruckName, intCuisineTypeID, intVendorID } = req.body;
     const truckData = {
       strTruckName,
       intCuisineTypeID,
-      intVendorID
+      intVendorID,
     };
     res.status(200).json({
       success: true,
@@ -417,7 +423,7 @@ app.post("/addtruck", async (req, res) => {
       user: {
         strTruckName: req.body.strTruckName,
         intCuisineTypeID: req.body.intCuisineTypeID,
-        intVendorID: req.body.intVendorID
+        intVendorID: req.body.intVendorID,
       },
     });
   } catch (error) {
@@ -430,17 +436,17 @@ app.post("/addtruck", async (req, res) => {
   }
 });
 
-app.post('/addevent', upload.single('logo'), async (req, res) => {
+app.post("/addevent", upload.single("logo"), async (req, res) => {
   try {
-      const eventData = req.body;
-      console.log('Received file:', req.file);
-      if (req.file) {
-        eventData.strLogoFilePath = `/public/uploads/eventlogos/${req.file.filename}`;
+    const eventData = req.body;
+    console.log("Received file:", req.file);
+    if (req.file) {
+      eventData.strLogoFilePath = `/public/uploads/eventlogos/${req.file.filename}`;
     } else {
-        console.log('No file uploaded');
+      console.log("No file uploaded");
     }
 
-    console.log('Event Details:', {
+    console.log("Event Details:", {
       name: eventData.strEventName,
       description: eventData.strDescription,
       dateOfEvent: eventData.dtDateOfEvent,
@@ -448,18 +454,18 @@ app.post('/addevent', upload.single('logo'), async (req, res) => {
       location: eventData.strLocation,
       totalSpaces: eventData.intTotalSpaces,
       expectedGuests: eventData.intExpectedGuests,
-      organizerID: eventData.intOrganizerID
-  });
+      organizerID: eventData.intOrganizerID,
+    });
 
-  console.log('Complete Event Data:', eventData);
-  res.json({ 
-    success: true, 
-    message: 'Event created successfully',
-    data: eventData
-});
+    console.log("Complete Event Data:", eventData);
+    res.json({
+      success: true,
+      message: "Event created successfully",
+      data: eventData,
+    });
   } catch (error) {
-      console.error(error);
-      res.status(500).json({ success: false, message: 'Error creating event' });
+    console.error(error);
+    res.status(500).json({ success: false, message: "Error creating event" });
   }
 });
 
