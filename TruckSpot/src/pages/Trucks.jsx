@@ -13,7 +13,7 @@ function Trucks() {
                     <div className="col-span-12 md:col-span-3">
                         <SideBar/>
                     </div>
-                        My FoodTruck
+                        My Truck
 
                         <Link to='/addtruck'><button className="w-32 bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition-colors">Add Truck</button></Link>
                     </div>
