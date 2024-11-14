@@ -13,7 +13,7 @@ function MyEventDashboard() {
                     <div className="col-span-12 md:col-span-3">
                         <SideBar/>
                     </div>
-                        My Event
+                        New Event
 
                         <Link to='/addevent'><button className="w-32 bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition-colors">Add an event</button></Link>
                     </div>
