@@ -85,7 +85,7 @@ function Navbar() {
   <div className="navbar-center hidden lg:flex">
     <ul className="menu menu-horizontal px-1">
       <li><Link to='/home'>Home</Link></li>
-      <li><Link to='/event'>Event</Link></li>
+      <li><Link to='/event'>Events</Link></li>
 
       {/* Show Create Event only for organizers (userType === '2') */}
           {isLoggedIn && userType === '2' && (
