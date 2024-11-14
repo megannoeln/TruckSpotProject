@@ -19,6 +19,7 @@ import Trucks from './pages/Trucks.jsx';
 import AddTruck from './pages/AddTruck.jsx';
 import AddEvent from './pages/AddEvent.jsx';
 import MyEvent from './pages/MyEvent.jsx';
+import MyEventDashboard from './pages/MyEventDashboard.jsx';
 const router = createBrowserRouter([
   {
     path: "/",
@@ -76,6 +77,11 @@ const router = createBrowserRouter([
   {
     path: "myevent",
     element: <MyEvent/>
+  }
+  ,
+  {
+    path: "myeventdashboard",
+    element: <MyEventDashboard/>
   }
 
 

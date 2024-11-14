@@ -233,6 +233,7 @@ app.get("/api/allevents", async (req, res) => {
   }
 });
 
+// Get only reservation that related to a vendor
 app.get("/api/myreservation", async (req, res) => {
   const userID = req.query.userID;
   console.log("Received userID:", userID, typeof userID); 
@@ -258,6 +259,35 @@ app.get("/api/myreservation", async (req, res) => {
                   V.intVendorID = ${parsedUserID}
               ORDER BY 
                   E.dtDateOfEvent;
+                `);
+                
+    console.log(result.query);
+    console.log(`Found ${result.recordset.length} events`);
+    res.json(result.recordset);
+  } catch (err) {
+    console.error("Error fetching all events:", err);
+    res.status(500).json({
+      error: "Database error",
+      message: err.message,
+    });
+  }
+});
+
+
+// Get only event that related to an organizer
+app.get("/api/mycreatedevent", async (req, res) => {
+  const userID = req.query.userID;
+  console.log("Received userID:", userID, typeof userID); 
+  const parsedUserID = parseInt(userID, 10);
+  console.log("RparsedUserID:", parsedUserID, typeof parsedUserID); 
+  try {
+    const pool = await sqlConnectionToServer.connect(config);
+    console.log('attempting')
+    const result = await pool.request()
+    .query(`
+            SELECT intEventID,strEventName,dtDateOfEvent
+            FROM TEvents JOIN TOrganizers ON TEvents.intOrganizerID = TOrganizers.intOrganizerID
+            WHERE TEvents.intOrganizerID = 1
                 `);
                 
     console.log(result.query);
