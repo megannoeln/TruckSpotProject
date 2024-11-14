@@ -89,12 +89,12 @@ function Navbar() {
 
       {/* Show Create Event only for organizers (userType === '2') */}
           {isLoggedIn && userType === '2' && (
-            <li><Link to='/myevent'>My Event</Link></li>
+            <li><Link to='/myevent'>My Events</Link></li>
           )}
           
           {/* Show My Reservation only for vendors (userType === '1') */}
           {isLoggedIn && userType === '1' && (
-            <li><Link to='/reservation'>My Reservation</Link></li>
+            <li><Link to='/reservation'>My Reservations</Link></li>
       )}
       <li><Link to='#'>Contact Support</Link></li>
     </ul>
