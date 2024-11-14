@@ -10,6 +10,8 @@ function EventInformation() {
   const { eventId } = useParams(); 
   const [event, setEvent] = useState(null);
   const [error, setError] = useState(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userType, setUserType] = useState(null);
 
   useEffect(() => {
     const fetchEventDetails = async () => {
@@ -31,6 +33,20 @@ function EventInformation() {
   useEffect(() => {
     console.log('Events state updated:', event);
   }, [event]);
+
+  useEffect(() => {
+    // Check session storage for user data
+    const storedUserType = sessionStorage.getItem('userType');
+    const storedUserID = sessionStorage.getItem('userID');
+
+    if (storedUserType && storedUserID) {
+      setIsLoggedIn(true);
+      setUserType(storedUserType);
+    } else {
+      console.log('No session data found');
+    }
+
+  }, []);
 
 
   if (event) {return (
@@ -76,10 +92,14 @@ function EventInformation() {
                   <span>{event.strLocation}</span>
                 </div>
               </div>
-              
+              {/* if it's a vendor show reserver button */}
+              {isLoggedIn && userType === '1' && (
               <button className="bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-600 transition-colors">
                 Reserve a spot
               </button>
+              )}
+
+              
               
             </div>
           </div>

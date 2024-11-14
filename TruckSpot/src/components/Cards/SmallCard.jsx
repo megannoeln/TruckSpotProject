@@ -1,14 +1,33 @@
 // SmallCard.jsx
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useState } from "react";
+import { useEffect } from "react";
 
 function SmallCard({ event }) {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userType, setUserType] = useState(null);
+
   // Format the date
   const formattedDate = new Date(event.dtDateOfEvent).toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',
     day: 'numeric'
   });
+
+  useEffect(() => {
+    // Check session storage for user data
+    const storedUserType = sessionStorage.getItem('userType');
+    const storedUserID = sessionStorage.getItem('userID');
+
+    if (storedUserType && storedUserID) {
+      setIsLoggedIn(true);
+      setUserType(storedUserType);
+    } else {
+      console.log('No session data found');
+    }
+
+  }, []);
 
   return (
     <div className="bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
@@ -31,6 +50,8 @@ function SmallCard({ event }) {
         <p className="mb-3 font-normal text-gray-700 dark:text-gray-400 line-clamp-2">
           {event.strDescription}
         </p>
+        
+        
         <Link 
           to={`/eventinformation/${event.intEventID}`}
           className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
