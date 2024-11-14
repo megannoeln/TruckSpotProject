@@ -435,10 +435,6 @@ app.get("/api/user-details", async (req, res) => {
   }
 });
 
-app.listen(API_PORT, () => {
-  console.log(`Server running on port ${API_PORT}`);
-});
-
 app.post("/addtruck", async (req, res) => {
   try {
     const { strTruckName, intCuisineTypeID, intVendorID } = req.body;
