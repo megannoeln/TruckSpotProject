@@ -112,7 +112,7 @@ BEGIN
               AND intCuisineTypeID = (
                   SELECT intCuisineTypeID
                   FROM TFoodTrucks
-                  WHERE intFoodTruckID = @intFoodTruckID;
+                  WHERE intFoodTruckID = @intFoodTruckID
                 )
 
     COMMIT TRANSACTION
