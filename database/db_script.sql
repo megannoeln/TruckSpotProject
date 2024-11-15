@@ -337,7 +337,7 @@ INSERT INTO TEventCuisines (intEventID, intCuisineTypeID, intLimit, intAvailable
 (4, 1, 2, 2),  -- winter wonderland allowing 2 italian trucks
 (4, 6, 4, 4); -- winter wonderland allowing 4 bakery/dessert trucks
 
--- Past events (IDs 7 - 16), all intAvailable set to 0
+-- Past events (IDs 7 - 16) belonging to organizer 1, all intAvailable set to 0
 INSERT INTO TEventCuisines (intEventID, intCuisineTypeID, intLimit, intAvailable) VALUES
 (7, 2, 3, 0),  -- Spring Carnival allowing 3 Mexican trucks
 (7, 3, 5, 0),  -- Spring Carnival allowing 5 American trucks
@@ -355,7 +355,7 @@ INSERT INTO TEventCuisines (intEventID, intCuisineTypeID, intLimit, intAvailable
 (15, 2, 5, 0), -- Marathon Expo allowing 5 Mexican trucks
 (16, 2, 2, 0); -- Book Fair allowing 2 Mexican trucks
 
--- Upcoming events (IDs 17 - 26), all include Mexican trucks (for vendor 1 to reserve) and have some intAvailable open
+-- Upcoming events (IDs 17 - 26) belonging to organizer 1, all include Mexican trucks (for vendor 1 to reserve) and have some intAvailable open
 INSERT INTO TEventCuisines (intEventID, intCuisineTypeID, intLimit, intAvailable) VALUES
 (17, 2, 3, 2),  -- Winter Charity Concert allowing 3 Mexican trucks, 2 available
 (17, 1, 4, 2),  -- Winter Charity Concert allowing 4 Italian trucks, 2 available
@@ -414,6 +414,41 @@ VALUES
 (5, 3, 500.00, 4, 'Had a blast'), 
 (5, 4, 300.00, 3, 'It was alright, but we expected more attendees'),  
 (5, 5, 1500.00, 5, 'Wonderful event, we sold out of food!');  
+
+-- Inserting rows for intFoodTruckID 1 (belongs to vendor 1) at past events 7-12 with feedback
+INSERT INTO TFoodTruckEvents (intEventID, intFoodTruckID, monTotalRevenue, intRating, strVendorComment)
+VALUES
+(7, 1, 500.00, 4, 'Solid event with good engagement'),
+(8, 1, 450.00, 3, 'The event was decent but a bit under-advertised'),
+(9, 1, 600.00, 5, 'Great event, lots of attendees and good sales'),
+(10, 1, 450.00, 3, 'Average turnout, but steady sales throughout'),
+(11, 1, 800.00, 4, 'Well-organized, we had consistent traffic'),
+(12, 1, 550.00, 4, 'Nice crowd and well-planned event layout');
+
+-- Other vendors 2-5 at past events 7-16 with feedback
+INSERT INTO TFoodTruckEvents (intEventID, intFoodTruckID, monTotalRevenue, intRating, strVendorComment)
+VALUES
+(7, 1, 500.00, 4, 'Good sales, overall a nice crowd'),
+(7, 3, 600.00, 5, 'Fantastic event with high engagement'),
+(8, 2, 450.00, 3, 'Average turnout but made decent connections'),
+(8, 4, 550.00, 4, 'Steady flow of customers, well-organized event'),
+(9, 1, 800.00, 5, 'Best event we’ve attended this month'),
+(9, 5, 700.00, 4, 'Great experience, lots of attendees'),
+(10, 2, 300.00, 1, 'Low traffic, event needed more promotion'),
+(10, 3, 450.00, 4, 'Solid sales, happy with the outcome'),
+(11, 1, 600.00, 4, 'Good exposure, decent foot traffic'),
+(11, 4, 400.00, 3, 'Could have been better with more advertising'),
+(12, 3, 700.00, 5, 'Great day, made significant profit'),
+(12, 5, 750.00, 4, 'Steady and enjoyable, well-organized'),
+(13, 2, 250.00, 2, 'Turnout was low, possibly due to weather'),
+(13, 5, 500.00, 4, 'Decent sales given the conditions'),
+(14, 1, 900.00, 5, 'Top event for sales this season'),
+(14, 4, 650.00, 4, 'Good turnout, great location'),
+(15, 3, 400.00, 3, 'It was okay, not as busy as expected'),
+(15, 5, 600.00, 4, 'Enjoyable event with moderate success'),
+(16, 2, 850.00, 5, 'Highly successful, busy throughout the day'),
+(16, 1, 700.00, 4, 'Great atmosphere and excellent sales');
+
 
 
 -- TReservations
