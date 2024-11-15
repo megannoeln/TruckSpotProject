@@ -28,8 +28,9 @@ CREATE PROCEDURE uspReserveSpace
     @intPaymentID AS INT OUTPUT,
     @intFoodTruckEventID AS INT OUTPUT,
     @monPricePerSpace MONEY OUTPUT,
-    @intEventSpaceID AS INT,
-    @intFoodTruckID AS INT,
+    @intFoodTruckID AS INT OUTPUT,
+    @intEventSpaceID AS INT OUTPUT,
+    @intVendorID AS INT,
     @intEventID AS INT
 AS
 BEGIN
@@ -40,10 +41,49 @@ BEGIN
 
     BEGIN TRY
 
+        SELECT @intEventSpaceID = MIN(intEventSpaceID)
+        FROM TEventSpaces
+        WHERE intEventID = @intEventID
+            AND boolIsAvailable = 1
+
         SELECT @monPricePerSpace = TEvents.monPricePerSpace
         FROM TEventSpaces
         INNER JOIN TEvents ON TEventSpaces.intEventID = TEvents.intEventID
         WHERE TEventSpaces.intEventSpaceID = @intEventSpaceID
+
+        SELECT @intFoodTruckID = TFoodTrucks.intFoodTruckID
+        FROM TVendors
+        INNER JOIN TFoodTrucks ON TVendors.intVendorID = TFoodTrucks.intVendorID
+        WHERE TVendors.intVendorID = @intVendorID
+
+        IF EXISTS (
+                SELECT 1
+                FROM TReservations
+                INNER JOIN TEventSpaces ON TReservations.intEventSpaceID = TEventSpaces.intEventSpaceID
+                WHERE TEventSpaces.intEventID = @intEventID
+                      AND TReservations.intFoodTruckID IN (
+                        SELECT TFoodTrucks.intFoodTruckID
+                        FROM TFoodTrucks
+                        WHERE TFoodTrucks.intVendorID = @intVendorID
+                        )
+        )
+        BEGIN
+           RAISERROR ('Vendor already has a reservation for this event.', 16, 1);
+        END;
+
+        IF NOT EXISTS (
+           SELECT 1
+           FROM TEventCuisines
+           WHERE intEventID = @intEventID
+                 AND intCuisineTypeID = (
+                     SELECT intCuisineTypeID
+                     FROM TFoodTrucks
+                     WHERE intFoodTruckID = @intFoodTruckID
+                    )
+        )
+        BEGIN
+            RAISERROR ('Food truck cuisine does not match the preferred type for this event.', 16, 1);
+        END;
 
         INSERT INTO TReservations (intEventSpaceID, intFoodTruckID, dtReservationDate, intStatusID)
         VALUES (@intEventSpaceID, @intFoodTruckID, GETDATE(), 1);
@@ -66,11 +106,20 @@ BEGIN
         SET boolIsAvailable = 0
         WHERE intEventSpaceID = @intEventSpaceID;
 
+        UPDATE TEventCuisines
+        SET intAvailable = intAvailable - 1
+        WHERE intEventID = @intEventID
+              AND intCuisineTypeID = (
+                  SELECT intCuisineTypeID
+                  FROM TFoodTrucks
+                  WHERE intFoodTruckID = @intFoodTruckID;
+                )
+
     COMMIT TRANSACTION
     END TRY
     BEGIN CATCH
-          ROLLBACK TRANSACTION;
-          THROW;
+        THROW;
+        ROLLBACK TRANSACTION;
     END CATCH
 END;
 GO
