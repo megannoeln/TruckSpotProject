@@ -39,14 +39,6 @@ function UpdateAccount() {
                                 <p className="text-sm text-gray-500 mb-1">Type of Account</p>
                                 <input type="text" placeholder="Type here" className="input input-bordered w-full max-w-xs" />
                             </div>
-                            <div>
-                                <p className="text-sm text-gray-500 mb-1">Business Name</p>
-                                <input type="text" placeholder="Type here" className="input input-bordered w-full max-w-xs" />
-                            </div>
-                            <div>
-                                <p className="text-sm text-gray-500 mb-1">Type of Food</p>
-                                <input type="text" placeholder="Type here" className="input input-bordered w-full max-w-xs" />
-                            </div>
                         </div>
                     </div>
 
