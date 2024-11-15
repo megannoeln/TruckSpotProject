@@ -31,12 +31,11 @@ function UpdateAccount() {
                     
                         <div className="mb-10">
                             <div>
-                                <p className="text-sm text-gray-500 mb-1">Name</p>
+                                <p className="text-sm text-gray-500 mb-1">First Name</p>
                                 <input type="text" placeholder="Type here" className="input input-bordered w-full max-w-xs" />
-
                             </div>
                             <div>
-                                <p className="text-sm text-gray-500 mb-1">Type of Account</p>
+                                <p className="text-sm text-gray-500 mb-1">Last Name</p>
                                 <input type="text" placeholder="Type here" className="input input-bordered w-full max-w-xs" />
                             </div>
                         </div>
