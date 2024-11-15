@@ -24,18 +24,20 @@ IF OBJECT_ID( 'uspReserveSpace') IS NOT NULL DROP PROCEDURE  uspReserveSpace
 GO
 
 CREATE PROCEDURE uspReserveSpace
-    @intReservationID AS INT OUTPUT,
-    @intPaymentID AS INT OUTPUT,
-    @intFoodTruckEventID AS INT OUTPUT,
-    @monPricePerSpace MONEY OUTPUT,
-    @intFoodTruckID AS INT OUTPUT,
-    @intEventSpaceID AS INT OUTPUT,
     @intVendorID AS INT,
     @intEventID AS INT
 AS
 BEGIN
     SET NOCOUNT ON;
     SET XACT_ABORT ON;
+
+    DECLARE @intReservationID INT
+    DECLARE @intPaymentID INT
+    DECLARE @intFoodTruckEventID INT
+    DECLARE @monPricePerSpace MONEY
+    DECLARE @intFoodTruckID INT
+    DECLARE @intEventSpaceID INT
+
 
     BEGIN TRANSACTION;
 
