@@ -287,7 +287,7 @@ app.get("/api/mycreatedevent", async (req, res) => {
     .query(`
             SELECT intEventID,strEventName,dtDateOfEvent
             FROM TEvents JOIN TOrganizers ON TEvents.intOrganizerID = TOrganizers.intOrganizerID
-            WHERE TEvents.intOrganizerID = 1
+            WHERE TEvents.intOrganizerID = ${parsedUserID}
                 `);
                 
     console.log(result.query);
