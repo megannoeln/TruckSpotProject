@@ -337,6 +337,50 @@ INSERT INTO TEventCuisines (intEventID, intCuisineTypeID, intLimit, intAvailable
 (4, 1, 2, 2),  -- winter wonderland allowing 2 italian trucks
 (4, 6, 4, 4); -- winter wonderland allowing 4 bakery/dessert trucks
 
+-- Past events (IDs 7 - 16), all intAvailable set to 0
+INSERT INTO TEventCuisines (intEventID, intCuisineTypeID, intLimit, intAvailable) VALUES
+(7, 2, 3, 0),  -- Spring Carnival allowing 3 Mexican trucks
+(7, 3, 5, 0),  -- Spring Carnival allowing 5 American trucks
+(8, 2, 4, 0),  -- Art and Craft Fair allowing 4 Mexican trucks
+(8, 5, 2, 0),  -- Art and Craft Fair allowing 2 Asian trucks
+(9, 2, 3, 0),  -- Community Potluck allowing 3 Mexican trucks
+(9, 6, 4, 0),  -- Community Potluck allowing 4 Bakery/Desserts trucks
+(10, 2, 8, 0), -- Tech Expo allowing 8 Mexican trucks
+(10, 1, 5, 0), -- Tech Expo allowing 5 Italian trucks
+(11, 2, 4, 0), -- Historical Reenactment allowing 4 Mexican trucks
+(12, 2, 6, 0), -- Jazz Night allowing 6 Mexican trucks
+(13, 1, 7, 0), -- Charity Gala allowing 7 Italian trucks
+(13, 2, 3, 0), -- Charity Gala allowing 3 Mexican trucks
+(14, 2, 10, 0), -- Outdoor Film Screening allowing 10 Mexican trucks
+(15, 2, 5, 0), -- Marathon Expo allowing 5 Mexican trucks
+(16, 2, 2, 0); -- Book Fair allowing 2 Mexican trucks
+
+-- Upcoming events (IDs 17 - 26), all include Mexican trucks (for vendor 1 to reserve) and have some intAvailable open
+INSERT INTO TEventCuisines (intEventID, intCuisineTypeID, intLimit, intAvailable) VALUES
+(17, 2, 3, 2),  -- Winter Charity Concert allowing 3 Mexican trucks, 2 available
+(17, 1, 4, 2),  -- Winter Charity Concert allowing 4 Italian trucks, 2 available
+(17, 6, 3, 1),  -- Winter Charity Concert allowing 3 Bakery/Desserts trucks, 1 available
+(18, 2, 5, 3),  -- Christmas Market allowing 5 Mexican trucks, 3 available
+(18, 3, 7, 4),  -- Christmas Market allowing 7 American trucks, 4 available
+(19, 2, 4, 4),  -- New Year Countdown Party allowing 4 Mexican trucks, all available
+(19, 5, 6, 6),  -- New Year Countdown Party allowing 6 Asian trucks, all available
+(20, 2, 2, 1),  -- Valentine’s Day Bash allowing 2 Mexican trucks, 1 available
+(20, 4, 2, 1),  -- Valentine’s Day Bash allowing 2 Indian trucks, 1 available
+(20, 7, 4, 2),  -- Valentine’s Day Bash allowing 4 Other trucks, 2 available
+(21, 2, 6, 5),  -- Spring Music Festival allowing 6 Mexican trucks, 5 available
+(21, 1, 8, 5),  -- Spring Music Festival allowing 8 Italian trucks, 5 available
+(21, 3, 10, 7), -- Spring Music Festival allowing 10 American trucks, 7 available
+(22, 2, 3, 2),  -- Food Truck Rally allowing 3 Mexican trucks, 2 available
+(22, 6, 5, 4),  -- Food Truck Rally allowing 5 Bakery/Desserts trucks, 4 available
+(23, 2, 3, 2),  -- Cultural Dance Festival allowing 3 Mexican trucks, 2 available
+(23, 5, 3, 2),  -- Cultural Dance Festival allowing 3 Asian trucks, 2 available
+(24, 2, 4, 4),  -- Local Author Meetup allowing 4 Mexican trucks, all available
+(25, 2, 2, 1),  -- Art Exhibition allowing 2 Mexican trucks, 1 available
+(25, 1, 3, 3),  -- Art Exhibition allowing 3 Italian trucks, all available
+(25, 6, 2, 1),  -- Art Exhibition allowing 2 Bakery/Desserts trucks, 1 available
+(26, 2, 3, 2),  -- Community Cleanup Day allowing 3 Mexican trucks, 2 available
+(26, 3, 5, 3);  -- Community Cleanup Day allowing 5 American trucks, 3 available
+
 
 -- TEventSpaces
 INSERT INTO TEventSpaces (intEventID, strSpaceNum, strSize, boolIsAvailable) 
