@@ -784,7 +784,7 @@ CREATE PROCEDURE uspUpdateVendor
     @intVendorID INT,
     @strFirstName VARCHAR(50) = NULL,
     @strLastName VARCHAR(50) = NULL,
-    @strPassword VARCHAR(50) = NULL,
+
     @strEmail VARCHAR(50) = NULL,
     @strPhone VARCHAR(15) = NULL
 AS
@@ -800,7 +800,7 @@ BEGIN
         SET 
             strFirstName = COALESCE(@strFirstName, strFirstName),
             strLastName = COALESCE(@strLastName, strLastName),
-            strPassword = COALESCE(@strPassword, strPassword),
+
             strEmail = COALESCE(@strEmail, strEmail),
             strPhone = COALESCE(@strPhone, strPhone)
         WHERE intVendorID = @intVendorID;
@@ -834,7 +834,7 @@ CREATE PROCEDURE uspUpdateOrganizer
     @intOrganizerID INT,
     @strFirstName VARCHAR(50) = NULL,
     @strLastName VARCHAR(50) = NULL,
-    @strPassword VARCHAR(50) = NULL,
+    
     @strEmail VARCHAR(50) = NULL,
     @strPhone VARCHAR(15) = NULL
 AS
@@ -850,7 +850,7 @@ BEGIN
         SET 
             strFirstName = COALESCE(@strFirstName, strFirstName),
             strLastName = COALESCE(@strLastName, strLastName),
-            strPassword = COALESCE(@strPassword, strPassword),
+
             strEmail = COALESCE(@strEmail, strEmail),
             strPhone = COALESCE(@strPhone, strPhone)
         WHERE intOrganizerID = @intOrganizerID;
