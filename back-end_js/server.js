@@ -302,6 +302,7 @@ app.get("/api/mycreatedevent", async (req, res) => {
   }
 });
 
+// log in procedure
 app.post("/login", async (req, res) => {
   const strEmail = req.body.strEmail;
   const strPassword = req.body.strPassword;
