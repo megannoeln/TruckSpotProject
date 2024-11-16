@@ -461,8 +461,8 @@ app.post("/addtruck", async (req, res) => {
       error: error.message,
     });
   }
-});
-
+}); 
+ 
 app.post("/addevent", upload.single("logo"), async (req, res) => {
   try {
     const eventData = req.body;
