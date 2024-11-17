@@ -439,29 +439,30 @@ app.get("/api/user-details", async (req, res) => {
 app.post("/addtruck", async (req, res) => {
   try {
     const { strTruckName, intCuisineTypeID, intVendorID } = req.body;
-    const truckData = {
-      strTruckName,
-      intCuisineTypeID,
-      intVendorID,
-    };
+
+    const pool = await sql.connect(config);
+    const result = await pool
+      .request()
+      .input("intVendorID", sql.Int, intVendorID)
+      .input("intCuisineTypeID", sql.Int, intCuisineTypeID)
+      .input("strTruckName", sql.VarChar(50), strTruckName)
+      .output("intFoodTruckID", sql.Int)
+      .execute("uspCreateFoodTruck");
+
     res.status(200).json({
       success: true,
-      message: "Signup data received successfully",
-      user: {
-        strTruckName: req.body.strTruckName,
-        intCuisineTypeID: req.body.intCuisineTypeID,
-        intVendorID: req.body.intVendorID,
-      },
+      message: "Truck added successfully",
+      truckID: result.output.intFoodTruckID,
     });
   } catch (error) {
-    console.error("Error in signup:", error);
+    console.error("Error in addtruck:", error);
     res.status(500).json({
       success: false,
-      message: "An error occurred during signup",
+      message: "Error occurred while adding the truck",
       error: error.message,
     });
   }
-}); 
+});
  
 app.post("/addevent", upload.single("logo"), async (req, res) => {
   try {
