@@ -205,12 +205,11 @@ CREATE TABLE TFoodTruckEvents
 
 CREATE TABLE TMenus (
      intMenuID				INTEGER  IDENTITY		NOT NULL
-    ,intFoodTruckEventID	INTEGER					NOT NULL         
+    ,intFoodTruckID	INTEGER					NOT NULL         
     ,strItem				VARCHAR(255)			NOT NULL         
-    ,monPrice				MONEY					NOT NULL         
-    ,intUnitsSold			INTEGER					NULL                    
+    ,monPrice				MONEY					NOT NULL                          
     ,CONSTRAINT TMenus_PK PRIMARY KEY ( intMenuID )
-    ,FOREIGN KEY ( intFoodTruckEventID ) REFERENCES TFoodTruckEvents ( intFoodTruckEventID ) ON DELETE CASCADE
+    ,FOREIGN KEY ( intFoodTruckID ) REFERENCES TFoodTrucks ( intFoodTruckID ) ON DELETE CASCADE
 );
 
 CREATE TABLE TEventSponsors
