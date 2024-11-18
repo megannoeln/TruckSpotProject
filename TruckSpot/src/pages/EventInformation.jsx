@@ -12,11 +12,11 @@ function EventInformation() {
   const [error, setError] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userType, setUserType] = useState(null);
-
+  const [showModal, setShowModal] = useState(false);
+  
   useEffect(() => {
     const fetchEventDetails = async () => {
         try {
-
             console.log('Fetching event details for ID:', eventId);
             const response = await axios.get(`http://localhost:5000/api/events/${eventId}`);
             console.log('Event details:', response.data);
@@ -35,7 +35,6 @@ function EventInformation() {
   }, [event]);
 
   useEffect(() => {
-    // Check session storage for user data
     const storedUserType = sessionStorage.getItem('userType');
     const storedUserID = sessionStorage.getItem('userID');
 
@@ -48,11 +47,55 @@ function EventInformation() {
 
   }, []);
 
+  const handleReservation = async () => {
+    setShowModal(true);
+   };
+
+   const confirmReservation = async () => {
+    const storedUserID = sessionStorage.getItem('userID');
+    console.log("Attempting reserve")
+    console.log(eventId)
+    try {
+      const response = await axios.post('http://localhost:5000/api/reserve', {  
+        eventID: eventId,
+        userID: storedUserID
+      });
+      console.log('Reservation successful:');
+      setShowModal(false);
+    } catch (err) {
+      console.error('Full error:', err.response?.data);
+      alert(err.response?.data?.error || 'Reservation failed');
+      
+    }
+   };
+
 
   if (event) {return (
     <>
     <div className="min-h-screen">
       <Navbar />
+        {showModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+            <div className="bg-white p-6 rounded-lg">
+              <h3 className="text-lg font-semibold">Confirm Reservation</h3>
+              <p className="my-4">Are you sure you want to reserve a spot for this event?</p>
+              <div className="flex justify-end gap-4">
+                <button 
+                  onClick={() => setShowModal(false)}
+                  className="px-4 py-2 border rounded hover:bg-gray-100"
+                >
+                  No
+                </button>
+                <button
+                  onClick={confirmReservation}
+                  className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                >
+                  Yes
+                </button>
+              </div>
+            </div>
+          </div>
+          )}
       <div className="container mx-auto px-4 py-8 max-w-6xl">
         <div className="grid md:grid-cols-2 gap-8">
 
@@ -94,16 +137,15 @@ function EventInformation() {
               </div>
               {/* if it's a vendor show reserver button */}
               {isLoggedIn && userType === '1' && (
-              <button className="bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-600 transition-colors">
+              <button 
+              className="bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-600 transition-colors"
+              onClick={handleReservation}>
                 Reserve a spot
               </button>
               )}
 
-              
-              
             </div>
           </div>
-          
           <div className="space-y-6">
             <div className="aspect-w-16 aspect-h-9 rounded-lg overflow-hidden">
               <img 
@@ -112,14 +154,12 @@ function EventInformation() {
                 className="w-full h-full object-cover"
               />
             </div>
-            
             <div className="space-y-4">
               <h2 className="text-xl font-semibold">{event.strEventName}, {event.strLocation}</h2>   
               <div className="space-y-4 text-gray-600">
                 <p>
                  {event.strDescription}
                 </p>
-
               </div>
             </div>
           </div>

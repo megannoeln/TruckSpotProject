@@ -309,7 +309,6 @@ app.post("/login", async (req, res) => {
 
   try {
     const pool = await sqlConnectionToServer.connect(config);
-
     // Set up the request to call the stored procedure
     const request = pool.request();
     request.input("strEmail", sqlConnectionToServer.VarChar(50), strEmail);
@@ -466,6 +465,7 @@ app.post("/addtruck", async (req, res) => {
 
 app.get("/api/truck-details", async (req, res) => {
   const userID = req.query.userID;
+
   try {
     const pool = await sqlConnectionToServer.connect(config);
     const request = pool.request();
@@ -538,6 +538,26 @@ app.post("/addevent", upload.single("logo"), async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, message: "Error creating event" });
+  }
+});
+
+// get EventID and UserID to execute uspReserveSapce
+app.post('/api/reserve', async (req, res) => {
+  const { eventID, userID } = req.body;
+
+  const parsedUserID = parseInt(userID)
+  const parsedEventID = parseInt(eventID)
+  try {
+    const pool = await sqlConnectionToServer.connect(config);
+    console.log("Database connected");
+    const result = await pool.request()
+      .input("intVendorID", sqlConnectionToServer.Int, parsedUserID)
+      .input("intEventID", sqlConnectionToServer.Int, parsedEventID)
+      .execute("uspReserveSpace");
+    res.json({ success: true, data: result.recordset });
+  } catch (err) {
+    console.log("Error")
+    res.status(500).json({ error: err.message });
   }
 });
 
