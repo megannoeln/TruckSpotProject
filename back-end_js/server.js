@@ -463,6 +463,50 @@ app.post("/addtruck", async (req, res) => {
     });
   }
 });
+
+app.get("/api/truck-details", async (req, res) => {
+  const userID = req.query.userID;
+  try {
+    const pool = await sqlConnectionToServer.connect(config);
+    const request = pool.request();
+    let result;
+
+    request.input("intVendorID", sqlConnectionToServer.Int, parseInt(userID));
+    result = await request.execute("uspGetFoodTruck");
+    // Check if we have results
+    if (result && result.recordset && result.recordset.length > 0) {
+      const truck = result.recordset[0];
+      const truckName = `${truck.strTruckName}`;
+      const custineType = `${truck.strCuisineType}`;
+      const operatingLicense = `${truck.strOperatingLicense}`;
+      res.json({
+        success: true,
+        truckName: truckName,
+        custineType: custineType,
+        operatingLicense: operatingLicense,
+      });
+    } else {
+      res.status(404).json({
+        success: false,
+        message: "Truck not found",
+      });
+    }
+  } catch (err) {
+    console.error("Database error:", err);
+    res.status(500).json({
+      success: false,
+      error: "Database error",
+      message: err.message,
+      details: err.stack, // Stack trace for debugging
+    });
+  } finally {
+    try {
+      await sqlConnectionToServer.close();
+    } catch (err) {
+      console.error("Error closing connection:", err);
+    }
+  }
+});
  
 app.post("/addevent", upload.single("logo"), async (req, res) => {
   try {

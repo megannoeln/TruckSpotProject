@@ -8,8 +8,6 @@ function MyAccount() {
   const [userName, setUserName] = useState("");
   const [userDetails, setUserDetails] = useState({
     accountType: "",
-    businessName: "Chipotle", // example value, assuming fetched from another API or hardcoded
-    foodType: "Mexican", // example value
     phoneNumber: "",
     email: "",
   });
@@ -41,9 +39,7 @@ function MyAccount() {
         setUserDetails({
           accountType: storedUserType === "1" ? "Vendor" : "Organizer",
           phoneNumber: response.data.phoneNumber,
-          email: response.data.email,
-          businessName: userDetails.businessName,
-          foodType: userDetails.foodType,
+          email: response.data.email
         });
         console.log("5. User details set", { userDetails });
       }
@@ -77,56 +73,41 @@ function MyAccount() {
             <div className=" rounded-lg shadow-sm p-6">
               <h2 className="text-xl font-semibold mb-6">Personal Details</h2>
 
-              {/* Profile Photo Section */}
               <div className="flex items-start gap-8">
-                <div>
-                  <div className="w-48 aspect-square bg-gray-200 rounded-lg mb-2 overflow-hidden">
-                    <img
-                      src="/placeholder-profile.jpg"
-                      alt="Profile"
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                </div>
+                        <div>
+                            <div className="w-full aspect-square bg-gray-200 rounded-lg mb-2 overflow-hidden">
+                                 (
+                                <img
+                                    // src={logoPreview}
+                                    alt="Event Logo Preview"
+                                    className="w-80 aspect-square object-cover"
+                                />
+                                ) : (
+                                <div className="w-70 aspect-square object-cover">
+                                    <span className="text-gray-500">No picture selected</span>
+                                </div>
+                                )
+                            </div>    
+                        </div>
                 <div className="mb-15">
                   <div>
                     <p className="text-sm text-gray-500 mb-1">Name</p>
                     <p className="font-medium mb-5">{userName}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-500 mb-1">
-                      Type of Account
-                    </p>
-                    <p className="font-medium mb-5">
-                      {userDetails.accountType}
-                    </p>
+                    <p className="text-sm text-gray-500 mb-1">Phone Number</p>
+                    <p className="font-medium mb-5">{userDetails.phoneNumber}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-500 mb-1">Business Name</p>
-                    <p className="font-medium mb-5">
-                      {userDetails.businessName}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-500 mb-1">Type of Food</p>
-                    <p className="font-medium mb-1">{userDetails.foodType}</p>
+                    <p className="text-sm text-gray-500 mb-1">Email</p>
+                    <p className="font-medium mb-5">{userDetails.email}</p>
                   </div>
                 </div>
               </div>
 
               {/* Contact Details */}
               <div className="space-y-6">
-                <h2 className="text-xl font-semibold pt-4 mb-6">
-                  Contact Details
-                </h2>
-                <div>
-                  <p className="text-sm text-gray-500 mb-1">Phone Number</p>
-                  <p className="font-medium mb-2">{userDetails.phoneNumber}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500 mb-1">Email</p>
-                  <p className="font-medium mb-2">{userDetails.email}</p>
-                </div>
+                
                 <Link to="/updateaccount">
                   <button className="w-32 bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition-colors">
                     Edit
