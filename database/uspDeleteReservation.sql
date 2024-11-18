@@ -46,6 +46,14 @@ BEGIN
         WHERE intEventID = @intEventID
     );
 
+	DELETE FROM TFoodTruckEvents
+WHERE intFoodTruckID IN (
+    SELECT intFoodTruckID
+    FROM TFoodTrucks
+    WHERE intVendorID = @intVendorID
+)
+AND intEventID = @intEventID;
+
     
     IF EXISTS (SELECT 1 FROM @DeletedEventSpaces)
     BEGIN
