@@ -567,6 +567,14 @@ VALUES
 (4, 4, 1200.00),
 (5, 5, 1800.00); 
 
+-- populate a menu for vendor 1
+INSERT INTO TMenus (intFoodTruckID, strItem, monPrice, intUnitsSold)
+VALUES
+    (1, 'Beef Tacos', 3.50, 30),
+    (1, 'Chicken Quesadilla', 4.75, 20),
+    (1, 'Chips and Queso', 4.00, 22),
+    (1, 'Churro', 2.00, 16);
+
 
 
 -- --------------------------------------------------------------------------------
