@@ -135,8 +135,8 @@ function EventInformation() {
                   <span>{event.strLocation}</span>
                 </div>
               </div>
-              {/* if it's a vendor show reserver button */}
-              {isLoggedIn && userType === '1' && (
+              {/* if it's a vendor show reserve button */}
+              {isLoggedIn && userType === '1' && new Date(event.dtDateOfEvent) > new Date() &&(
               <button 
               className="bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-600 transition-colors"
               onClick={handleReservation}>
