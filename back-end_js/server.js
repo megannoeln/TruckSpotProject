@@ -275,6 +275,47 @@ app.get("/api/myreservation", async (req, res) => {
   }
 });
 
+// API To get event to show on the table in profile account
+app.get("/api/myreservationTable", async (req, res) => {
+  const userID = req.query.userID;
+  console.log("Received userID:", userID, typeof userID); 
+  const parsedUserID = parseInt(userID, 10);
+  console.log("RparsedUserID:", parsedUserID, typeof parsedUserID); 
+  try {
+    const pool = await sqlConnectionToServer.connect(config);
+    console.log('attempting')
+    const result = await pool.request()
+    .query(`
+              SELECT 
+                  E.intEventID,
+                  E.strEventName,
+                  E.dtDateOfEvent,
+                  FT.intFoodTruckID,
+                  FT.strTruckName,
+				  O.strFirstName + ' ' + o.strLastName AS OrganizerName
+              FROM 
+                  TVendors V
+                  INNER JOIN TFoodTrucks FT ON V.intVendorID = FT.intVendorID
+                  INNER JOIN TFoodTruckEvents FTE ON FT.intFoodTruckID = FTE.intFoodTruckID
+                  INNER JOIN TEvents E ON FTE.intEventID = E.intEventID
+				  JOIN TOrganizers O  ON O.intOrganizerID = E.intOrganizerID
+              WHERE V.intVendorID = ${parsedUserID}
+              ORDER BY 
+                  E.dtDateOfEvent DESC;
+                `);
+                
+    console.log(result.query);
+    console.log(`Found ${result.recordset.length} events`);
+    res.json(result.recordset);
+  } catch (err) {
+    console.error("Error fetching all events:", err);
+    res.status(500).json({
+      error: "Database error",
+      message: err.message,
+    });
+  }
+});
+
 
 // Get only event that related to an organizer
 app.get("/api/mycreatedevent", async (req, res) => {
@@ -560,6 +601,37 @@ app.post('/api/reserve', async (req, res) => {
   } catch (err) {
     console.log("Error")
     res.status(500).json({ error: err.message });
+  }
+});
+
+// handle cancel reservation
+app.post('/api/cancel-reservation', async (req, res) => {
+  const { eventID, userID } = req.body;
+
+  const parsedUserID = parseInt(userID)
+  const parsedEventID = parseInt(eventID)
+
+  console.log(parsedEventID, parsedUserID)
+  try {
+    const pool = await sqlConnectionToServer.connect(config);
+    console.log("Database connected");
+    const result = await pool.request()
+      .input("intVendorID", sqlConnectionToServer.Int, parsedUserID)
+      .input("intEventID", sqlConnectionToServer.Int, parsedEventID)
+      .execute("uspDeleteReservation");
+      
+      res.json({
+        success: true,
+        message: "Reservation canceled successfully."
+      });
+  
+  } catch (err) {
+    console.error("Error canceling reservation:", err); 
+    res.status(500).json({ 
+      success: false,
+      message: "Failed to cancel reservation",
+      error: err.message 
+    });
   }
 });
 

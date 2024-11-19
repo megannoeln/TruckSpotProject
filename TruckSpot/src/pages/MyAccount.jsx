@@ -32,9 +32,6 @@ function MyAccount() {
   
         // Check for success response from backend
         if (response.data.success) {
-          // Clear sessionStorage
-          // sessionStorage.removeItem('userType');
-          // sessionStorage.removeItem('userID');
 
           sessionStorage.clear();
   
