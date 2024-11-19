@@ -207,7 +207,8 @@ CREATE TABLE TMenus (
      intMenuID				INTEGER  IDENTITY		NOT NULL
     ,intFoodTruckID	INTEGER					NOT NULL         
     ,strItem				VARCHAR(255)			NOT NULL         
-    ,monPrice				MONEY					NOT NULL                          
+    ,monPrice				MONEY					NOT NULL  
+	,intUnitsSold			MONEY					NULL
     ,CONSTRAINT TMenus_PK PRIMARY KEY ( intMenuID )
     ,FOREIGN KEY ( intFoodTruckID ) REFERENCES TFoodTrucks ( intFoodTruckID ) ON DELETE CASCADE
 );

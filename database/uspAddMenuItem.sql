@@ -42,8 +42,8 @@ BEGIN
     IF @intFoodTruckID IS NOT NULL
     BEGIN
         
-        INSERT INTO TMenus (intFoodTruckID, strItem, monPrice)
-        VALUES (@intFoodTruckID, @strItem, @monPrice);
+        INSERT INTO TMenus (intFoodTruckID, strItem, monPrice, intUnitsSold)
+        VALUES (@intFoodTruckID, @strItem, @monPrice, 0);
 
         PRINT 'Menu item added successfully.';
     END
