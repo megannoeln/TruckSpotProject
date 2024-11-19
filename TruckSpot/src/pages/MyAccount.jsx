@@ -18,6 +18,11 @@ function MyAccount() {
     const storedUserType = sessionStorage.getItem("userType");
   
     if (storedUserID && storedUserType) {
+
+      if (!window.confirm("Are you sure you want to delete your account?")) {
+        return;
+      }
+
       try {
         // Call the backend to delete the account
         const response = await axios.post("http://localhost:5000/api/delete-account", {
