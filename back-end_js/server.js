@@ -562,6 +562,62 @@ app.post('/api/reserve', async (req, res) => {
   }
 });
 
+
+//delete account
+app.post('/api/delete-account', async (req, res) => {
+  const { userID, userType } = req.body;
+  console.log(typeof(userID))
+  try {
+    const pool = await sqlConnectionToServer.connect(config);
+    console.log("Database connected");
+
+    let result;
+
+    // Check userType and call the correct stored procedure
+    if (userType === "1") { // Assuming "1" is Vendor
+      result = await pool.request()
+        .input("intVendorID", sqlConnectionToServer.Int, userID)
+        .execute("uspDeleteVendor");
+    } else if (userType === "2") { // Assuming "2" is Organizer
+      result = await pool.request()
+        .input("intOrganizerID", sqlConnectionToServer.Int, userID)
+        .execute("uspDeleteOrganizer");
+    } else {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid user type.",
+      });
+    }
+
+    // Check if any rows were affected by the deletion
+    if (result.rowsAffected > 0) {
+      res.status(200).json({
+        success: true,
+        message: "Account deleted successfully.",
+      });
+    } else {
+      res.status(400).json({
+        success: false,
+        message: "Account not found or could not be deleted.",
+      });
+    }
+  } catch (err) {
+    console.error("Error deleting account:", err);  // Detailed error log
+    return res.status(500).json({
+      success: false,
+      message: "There was an error deleting the account.",
+      error: err.message,  // Send the specific error message back
+    });
+  }
+});
+
+
+
+
+
 app.listen(API_PORT, () => {
   console.log(`Server running on port ${API_PORT}`);
 });
+
+
+

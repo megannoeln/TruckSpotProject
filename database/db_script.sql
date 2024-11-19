@@ -547,7 +547,6 @@ VALUES
 (7, 80.00,  '2024-10-06'), 
 (8, 140.00, '2024-10-07'); 
 
-
 -- TSponsors
 INSERT INTO TSponsors (strSponsorName, strEmail, strPhone)
 VALUES

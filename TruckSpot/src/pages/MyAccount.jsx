@@ -12,6 +12,39 @@ function MyAccount() {
     email: "",
   });
 
+  //delete account function
+  const handleDeleteAccount = async () => {
+    const storedUserID = sessionStorage.getItem("userID");
+    const storedUserType = sessionStorage.getItem("userType");
+  
+    if (storedUserID && storedUserType) {
+      try {
+        // Call the backend to delete the account
+        const response = await axios.post("http://localhost:5000/api/delete-account", {
+          userID: storedUserID,
+          userType: storedUserType,  
+        });
+  
+        // Check for success response from backend
+        if (response.data.success) {
+          // Clear sessionStorage
+          sessionStorage.clear();
+  
+          // Redirect to homepage after account deletion
+          window.location.href = "/";  // Redirect to home page (adjust URL as needed)
+        } else {
+          // Handle failure
+          alert(response.data.message);  // Show the message returned by the backend
+        }
+      } catch (error) {
+        console.error("Error deleting account:", error);
+        alert("There was an error deleting the account.");
+      }
+    } else {
+      alert("User ID or User Type is missing.");
+    }
+  };
+
   // Fetch user details function
   const fetchUserDetails = async () => {
     console.log("1. Function started");
@@ -113,6 +146,9 @@ function MyAccount() {
                     Edit
                   </button>
                 </Link>
+                <button className="w-32 bg-red-500 text-white py-2 rounded-md hover:bg-red-600 transition-colors" onClick={handleDeleteAccount}>
+                   Delete Account
+                </button>
               </div>
             </div>
           </div>
