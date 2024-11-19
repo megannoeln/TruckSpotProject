@@ -221,6 +221,7 @@ app.get("/api/allevents", async (req, res) => {
           e.dtDateOfEvent,
           e.strLocation		  
 		      from TEvents as e
+          ORDER BY e.dtDateOfEvent ASC
       `);
     console.log(`Found ${result.recordset.length} events`);
     res.json(result.recordset);
