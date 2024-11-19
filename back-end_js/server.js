@@ -215,13 +215,14 @@ app.get("/api/allevents", async (req, res) => {
   try {
     const pool = await sqlConnectionToServer.connect(config);
     const result = await pool.request().query(`
-          select   e.intEventID,
-          e.strEventName,
-          e.strDescription,
-          e.dtDateOfEvent,
-          e.strLocation		  
-		      from TEvents as e
-          ORDER BY e.dtDateOfEvent ASC
+        SELECT  e.intEventID,
+        e.strEventName,
+        e.strDescription,
+        e.dtDateOfEvent,
+        e.strLocation		  
+        FROM TEvents as e
+        WHERE e.dtDateOfEvent > GETDATE()
+        ORDER BY e.dtDateOfEvent ASC;
       `);
     console.log(`Found ${result.recordset.length} events`);
     res.json(result.recordset);
@@ -257,7 +258,7 @@ app.get("/api/myreservation", async (req, res) => {
                   INNER JOIN TFoodTruckEvents FTE ON FT.intFoodTruckID = FTE.intFoodTruckID
                   INNER JOIN TEvents E ON FTE.intEventID = E.intEventID
               WHERE 
-                  V.intVendorID = ${parsedUserID}
+                 e.dtDateOfEvent > GETDATE() AND V.intVendorID = ${parsedUserID}
               ORDER BY 
                   E.dtDateOfEvent;
                 `);
