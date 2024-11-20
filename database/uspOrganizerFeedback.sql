@@ -32,7 +32,7 @@ BEGIN
 
     
     UPDATE TEvents
-    SET monTotalRevenue = @monTotalRevenue
+    SET monTotalRevenue = ISNULL(monTotalRevenue, 0) + @monTotalRevenue
     WHERE intOrganizerID = @intOrganizerID AND intEventID = @intEventID;
 
     
