@@ -125,6 +125,12 @@ CREATE TABLE TEvents
 	,CONSTRAINT chk_TotalSpaces CHECK (intTotalSpaces >= 0)
 	,CONSTRAINT chk_AvailableSpaces CHECK (intAvailableSpaces >= 0 AND intAvailableSpaces <= intTotalSpaces)
 );
+-- allow some nulls
+ALTER TABLE TEvents
+ALTER COLUMN monPricePerSpace MONEY NULL;
+
+ALTER TABLE TEvents
+ALTER COLUMN intExpectedGuests INTEGER NULL;
 
 CREATE TABLE TEventCuisines
 (
