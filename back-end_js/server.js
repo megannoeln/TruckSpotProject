@@ -478,6 +478,84 @@ app.get("/api/user-details", async (req, res) => {
   }
 });
 
+app.post("/api/update-user", async (req, res) => {
+  const { userID, userType, firstName, lastName, email, phone } = req.body;
+
+  console.log("Update request received:", {
+    userID,
+    userType,
+    firstName,
+    lastName,
+    email,
+    phone,
+  });
+
+  try {
+    const pool = await sqlConnectionToServer.connect(config);
+    const request = pool.request();
+
+    if (userType === "1") {
+      // Use uspGetVendor stored procedure
+      request.input("intVendorID", sqlConnectionToServer.Int, parseInt(userID));
+      request.input(
+        "strFirstName",
+        sqlConnectionToServer.VarChar,
+        firstName || null
+      );
+      request.input(
+        "strLastName",
+        sqlConnectionToServer.VarChar,
+        lastName || null
+      );
+      request.input("strEmail", sqlConnectionToServer.VarChar, email || null);
+      request.input("strPhone", sqlConnectionToServer.VarChar, phone || null);
+      result = await request.execute("uspUpdateVendor");
+    } else if (userType === "2") {
+      // Use uspGetOrganizer stored procedure
+      request.input(
+        "intOrganizerID",
+        sqlConnectionToServer.Int,
+        parseInt(userID)
+      );
+      request.input(
+        "strFirstName",
+        sqlConnectionToServer.VarChar,
+        firstName || null
+      );
+      request.input(
+        "strLastName",
+        sqlConnectionToServer.VarChar,
+        lastName || null
+      );
+      request.input("strEmail", sqlConnectionToServer.VarChar, email || null);
+      request.input("strPhone", sqlConnectionToServer.VarChar, phone || null);
+      result = await request.execute("uspUpdateOrganizer");
+    } else {
+      throw new Error("Invalid user type");
+    }
+
+    res.json({
+      success: true,
+      message: "User information updated successfully",
+      result,
+    });
+  } catch (err) {
+    console.error("Database error:", err);
+    res.status(500).json({
+      success: false,
+      error: "Database error",
+      message: err.message,
+      details: err.stack, // Stack trace for debugging
+    });
+  } finally {
+    try {
+      await sqlConnectionToServer.close();
+    } catch (err) {
+      console.error("Error closing connection:", err);
+    }
+  }
+});
+
 app.post("/addtruck", async (req, res) => {
   try {
     const { strTruckName, intCuisineTypeID, intVendorID } = req.body;
