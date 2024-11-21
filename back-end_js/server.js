@@ -804,6 +804,28 @@ app.post('/api/additem', async (req, res) => {
   }
 });
 
+app.get("/api/getitem", async (req, res) => {
+  try {
+    const intVendorID = req.body;
+    console.log("request body", req.body)
+    console.log("Hello", intVendorID);
+    const parsedUserID = parseInt(intVendorID)
+    const pool = await sqlConnectionToServer.connect(config);
+    const result = await pool.request()
+    .input("intVendorID", sqlConnectionToServer.Int, parsedUserID)
+    .execute("uspGetMenu");
+      
+    console.log(result.recordset);
+    res.json(result.recordset);
+  } catch (err) {
+    console.error("Error fetching all events:", err);
+    res.status(500).json({
+      error: "Database error",
+      message: err.message,
+    });
+  }
+});
+
 
 app.listen(API_PORT, () => {
   console.log(`Server running on port ${API_PORT}`);
