@@ -330,8 +330,10 @@ app.get("/api/mycreatedevent", async (req, res) => {
     .query(`
             SELECT intEventID,strEventName,dtDateOfEvent
             FROM TEvents JOIN TOrganizers ON TEvents.intOrganizerID = TOrganizers.intOrganizerID
-            WHERE TEvents.intOrganizerID = ${parsedUserID}
+            WHERE TEvents.dtDateOfEvent > GETDATE() AND TEvents.intOrganizerID = ${parsedUserID}
+            ORDER BY TEvents.dtDateOfEvent DESC;
                 `);
+
                 
     console.log(result.query);
     console.log(`Found ${result.recordset.length} events`);
@@ -489,6 +491,8 @@ app.post("/api/update-user", async (req, res) => {
     email,
     phone,
   });
+
+  console.log("request body", req.body)
 
   try {
     const pool = await sqlConnectionToServer.connect(config);
@@ -701,6 +705,34 @@ app.post('/api/cancel-reservation', async (req, res) => {
       res.json({
         success: true,
         message: "Reservation canceled successfully."
+      });
+  
+  } catch (err) {
+    console.error("Error canceling reservation:", err); 
+    res.status(500).json({ 
+      success: false,
+      message: "Failed to cancel reservation",
+      error: err.message 
+    });
+  }
+});
+
+// Delete Event
+app.post('/api/delete-event', async (req, res) => {
+  const { eventID } = req.body;
+
+  const parsedEventID = parseInt(eventID)
+  console.log(parsedEventID)
+  try {
+    const pool = await sqlConnectionToServer.connect(config);
+    console.log("Database connected");
+    const result = await pool.request()
+      .input("intEventID", sqlConnectionToServer.Int, parsedEventID)
+      .execute("uspDeleteEvent");
+      
+      res.json({
+        success: true,
+        message: "Event deleted successfully."
       });
   
   } catch (err) {

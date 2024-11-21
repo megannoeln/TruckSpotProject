@@ -9,6 +9,7 @@ function EventTable() {
 
     const [events, setEvents] = useState([]);
     const storedUserID = sessionStorage.getItem('userID');
+    const storedUserType = sessionStorage.getItem('userType');
     const navigate = useNavigate();
     
     const handleRowClick = (eventID) => {
@@ -53,8 +54,28 @@ function EventTable() {
         }
       };
   
-      const handleReview = (eventID) => {
+      const handleReview = async (eventID) => {
         console.log('Review for event:', eventID);
+      };
+
+      const handleDelete = async (eventID) => {
+        if (window.confirm('Are you sure you want to cancel this reservation?')) {
+          try {
+            await axios.post('http://localhost:5000/api/delete-event', {
+              eventID
+            });
+            // Remove the deleted event from the list
+            setEvents(events.filter(event => event.intEventID !== eventID));
+            alert('Event deleted successfully');
+          } catch (error) {
+            console.error('Error deleting event:', error);
+            alert('Failed to delete an event');
+          }
+        }
+      };
+
+      const handleEventDetails = async (eventID) => {
+        
       };
   
 
@@ -101,21 +122,32 @@ function EventTable() {
                   })}</td>
                   <td>{event.OrganizerName}</td>
                   <td>
-                    {isPastEvent ? (
-                      <button 
-                      onClick={(e) => handleButtonClick(e, () => handleReview(event.intEventID))}
-                        className="btn btn-primary btn-sm"
-                      >
+
+                  {storedUserType === '1' && (
+                    isPastEvent ? (
+                      <button onClick={(e) => handleButtonClick(e, () => handleReview(event.intEventID))} className="btn btn-primary btn-sm">
                         Review
                       </button>
                     ) : (
-                      <button 
-                      onClick={(e) => handleButtonClick(e, () => handleCancel(event.intEventID))}
-                        className="btn btn-error btn-sm"
-                      >
+                      <button onClick={(e) => handleButtonClick(e, () => handleCancel(event.intEventID))} className="btn btn-error btn-sm">
                         Cancel
                       </button>
-                    )}
+                    )
+                  )} 
+                  {storedUserType === '2' && (
+                    isPastEvent ? (
+                      <Link to={`/eventinformation/${event.intEventID}`}>
+                      <button onClick={(e) => handleButtonClick(e, () => handleEventDetails(event.intEventID))} className="btn btn-primary btn-sm">
+                        Details
+                      </button>
+                      </Link>
+                    ) : (
+                      <button onClick={(e) => handleButtonClick(e, () => handleDelete(event.intEventID))} className="btn btn-error btn-sm">
+                        Delete
+                      </button>
+                      
+                    )
+                  )} 
                   </td>
                 </tr>
               );
