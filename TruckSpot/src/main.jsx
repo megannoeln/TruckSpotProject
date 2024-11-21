@@ -21,6 +21,8 @@ import AddEvent from './pages/AddEvent.jsx';
 import MyEvent from './pages/MyEvent.jsx';
 import MyEventDashboard from './pages/MyEventDashboard.jsx';
 import MyActivity from './pages/MyActivity.jsx';
+import FoodMenu from './pages/FoodMenu.jsx';
+import AddItem from './pages/AddItem.jsx';
 const router = createBrowserRouter([
   {
     path: "/",
@@ -86,6 +88,14 @@ const router = createBrowserRouter([
   {
     path: "myactivity",
     element: <MyActivity/>
+  },
+  {
+    path: "foodmenu",
+    element: <FoodMenu/>
+  },
+  {
+    path: "additem",
+    element: <AddItem/>
   }
 
 

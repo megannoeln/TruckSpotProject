@@ -783,7 +783,26 @@ app.post('/api/delete-account', async (req, res) => {
 });
 
 
-
+app.post('/api/additem', async (req, res) => {
+  console.log(req.body);
+  try {
+    
+    const { strItem, monPrice, intVendorID  } = req.body;
+    const parsedUserID = parseInt(intVendorID)
+    const parsedMonPrice = parseInt(monPrice)
+    const pool = await sqlConnectionToServer.connect(config);
+    console.log("Before Store Procedure");
+    const result = await pool.request()
+      .input("intVendorID", sqlConnectionToServer.Int, parsedUserID)
+      .input("strItem", sqlConnectionToServer.VarChar, strItem)
+      .input("monPrice", sqlConnectionToServer.Int, parsedMonPrice)
+      .execute("uspAddMenuItem");
+    res.json({ success: true, data: result.recordset });
+  } catch (err) {
+    console.log("Error")
+    res.status(500).json({ error: err.message });
+  }
+});
 
 
 app.listen(API_PORT, () => {
