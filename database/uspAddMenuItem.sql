@@ -25,7 +25,8 @@ GO
 
 -- adds a menu item
 CREATE PROCEDURE uspAddMenuItem
-    @intVendorID INT,         
+    @intVendorID INT,   
+	@intMenuCategoryID INT,
     @strItem VARCHAR(255),     
     @monPrice MONEY                
 AS
@@ -42,8 +43,8 @@ BEGIN
     IF @intFoodTruckID IS NOT NULL
     BEGIN
         
-        INSERT INTO TMenus (intFoodTruckID, strItem, monPrice, intUnitsSold)
-        VALUES (@intFoodTruckID, @strItem, @monPrice, 0);
+        INSERT INTO TMenus (intFoodTruckID, intMenuCategoryID, strItem, monPrice, intUnitsSold)
+        VALUES (@intFoodTruckID, @intMenuCategoryID, @strItem, @monPrice, 0);
 
         PRINT 'Menu item added successfully.';
     END
