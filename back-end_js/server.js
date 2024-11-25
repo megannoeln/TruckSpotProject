@@ -617,6 +617,60 @@ app.post("/addtruck", async (req, res) => {
   }
 });
 
+app.post("/update-truck-details", async (req, res) => {
+  try {
+    const { userID, strTruckName, intCuisineTypeID, strOperatingLicense } =
+      req.body;
+
+    const pool = await sqlConnectionToServer.connect(config);
+
+    // Fetch `intFoodTruckID` for the vendor
+    const truckResult = await pool
+      .request()
+      .input("intVendorID", sql.Int, userID).query(`
+        SELECT intFoodTruckID 
+        FROM TFoodTrucks 
+        WHERE intVendorID = @intVendorID
+      `);
+
+    if (!truckResult.recordset.length) {
+      return res.status(404).json({
+        success: false,
+        message: "No food truck found for this vendor.",
+      });
+    }
+
+    const intFoodTruckID = truckResult.recordset[0].intFoodTruckID;
+
+    // Update the food truck details using the stored procedure
+    const result = await pool
+      .request()
+      .input("intFoodTruckID", sql.Int, intFoodTruckID)
+      .input("intVendorID", sql.Int, userID)
+      .input("intCuisineTypeID", sql.Int, intCuisineTypeID || null)
+      .input("strTruckName", sql.VarChar(50), strTruckName || null)
+      .input(
+        "strOperatingLicense",
+        sql.VarChar(50),
+        strOperatingLicense || null
+      )
+      .execute("uspUpdateFoodTruck");
+
+    res.status(200).json({
+      success: true,
+      message: "Truck updated successfully.",
+      truckID: result.output.intFoodTruckID,
+    });
+  } catch (error) {
+    console.error("Error in /update-truck-details:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error occurred while updating the truck.",
+      error: error.message,
+    });
+  }
+});
+
 app.get("/api/truck-details", async (req, res) => {
   
   const userID = req.query.userID;
