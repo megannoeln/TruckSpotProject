@@ -16,6 +16,7 @@ import UpdateAccount from './pages/UpdateAccount.jsx';
 import EventInformation from './pages/EventInformation.jsx';
 import Trucks from './pages/Trucks.jsx';
 import AddTruck from './Pages/AddTruck.jsx';
+import UpdateTruck from "./Pages/UpdateTruck.jsx";
 import AddEvent from './pages/AddEvent.jsx';
 import MyEvent from './Pages/MyEvent.jsx';
 import MyEventDashboard from './pages/MyEventDashboard.jsx';
@@ -76,6 +77,10 @@ const router = createBrowserRouter([
   {
     path: "addtruck",
     element: <AddTruck/>
+  },
+  {
+    path: "updatetruck",
+    element: <UpdateTruck />,
   },
   {
     path: "addevent",
