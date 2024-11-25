@@ -24,7 +24,12 @@ function EventTable() {
     useEffect(() => {
       const fetchEvents = async () => {
         try {
-          const response = await axios.get(`http://localhost:5000/api/myreservationTable?userID=${storedUserID}`);
+          const response = await axios.get(`http://localhost:5000/api/myreservationTable`, {
+          params: {
+            userID: storedUserID,
+            userType: storedUserType
+          }
+        });
           console.log('Events data:', response.data);
           setEvents(response.data);
         } catch (err) {

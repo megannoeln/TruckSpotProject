@@ -277,32 +277,44 @@ app.get("/api/myreservation", async (req, res) => {
 
 // API To get event to show on the table in profile account
 app.get("/api/myreservationTable", async (req, res) => {
-  const userID = req.query.userID;
-  console.log("Received userID:", userID, typeof userID); 
-  const parsedUserID = parseInt(userID, 10);
-  console.log("RparsedUserID:", parsedUserID, typeof parsedUserID); 
+
+  const { userID, userType } = req.query;
+  const parsedUserID = parseInt(userID);
+  const parsedUserType = parseInt(userType);
+  console.log("User ID", parsedUserID, "User Type", parsedUserType)
   try {
     const pool = await sqlConnectionToServer.connect(config);
-    console.log('attempting')
-    const result = await pool.request()
-    .query(`
-              SELECT 
-                  E.intEventID,
-                  E.strEventName,
-                  E.dtDateOfEvent,
-                  FT.intFoodTruckID,
-                  FT.strTruckName,
-				  O.strFirstName + ' ' + o.strLastName AS OrganizerName
+
+    let query = ``;
+    if (parsedUserType === 1) {
+      query = `SELECT 
+                  TEvents.intEventID,
+                  TEvents.strEventName,
+                  TEvents.dtDateOfEvent,
+                  TOrganizers.strFirstName + ' ' + TOrganizers.strLastName AS OrganizerName
               FROM 
-                  TVendors V
-                  INNER JOIN TFoodTrucks FT ON V.intVendorID = FT.intVendorID
-                  INNER JOIN TFoodTruckEvents FTE ON FT.intFoodTruckID = FTE.intFoodTruckID
-                  INNER JOIN TEvents E ON FTE.intEventID = E.intEventID
-				  JOIN TOrganizers O  ON O.intOrganizerID = E.intOrganizerID
-              WHERE V.intVendorID = ${parsedUserID}
-              ORDER BY 
-                  E.dtDateOfEvent DESC;
-                `);
+                  TFoodTruckEvents
+              INNER JOIN 
+                  TFoodTrucks ON TFoodTruckEvents.intFoodTruckID = TFoodTrucks.intFoodTruckID
+              INNER JOIN 
+                  TEvents ON TFoodTruckEvents.intEventID = TEvents.intEventID
+              INNER JOIN 
+                  TOrganizers ON TEvents.intOrganizerID = TOrganizers.intOrganizerID
+              WHERE 
+                  TFoodTrucks.intVendorID = ${parsedUserID}
+                  ORDER BY TEvents.dtDateOfEvent DESC`;
+    } else if (parsedUserType === 2) {
+              query = `select  TEvents.intEventID, 
+        TEvents.strEventName,
+        TEvents.dtDateOfEvent,
+        TOrganizers.strFirstName + ' ' + TOrganizers.strLastName AS OrganizerName
+        From TEvents join TOrganizers on TEvents.intOrganizerID = TOrganizers.intOrganizerID
+        Where TOrganizers.intOrganizerID = ${parsedUserID}
+        ORDER BY TEvents.dtDateOfEvent DESC`;
+            }
+
+    const result = await pool.request().query(query);
+    res.json(result.recordset);
                 
     console.log(result.query);
     console.log(`Found ${result.recordset.length} events`);
