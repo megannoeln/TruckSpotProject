@@ -153,9 +153,11 @@ function EventInformation() {
                 Reserve a spot
               </button>
               )}
+              {isLoggedIn && userType === '2' &&(
               <button onClick={() => setShowVendorModal(true)} className="bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-600 transition-colors">
                 Show Vendors
               </button>
+                            )}
               </div>
             </div>
           </div>
