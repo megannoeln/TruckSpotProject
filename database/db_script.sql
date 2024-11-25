@@ -34,6 +34,7 @@ IF OBJECT_ID('TCuisineTypes')		IS NOT NULL DROP TABLE TCuisineTypes;
 IF OBJECT_ID('TVendors')			IS NOT NULL DROP TABLE TVendors; 
 IF OBJECT_ID('TOrganizers')			IS NOT NULL DROP TABLE TOrganizers; 
 IF OBJECT_ID('TStatuses')			IS NOT NULL DROP TABLE TStatuses; 
+IF OBJECT_ID('TMenuCategories')				IS NOT NULL DROP TABLE TMenuCategories; 
 
 IF OBJECT_ID( 'uspLoginUser' )	    IS NOT NULL DROP PROCEDURE  uspLoginUser
 
@@ -209,14 +210,23 @@ CREATE TABLE TFoodTruckEvents
 	,CONSTRAINT chk_TotalRevenue CHECK (monTotalRevenue >= 0) 
 );
 
+CREATE TABLE TMenuCategories
+(
+	 intMenuCategoryID      INTEGER IDENTITY			NOT NULL
+    ,strCategory        VARCHAR(50)				NOT NULL
+    ,CONSTRAINT TMenuCategories_PK PRIMARY KEY (intMenuCategoryID)
+);
+
 CREATE TABLE TMenus (
      intMenuID				INTEGER  IDENTITY		NOT NULL
-    ,intFoodTruckID	INTEGER					NOT NULL         
+    ,intFoodTruckID			INTEGER					NOT NULL   
+	,intMenuCategoryID		INTEGER					
     ,strItem				VARCHAR(255)			NOT NULL         
     ,monPrice				MONEY					NOT NULL  
 	,intUnitsSold			MONEY					NULL
     ,CONSTRAINT TMenus_PK PRIMARY KEY ( intMenuID )
     ,FOREIGN KEY ( intFoodTruckID ) REFERENCES TFoodTrucks ( intFoodTruckID ) ON DELETE CASCADE
+	,FOREIGN KEY ( intMenuCategoryID ) REFERENCES TMenuCategories ( intMenuCategoryID ) ON DELETE CASCADE
 );
 
 CREATE TABLE TEventSponsors
@@ -256,6 +266,16 @@ VALUES
 ('Asian'), -- id 5
 ('Bakery/Desserts'), -- id 6
 ('Other'); -- id 7
+
+-- TMenuCategories
+INSERT INTO TMenuCategories (strCategory)
+VALUES 
+('Entree'), -- id 1
+('Appetizer'), -- id 2
+('Drink'), -- id 3
+('Dessert'); -- id 4 
+
+
 
 
 -- TStatuses
@@ -573,12 +593,13 @@ VALUES
 (5, 5, 1800.00); 
 
 -- populate a menu for vendor 1
-INSERT INTO TMenus (intFoodTruckID, strItem, monPrice, intUnitsSold)
+INSERT INTO TMenus (intFoodTruckID, intMenuCategoryID, strItem, monPrice, intUnitsSold)
 VALUES
-    (1, 'Beef Tacos', 3.50, 30),
-    (1, 'Chicken Quesadilla', 4.75, 20),
-    (1, 'Chips and Queso', 4.00, 22),
-    (1, 'Churro', 2.00, 16);
+    (1, 1,  'Beef Tacos', 3.50, 30), -- entree
+    (1, 1, 'Chicken Quesadilla', 4.75, 20), -- entree
+    (1, 2,  'Chips and Queso', 4.00, 22), -- app
+    (1, 4, 'Churro', 2.00, 16), -- dessert
+	(1, 3, 'Pop', 1.50, 20); -- drink
 
 
 

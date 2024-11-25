@@ -41,7 +41,20 @@ BEGIN
     IF @intFoodTruckID IS NOT NULL
     BEGIN
         
-		select * from TMenus where intFoodTruckID = @intFoodTruckID;
+		SELECT 
+            TMenus.intFoodTruckID,
+            TMenus.strItem,
+            TMenus.monPrice,
+            TMenus.intUnitsSold,
+            TMenuCategories.strCategory
+        FROM 
+            TMenus
+        JOIN 
+            TMenuCategories
+        ON 
+            TMenus.intMenuCategoryID = TMenuCategories.intMenuCategoryID
+        WHERE 
+            TMenus.intFoodTruckID = @intFoodTruckID;
 
     END
     ELSE
@@ -52,4 +65,6 @@ END;
 GO
 
 GO
+
+--exec uspGetMenu 1
 
