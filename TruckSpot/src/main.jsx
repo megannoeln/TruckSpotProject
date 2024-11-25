@@ -14,15 +14,16 @@ import Reservation from './pages/reservation.jsx';
 import MyAccount from './pages/MyAccount.jsx';
 import UpdateAccount from './pages/UpdateAccount.jsx';
 import EventInformation from './pages/EventInformation.jsx';
-import Dashboard from './pages/Dashboard.jsx';
 import Trucks from './pages/Trucks.jsx';
-import AddTruck from './pages/AddTruck.jsx';
+import AddTruck from './Pages/AddTruck.jsx';
 import AddEvent from './pages/AddEvent.jsx';
-import MyEvent from './pages/MyEvent.jsx';
+import MyEvent from './Pages/MyEvent.jsx';
 import MyEventDashboard from './pages/MyEventDashboard.jsx';
 import MyActivity from './pages/MyActivity.jsx';
 import FoodMenu from './pages/FoodMenu.jsx';
 import AddItem from './pages/AddItem.jsx';
+import VendorDashboard from './pages/VendorDashboard.jsx';
+import OrganizerDashboard from './Pages/OrganizerDashboard.jsx';
 const router = createBrowserRouter([
   {
     path: "/",
@@ -61,8 +62,12 @@ const router = createBrowserRouter([
     element: <EventInformation/>
   },
   {
-    path: "dashboard",
-    element: <Dashboard/>
+    path: "vendordashboard",
+    element: <VendorDashboard/>
+  },
+  {
+    path: "organizerdashboard",
+    element: <OrganizerDashboard/>
   },
   {
     path: "trucks",

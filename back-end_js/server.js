@@ -867,6 +867,26 @@ app.get("/api/getitem", async (req, res) => {
   }
 });
     
+app.post("/api/vendor-feedback", async (req, res) => {
+  const { intVendorID, intEventID, monTotalRevenue, intRating, strVendorComment } = req.body;
+  console.log("Request received", req.body)
+  try {
+    const pool = await sqlConnectionToServer.connect(config);
+    await pool
+      .request()
+      .input("intVendorID", sqlConnectionToServer.Int, intVendorID)
+      .input("intEventID", sqlConnectionToServer.Int, intEventID)
+      .input("monTotalRevenue", sqlConnectionToServer.Money, monTotalRevenue)
+      .input("intRating", sqlConnectionToServer.Int, intRating)
+      .input("strVendorComment", sqlConnectionToServer.VarChar(500), strVendorComment)
+      .execute("uspVendorFeedBack");
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to submit feedback" });
+  }
+});
 
 
 app.listen(API_PORT, () => {

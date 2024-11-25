@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from 'react-router-dom';
+import ReviewModal from '../Modal/ReviewModal';
 
 function EventTable() {
 
@@ -11,6 +12,13 @@ function EventTable() {
     const storedUserID = sessionStorage.getItem('userID');
     const storedUserType = sessionStorage.getItem('userType');
     const navigate = useNavigate();
+    const [showReviewModal, setShowReviewModal] = useState(false);
+    const [selectedEventId, setSelectedEventId] = useState(null);
+    const [review, setReview] = useState({
+      rating: 0,
+      revenue: '',
+      comment: ''
+    });
     
     const handleRowClick = (eventID) => {
         navigate(`/eventinformation/${eventID}`);
@@ -59,8 +67,32 @@ function EventTable() {
         }
       };
   
-      const handleReview = async (eventID) => {
-        console.log('Review for event:', eventID);
+      const handleReview = (eventID) => {
+        setSelectedEventId(eventID);
+        setReview({
+          rating: 0,
+          revenue: '',
+          comment: ''
+        });
+        setShowReviewModal(true);
+       };
+       
+      
+      const handleSubmitReview = async () => {
+        try {
+          await axios.post('http://localhost:5000/api/vendor-feedback', {
+            intVendorID: storedUserID,
+            intEventID: selectedEventId,
+            monTotalRevenue: review.revenue,
+            intRating: review.rating,
+            strVendorComment: review.comment
+          });
+          setShowReviewModal(false);
+          alert('Review submitted successfully');
+        } catch (error) {
+          console.error('Error submitting review:', error);
+          alert('Failed to submit review');
+        }
       };
 
       const handleDelete = async (eventID) => {
@@ -159,7 +191,22 @@ function EventTable() {
             })}
           </tbody>
         </table>
+        <ReviewModal 
+ show={showReviewModal}
+ onClose={() => {
+   setShowReviewModal(false);
+   setReview({
+     rating: 0,
+     revenue: '',
+     comment: ''
+   });
+ }}
+ onSubmit={handleSubmitReview}
+ review={review}
+ setReview={setReview}
+/>
       </div>
+      
     );
 }
 
