@@ -35,13 +35,16 @@ BEGIN
         TFoodTrucks.strTruckName AS FoodTruckName,
         TVendors.strFirstName + ' ' + TVendors.strLastName AS VendorName,
         TVendors.strEmail AS VendorEmail,
-        TVendors.strPhone AS VendorPhone
+        TVendors.strPhone AS VendorPhone,
+        TCuisineTypes.strCuisineType AS FoodType
     FROM 
         TFoodTruckEvents
     INNER JOIN 
         TFoodTrucks ON TFoodTruckEvents.intFoodTruckID = TFoodTrucks.intFoodTruckID
     INNER JOIN 
         TVendors ON TFoodTrucks.intVendorID = TVendors.intVendorID
+    INNER JOIN 
+        TCuisineTypes ON TFoodTrucks.intCuisineTypeID = TCuisineTypes.intCuisineTypeID
     WHERE 
         TFoodTruckEvents.intEventID = @EventID;
 END;
