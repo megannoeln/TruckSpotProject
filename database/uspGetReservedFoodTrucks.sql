@@ -28,32 +28,22 @@ GO
 -- GET RESERVED FOODTRUCKS
 -- gets a thumbnail for every foodtruck reserved for a specific event
 CREATE PROCEDURE uspGetReservedFoodTrucks
-    @intEventID INT
+    @EventID INTEGER
 AS
 BEGIN
-    SET NOCOUNT ON;
-
-    DECLARE @intFoodTruckID INT;
-
-
-    DECLARE foodTruckCursor CURSOR FOR
-    SELECT intFoodTruckID
-    FROM TFoodTruckEvents
-    WHERE intEventID = @intEventID;
-
-    OPEN foodTruckCursor;
-    FETCH NEXT FROM foodTruckCursor INTO @intFoodTruckID;
-
-    WHILE @@FETCH_STATUS = 0
-    BEGIN
-        -- execute the uspGetFoodTruckThumbnail procedure for each food truck
-        EXEC dbo.uspGetFoodTruckThumbnail @intFoodTruckID;
-        
-        FETCH NEXT FROM foodTruckCursor INTO @intFoodTruckID;
-    END;
-
-    CLOSE foodTruckCursor;
-    DEALLOCATE foodTruckCursor;
+    SELECT 
+        TFoodTrucks.strTruckName AS FoodTruckName,
+        TVendors.strFirstName + ' ' + TVendors.strLastName AS VendorName,
+        TVendors.strEmail AS VendorEmail,
+        TVendors.strPhone AS VendorPhone
+    FROM 
+        TFoodTruckEvents
+    INNER JOIN 
+        TFoodTrucks ON TFoodTruckEvents.intFoodTruckID = TFoodTrucks.intFoodTruckID
+    INNER JOIN 
+        TVendors ON TFoodTrucks.intVendorID = TVendors.intVendorID
+    WHERE 
+        TFoodTruckEvents.intEventID = @EventID;
 END;
 GO
 
