@@ -13,9 +13,7 @@ function Trucks() {
   });
 
   const fetchTruckDetails = async () => {
-
     const storeUserID = sessionStorage.getItem("userID");
-
     try{
       const response = await axios.get(
         "http://localhost:5000/api/truck-details",

@@ -8,10 +8,17 @@ import axios from 'axios';
 
 function AddItem() {
     const storedUserID = sessionStorage.getItem("userID");
+    const categories = [
+      { id: 1, name: 'Entree' },
+      { id: 2, name: 'Appetizer' },
+      { id: 3, name: 'Drink' },
+      { id: 4, name: 'Dessert' }
+    ];
     const [values, setValues] = useState({
         strItem: "",
         monPrice: "",
-        intVendorID: storedUserID || ""
+        intVendorID: storedUserID || "",
+        intCategoryID: "" 
     });
 
     const handleInput = (event) => {
@@ -81,6 +88,23 @@ function AddItem() {
                       className="input input-bordered w-full"
                     />
                   </div>
+                  <div>
+                  <p className="text-sm text-gray-500 mb-1">Category</p>
+                    <select
+                      name="intCategoryID"
+                      value={values.intCategoryID || '1'}
+                      onChange={handleInput}
+                      className="input input-bordered w-full p-2"
+                    >
+                      <option value="">Select a category</option>
+                        {categories.map(category => (
+                        <option key={category.id} value={category.id}>
+                          {category.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
                   <div>
                     <p className="text-sm text-gray-500 mb-1">Price</p>
                     <input

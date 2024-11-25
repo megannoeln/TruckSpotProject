@@ -589,15 +589,16 @@ app.post("/addtruck", async (req, res) => {
 });
 
 app.get("/api/truck-details", async (req, res) => {
+  
   const userID = req.query.userID;
-
+  console.log("received ID", userID)
   try {
     const pool = await sqlConnectionToServer.connect(config);
     const request = pool.request();
     let result;
-
     request.input("intVendorID", sqlConnectionToServer.Int, parseInt(userID));
     result = await request.execute("uspGetFoodTruck");
+    console.log("result for truck", result)
     // Check if we have results
     if (result && result.recordset && result.recordset.length > 0) {
       const truck = result.recordset[0];
@@ -787,15 +788,17 @@ app.post('/api/additem', async (req, res) => {
   console.log(req.body);
   try {
     
-    const { strItem, monPrice, intVendorID  } = req.body;
+    const { strItem, monPrice, intVendorID, intCategoryID  } = req.body;
     const parsedUserID = parseInt(intVendorID)
     const parsedMonPrice = parseInt(monPrice)
+    const parsedCategoryID = parseInt(intCategoryID)
     const pool = await sqlConnectionToServer.connect(config);
     console.log("Before Store Procedure");
     const result = await pool.request()
       .input("intVendorID", sqlConnectionToServer.Int, parsedUserID)
       .input("strItem", sqlConnectionToServer.VarChar, strItem)
       .input("monPrice", sqlConnectionToServer.Int, parsedMonPrice)
+      .input("intMenuCategoryID", sqlConnectionToServer.Int, parsedCategoryID)
       .execute("uspAddMenuItem");
     res.json({ success: true, data: result.recordset });
   } catch (err) {
@@ -805,8 +808,9 @@ app.post('/api/additem', async (req, res) => {
 });
 
 app.get("/api/getitem", async (req, res) => {
+  const intVendorID = req.query.intVendorID;
+  console.log("User ID", intVendorID);
   try {
-    const intVendorID = req.body;
     console.log("request body", req.body)
     console.log("Hello", intVendorID);
     const parsedUserID = parseInt(intVendorID)
@@ -814,9 +818,17 @@ app.get("/api/getitem", async (req, res) => {
     const result = await pool.request()
     .input("intVendorID", sqlConnectionToServer.Int, parsedUserID)
     .execute("uspGetMenu");
-      
-    console.log(result.recordset);
-    res.json(result.recordset);
+    if (result && result.recordset && result.recordset.length > 0) {
+      return res.json({
+        success: true,
+        data: result.recordset
+      });
+    } else {
+      return res.status(404).json({
+        success: false,
+        message: "No menu items found"
+      })
+    }
   } catch (err) {
     console.error("Error fetching all events:", err);
     res.status(500).json({
@@ -825,6 +837,7 @@ app.get("/api/getitem", async (req, res) => {
     });
   }
 });
+    
 
 
 app.listen(API_PORT, () => {
