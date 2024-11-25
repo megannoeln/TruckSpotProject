@@ -38,54 +38,61 @@ function FoodMenu() {
           })
         }
       }
-
       useEffect(() => {
         fetchMenuDetails();
       }, []);
-
-      useEffect(() => {
-        console.log("Current foodItems state:", foodItems);
-    console.log("foodItems length:", foodItems.length);
-    console.log("Is foodItems an array?", Array.isArray(foodItems));
-      }, [foodItems]);
-
+      
+      const categorizeItems = () => {
+        return {
+          Appetizer: foodItems.filter(item => item.strCategory === "Appetizer"),
+          Entree: foodItems.filter(item => item.strCategory === "Entree"),
+          Drink: foodItems.filter(item => item.strCategory === "Drink"),
+          Dessert: foodItems.filter(item => item.strCategory === "Dessert")
+        };
+      };
+    
+      const CategoryBox = ({ title, items }) => (
+        <div className="bg-white p-4 rounded-lg shadow">
+          <h2 className="text-xl font-semibold mb-4">{title}</h2>
+          {items.length > 0 ? (
+            items.map((item, index) => (
+              <div key={index} className="flex justify-between items-center mb-3 p-2 border-b">
+                <h3 className="font-medium">{item.strItem}</h3>
+                <p className="text-gray-600">${item.monPrice}</p>
+              </div>
+            ))
+          ) : (
+            <p className="text-gray-500">No items available</p>
+          )}
+        </div>
+      );
 
     return (
-        <>
-            <Navbar/>
-                <div className="container mx-auto px-4 py-8 gap-40">
-                    <div className="grid grid-cols-12 gap-8">
-                    {/* Sidebar */}
-                        <div className="col-span-12 md:col-span-3">
-                            <SideBar/>
-                        </div>
-                        <div className="menu-container">
-      <h2>Menu Items</h2>
-      {foodItems && foodItems.length > 0 ? (
-        <div className="menu-items">
-          {foodItems.map((item, index) => (
-            <div key={index} className="menu-item">
-              <h1>{item.strCategory}</h1>
-              <h3>{item.strItem}</h3>
-              <p>Price: ${item.monPrice}</p>
-              
-            </div>
-          ))}
+      <>
+      <Navbar />
+      <div className="container mx-auto px-4 py-8">
+        <div className="grid grid-cols-12 gap-8">
+          <div className="col-span-12 md:col-span-3">
+            <SideBar />
+          </div>
+          <div className="col-span-12 md:col-span-9">  
+            <div className="flex justify-between items-center mb-4">
+              <h1 className="text-xl font-semibold mb-6">Menu</h1>
+              <Link to="/additem">
+                <button className="bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-600 transition-colors">
+                  Add Item
+                </button>
+              </Link>
+              </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {Object.entries(categorizeItems()).map(([category, items]) => (
+                    <CategoryBox key={category} title={category} items={items} />
+                  ))}
+              </div>
+          </div>
         </div>
-      ) : (
-        <p>No menu items available</p>
-      )}
-    </div>
-                        <Link to="/additem" >
-                        <button className="w-32 bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition-colors">
-                    Add Item
-                  </button>
-                  </Link>
-                        </div>
-                        
-                </div>
-
-        </>
+      </div>
+    </>
       )
 }
 

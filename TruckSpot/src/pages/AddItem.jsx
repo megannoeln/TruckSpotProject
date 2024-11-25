@@ -18,7 +18,7 @@ function AddItem() {
         strItem: "",
         monPrice: "",
         intVendorID: storedUserID || "",
-        intCategoryID: "" 
+        intCategoryID: "" || "1"
     });
 
     const handleInput = (event) => {
@@ -92,7 +92,7 @@ function AddItem() {
                   <p className="text-sm text-gray-500 mb-1">Category</p>
                     <select
                       name="intCategoryID"
-                      value={values.intCategoryID || '1'}
+                      value={values.intCategoryID || 1}
                       onChange={handleInput}
                       className="input input-bordered w-full p-2"
                     >

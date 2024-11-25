@@ -57,7 +57,6 @@ function Trucks() {
                     <div className="col-span-12 md:col-span-9">
             <div className=" rounded-lg shadow-sm p-6">
               <h2 className="text-xl font-semibold mb-6">My Truck</h2>
-
               <div className="flex items-start gap-8">
                         <div>
                             <div className="w-full aspect-square bg-gray-200 rounded-lg mb-2 overflow-hidden">
