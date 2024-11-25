@@ -210,6 +210,26 @@ app.get("/api/events/:eventId", async (req, res) => {
   }
 });
 
+app.get("/api/events/:eventId/vendors", async (req, res) => {
+  const { eventId } = req.params;
+  try {
+    const pool = await sqlConnectionToServer.connect(config);
+    const result = await pool
+      .request()
+      .input("eventId", sqlConnectionToServer.Int, eventId)
+      .execute('uspGetReservedFoodTrucks');
+
+    res.json(result.recordset);
+  } catch (err) {
+    console.error("Error fetching vendors:", err);
+    res.status(500).json({ error: "Database error" });
+  }
+});
+
+
+
+
+
 // API Server for Select all event
 app.get("/api/allevents", async (req, res) => {
   try {
@@ -314,14 +334,11 @@ app.get("/api/myreservationTable", async (req, res) => {
             }
 
     const result = await pool.request().query(query);
-    res.json(result.recordset);
-                
-    console.log(result.query);
-    console.log(`Found ${result.recordset.length} events`);
-    res.json(result.recordset);
+    return res.json(result.recordset);
+
   } catch (err) {
     console.error("Error fetching all events:", err);
-    res.status(500).json({
+    return res.status(500).json({
       error: "Database error",
       message: err.message,
     });
