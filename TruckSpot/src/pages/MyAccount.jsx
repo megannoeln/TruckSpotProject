@@ -16,30 +16,31 @@ function MyAccount() {
   const handleDeleteAccount = async () => {
     const storedUserID = sessionStorage.getItem("userID");
     const storedUserType = sessionStorage.getItem("userType");
-  
-    if (storedUserID && storedUserType) {
 
+    if (storedUserID && storedUserType) {
       if (!window.confirm("Are you sure you want to delete your account?")) {
         return;
       }
 
       try {
         // Call the backend to delete the account
-        const response = await axios.post("http://localhost:5000/api/delete-account", {
-          userID: storedUserID,
-          userType: storedUserType,  
-        });
-  
+        const response = await axios.post(
+          "http://localhost:5000/api/delete-account",
+          {
+            userID: storedUserID,
+            userType: storedUserType,
+          }
+        );
+
         // Check for success response from backend
         if (response.data.success) {
-
           sessionStorage.clear();
-  
+
           // Redirect to homepage after account deletion
-          window.location.href = "/";  // Redirect to home page (adjust URL as needed)
+          window.location.href = "/"; // Redirect to home page (adjust URL as needed)
         } else {
           // Handle failure
-          alert(response.data.message);  // Show the message returned by the backend
+          alert(response.data.message); // Show the message returned by the backend
         }
       } catch (error) {
         console.error("Error deleting account:", error);
@@ -77,7 +78,7 @@ function MyAccount() {
         setUserDetails({
           accountType: storedUserType === "1" ? "Vendor" : "Organizer",
           phoneNumber: response.data.phoneNumber,
-          email: response.data.email
+          email: response.data.email,
         });
         console.log("5. User details set", { userDetails });
       }
@@ -112,21 +113,21 @@ function MyAccount() {
               <h2 className="text-xl font-semibold mb-6">Personal Details</h2>
 
               <div className="flex items-start gap-8">
-                        <div>
-                            <div className="w-full aspect-square bg-gray-200 rounded-lg mb-2 overflow-hidden">
-                                 (
-                                <img
-                                    // src={logoPreview}
-                                    alt="Event Logo Preview"
-                                    className="w-80 aspect-square object-cover"
-                                />
-                                ) : (
-                                <div className="w-70 aspect-square object-cover">
-                                    <span className="text-gray-500">No picture selected</span>
-                                </div>
-                                )
-                            </div>    
-                        </div>
+                <div>
+                  <div className="w-full aspect-square bg-gray-200 rounded-lg mb-2 overflow-hidden">
+                    (
+                    <img
+                      // src={logoPreview}
+                      alt="Event Logo Preview"
+                      className="w-80 aspect-square object-cover"
+                    />
+                    ) : (
+                    <div className="w-70 aspect-square object-cover">
+                      <span className="text-gray-500">No picture selected</span>
+                    </div>
+                    )
+                  </div>
+                </div>
                 <div className="mb-15">
                   <div>
                     <p className="text-sm text-gray-500 mb-1">Name</p>
@@ -134,7 +135,9 @@ function MyAccount() {
                   </div>
                   <div>
                     <p className="text-sm text-gray-500 mb-1">Phone Number</p>
-                    <p className="font-medium mb-5">{userDetails.phoneNumber}</p>
+                    <p className="font-medium mb-5">
+                      {userDetails.phoneNumber}
+                    </p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-500 mb-1">Email</p>
@@ -145,14 +148,16 @@ function MyAccount() {
 
               {/* Contact Details */}
               <div className="space-y-6">
-                
                 <Link to="/updateaccount">
                   <button className="w-32 bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition-colors">
                     Edit
                   </button>
                 </Link>
-                <button className="w-32 bg-red-500 text-white py-2 rounded-md hover:bg-red-600 transition-colors" onClick={handleDeleteAccount}>
-                   Delete Account
+                <button
+                  className="w-32 bg-red-500 text-white py-2 rounded-md hover:bg-red-600 transition-colors"
+                  onClick={handleDeleteAccount}
+                >
+                  Delete Account
                 </button>
               </div>
             </div>

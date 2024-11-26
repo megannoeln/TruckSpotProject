@@ -1,91 +1,90 @@
-import React from 'react'
-import Navbar from '../components/Navbar/Navbar'
-import SideBar from '../components/Sidebar/SideBar'
+import React from "react";
+import Navbar from "../components/Navbar/Navbar";
+import SideBar from "../components/Sidebar/SideBar";
 import axios from "axios";
 import { useState, useEffect } from "react";
 
 const CreateEvent = () => {
-    const storedUserID = sessionStorage.getItem('userID');
-    const [logoFile, setLogoFile] = useState(null);
-    const [logoPreview, setLogoPreview] = useState(null);
-    
-    const [values, setValues] = useState({
-        strEventName: "",
-        strDescription: "",
-        intOrganizerID: storedUserID || "",
-        dtDateOfEvent: "",
-        dtSetUpTime: "",
-        strLocation: "",
-        intTotalSpaces: "",
-        intExpectedGuests: "",
-    });
+  const storedUserID = sessionStorage.getItem("userID");
+  const [logoFile, setLogoFile] = useState(null);
+  const [logoPreview, setLogoPreview] = useState(null);
 
-    const handleInput = (event) => {
-        const { name, value } = event.target;
-        setValues((prev) => ({
-            ...prev,
-            [name]: value,
-            intOrganizerID: storedUserID 
-        }));
-        console.log(value);
-    };
+  const [values, setValues] = useState({
+    strEventName: "",
+    strDescription: "",
+    intOrganizerID: storedUserID || "",
+    dtDateOfEvent: "",
+    dtSetUpTime: "",
+    strLocation: "",
+    intTotalSpaces: "",
+    intExpectedGuests: "",
+  });
 
-    const handleLogoChange = (event) => {
-        const file = event.target.files[0];
-        if (file) {
-            setLogoFile(file);
-            // Create preview URL
-            const previewUrl = URL.createObjectURL(file);
-            setLogoPreview(previewUrl);
-        }
-    };
+  const handleInput = (event) => {
+    const { name, value } = event.target;
+    setValues((prev) => ({
+      ...prev,
+      [name]: value,
+      intOrganizerID: storedUserID,
+    }));
+    console.log(value);
+  };
+
+  const handleLogoChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setLogoFile(file);
+      // Create preview URL
+      const previewUrl = URL.createObjectURL(file);
+      setLogoPreview(previewUrl);
+    }
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     const formData = new FormData();
-    console.log('Form Values:', values);
+    console.log("Form Values:", values);
 
-    Object.keys(values).forEach(key => {
-        formData.append(key, values[key]);
+    Object.keys(values).forEach((key) => {
+      formData.append(key, values[key]);
     });
 
     if (logoFile) {
-        formData.append('logo', logoFile);
-        console.log('Logo File:', {
-            name: logoFile.name,
-            size: logoFile.size,
-            type: logoFile.type
-        });
+      formData.append("logo", logoFile);
+      console.log("Logo File:", {
+        name: logoFile.name,
+        size: logoFile.size,
+        type: logoFile.type,
+      });
     }
 
     for (let pair of formData.entries()) {
-        console.log('FormData Entry:', pair[0], pair[1]);
+      console.log("FormData Entry:", pair[0], pair[1]);
     }
 
     console.log("Form values before submission:", values);
     try {
-        console.log('Sending request to server...');
-        const response = await axios.post(
-          "http://localhost:5000/addevent",
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          }
-        );
-        console.log("Server response:", response.data);
-        if (response.data.success) {
-            alert("Event added successfully");
-            console.log('Saved logo path:', response.data.data.strLogoFilePath);
-        } else {
-            alert(response.data.message || "Something went wrong");
+      console.log("Sending request to server...");
+      const response = await axios.post(
+        "http://localhost:5000/addevent",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
         }
+      );
+      console.log("Server response:", response.data);
+      if (response.data.success) {
+        alert("Event added successfully");
+        console.log("Saved logo path:", response.data.data.strLogoFilePath);
+      } else {
+        alert(response.data.message || "Something went wrong");
+      }
     } catch (error) {
-        console.error("Error details:", error);
-        alert("Error adding event. Please try again.");
+      console.error("Error details:", error);
+      alert("Error adding event. Please try again.");
     }
-
   };
   return (
     <div className="container mx-auto px-4 py-8 gap-40">
@@ -240,7 +239,7 @@ function AddEvent() {
         <CreateEvent />
       </div>
     </>
-  )
+  );
 }
 
-export default AddEvent
+export default AddEvent;
