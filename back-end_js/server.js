@@ -218,7 +218,7 @@ app.get("/api/events/:eventId/vendors", async (req, res) => {
     const result = await pool
       .request()
       .input("eventId", sqlConnectionToServer.Int, eventId)
-      .execute('uspGetReservedFoodTrucks');
+      .execute("uspGetReservedFoodTrucks");
 
     res.json(result.recordset);
   } catch (err) {
@@ -226,10 +226,6 @@ app.get("/api/events/:eventId/vendors", async (req, res) => {
     res.status(500).json({ error: "Database error" });
   }
 });
-
-
-
-
 
 // API Server for Select all event
 app.get("/api/allevents", async (req, res) => {
@@ -259,14 +255,13 @@ app.get("/api/allevents", async (req, res) => {
 // Get only reservation that related to a vendor
 app.get("/api/myreservation", async (req, res) => {
   const userID = req.query.userID;
-  console.log("Received userID:", userID, typeof userID); 
+  console.log("Received userID:", userID, typeof userID);
   const parsedUserID = parseInt(userID, 10);
-  console.log("RparsedUserID:", parsedUserID, typeof parsedUserID); 
+  console.log("RparsedUserID:", parsedUserID, typeof parsedUserID);
   try {
     const pool = await sqlConnectionToServer.connect(config);
-    console.log('attempting')
-    const result = await pool.request()
-    .query(`
+    console.log("attempting");
+    const result = await pool.request().query(`
               SELECT 
                   E.intEventID,
                   E.strEventName,
@@ -283,7 +278,7 @@ app.get("/api/myreservation", async (req, res) => {
               ORDER BY 
                   E.dtDateOfEvent;
                 `);
-                
+
     console.log(result.query);
     console.log(`Found ${result.recordset.length} events`);
     res.json(result.recordset);
@@ -298,11 +293,10 @@ app.get("/api/myreservation", async (req, res) => {
 
 // API To get event to show on the table in profile account
 app.get("/api/myreservationTable", async (req, res) => {
-
   const { userID, userType } = req.query;
   const parsedUserID = parseInt(userID);
   const parsedUserType = parseInt(userType);
-  console.log("User ID", parsedUserID, "User Type", parsedUserType)
+  console.log("User ID", parsedUserID, "User Type", parsedUserType);
   try {
     const pool = await sqlConnectionToServer.connect(config);
 
@@ -325,18 +319,17 @@ app.get("/api/myreservationTable", async (req, res) => {
                   TFoodTrucks.intVendorID = ${parsedUserID}
                   ORDER BY TEvents.dtDateOfEvent DESC`;
     } else if (parsedUserType === 2) {
-              query = `select  TEvents.intEventID, 
+      query = `select  TEvents.intEventID, 
         TEvents.strEventName,
         TEvents.dtDateOfEvent,
         TOrganizers.strFirstName + ' ' + TOrganizers.strLastName AS OrganizerName
         From TEvents join TOrganizers on TEvents.intOrganizerID = TOrganizers.intOrganizerID
         Where TOrganizers.intOrganizerID = ${parsedUserID}
         ORDER BY TEvents.dtDateOfEvent DESC`;
-            }
+    }
 
     const result = await pool.request().query(query);
     return res.json(result.recordset);
-
   } catch (err) {
     console.error("Error fetching all events:", err);
     return res.status(500).json({
@@ -346,25 +339,22 @@ app.get("/api/myreservationTable", async (req, res) => {
   }
 });
 
-
 // Get only event that related to an organizer
 app.get("/api/mycreatedevent", async (req, res) => {
   const userID = req.query.userID;
-  console.log("Received userID:", userID, typeof userID); 
+  console.log("Received userID:", userID, typeof userID);
   const parsedUserID = parseInt(userID, 10);
-  console.log("RparsedUserID:", parsedUserID, typeof parsedUserID); 
+  console.log("RparsedUserID:", parsedUserID, typeof parsedUserID);
   try {
     const pool = await sqlConnectionToServer.connect(config);
-    console.log('attempting')
-    const result = await pool.request()
-    .query(`
+    console.log("attempting");
+    const result = await pool.request().query(`
             SELECT intEventID,strEventName,dtDateOfEvent
             FROM TEvents JOIN TOrganizers ON TEvents.intOrganizerID = TOrganizers.intOrganizerID
             WHERE TEvents.dtDateOfEvent > GETDATE() AND TEvents.intOrganizerID = ${parsedUserID}
             ORDER BY TEvents.dtDateOfEvent DESC;
                 `);
 
-                
     console.log(result.query);
     console.log(`Found ${result.recordset.length} events`);
     res.json(result.recordset);
@@ -522,7 +512,7 @@ app.post("/api/update-user", async (req, res) => {
     phone,
   });
 
-  console.log("request body", req.body)
+  console.log("request body", req.body);
 
   try {
     const pool = await sqlConnectionToServer.connect(config);
@@ -673,16 +663,15 @@ app.post("/update-truck-details", async (req, res) => {
 });
 
 app.get("/api/truck-details", async (req, res) => {
-  
   const userID = req.query.userID;
-  console.log("received ID", userID)
+  console.log("received ID", userID);
   try {
     const pool = await sqlConnectionToServer.connect(config);
     const request = pool.request();
     let result;
     request.input("intVendorID", sqlConnectionToServer.Int, parseInt(userID));
     result = await request.execute("uspGetFoodTruck");
-    console.log("result for truck", result)
+    console.log("result for truck", result);
     // Check if we have results
     if (result && result.recordset && result.recordset.length > 0) {
       const truck = result.recordset[0];
@@ -717,7 +706,7 @@ app.get("/api/truck-details", async (req, res) => {
     }
   }
 });
- 
+
 app.post("/addevent", upload.single("logo"), async (req, res) => {
   try {
     const eventData = req.body;
@@ -752,133 +741,138 @@ app.post("/addevent", upload.single("logo"), async (req, res) => {
 });
 
 // get EventID and UserID to execute uspReserveSapce
-app.post('/api/reserve', async (req, res) => {
+app.post("/api/reserve", async (req, res) => {
   const { eventID, userID } = req.body;
 
-  const parsedUserID = parseInt(userID)
-  const parsedEventID = parseInt(eventID)
+  const parsedUserID = parseInt(userID);
+  const parsedEventID = parseInt(eventID);
   try {
     const pool = await sqlConnectionToServer.connect(config);
     console.log("Database connected");
-    const result = await pool.request()
+    const result = await pool
+      .request()
       .input("intVendorID", sqlConnectionToServer.Int, parsedUserID)
       .input("intEventID", sqlConnectionToServer.Int, parsedEventID)
       .execute("uspReserveSpace");
     res.json({ success: true, data: result.recordset });
   } catch (err) {
-    console.log("Error")
+    console.log("Error");
     res.status(500).json({ error: err.message });
   }
 });
 
 // handle cancel reservation
-app.post('/api/cancel-reservation', async (req, res) => {
+app.post("/api/cancel-reservation", async (req, res) => {
   const { eventID, userID } = req.body;
 
-  const parsedUserID = parseInt(userID)
-  const parsedEventID = parseInt(eventID)
+  const parsedUserID = parseInt(userID);
+  const parsedEventID = parseInt(eventID);
 
-  console.log(parsedEventID, parsedUserID)
+  console.log(parsedEventID, parsedUserID);
   try {
     const pool = await sqlConnectionToServer.connect(config);
     console.log("Database connected");
-    const result = await pool.request()
+    const result = await pool
+      .request()
       .input("intVendorID", sqlConnectionToServer.Int, parsedUserID)
       .input("intEventID", sqlConnectionToServer.Int, parsedEventID)
       .execute("uspDeleteReservation");
-      
-      res.json({
-        success: true,
-        message: "Reservation canceled successfully."
-      });
-  
+
+    res.json({
+      success: true,
+      message: "Reservation canceled successfully.",
+    });
   } catch (err) {
-    console.error("Error canceling reservation:", err); 
-    res.status(500).json({ 
+    console.error("Error canceling reservation:", err);
+    res.status(500).json({
       success: false,
       message: "Failed to cancel reservation",
-      error: err.message 
+      error: err.message,
     });
   }
 });
 
 // Delete Event
-app.post('/api/delete-event', async (req, res) => {
+app.post("/api/delete-event", async (req, res) => {
   const { eventID } = req.body;
 
-  const parsedEventID = parseInt(eventID)
-  console.log(parsedEventID)
+  const parsedEventID = parseInt(eventID);
+  console.log(parsedEventID);
   try {
     const pool = await sqlConnectionToServer.connect(config);
     console.log("Database connected");
-    const result = await pool.request()
+    const result = await pool
+      .request()
       .input("intEventID", sqlConnectionToServer.Int, parsedEventID)
       .execute("uspDeleteEvent");
-      
-      res.json({
-        success: true,
-        message: "Event deleted successfully."
-      });
-  
+
+    res.json({
+      success: true,
+      message: "Event deleted successfully.",
+    });
   } catch (err) {
-    console.error("Error canceling reservation:", err); 
-    res.status(500).json({ 
+    console.error("Error canceling reservation:", err);
+    res.status(500).json({
       success: false,
       message: "Failed to cancel reservation",
-      error: err.message 
+      error: err.message,
     });
   }
 });
 
-
 //delete account
-app.post('/api/delete-account', async (req, res) => {
+app.post("/api/delete-account", async (req, res) => {
   const { userID, userType } = req.body;
-  
+
   try {
     const pool = await sqlConnectionToServer.connect(config);
-    console.log("Database connected, deleting account for:", { userID, userType });
+    console.log("Database connected, deleting account for:", {
+      userID,
+      userType,
+    });
 
     let result;
     if (userType === "1") {
-      result = await pool.request()
+      result = await pool
+        .request()
         .input("intVendorID", sqlConnectionToServer.Int, parseInt(userID))
         .execute("uspDeleteVendor");
     } else if (userType === "2") {
-      result = await pool.request()
+      result = await pool
+        .request()
         .input("intOrganizerID", sqlConnectionToServer.Int, parseInt(userID))
         .execute("uspDeleteOrganizer");
     } else {
-      return res.status(400).json({ success: false, message: "Invalid user type." });
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid user type." });
     }
-    console.log("Out of if")
-    
+    console.log("Out of if");
+
     res.json({
       success: true,
-      message: "Account deleted successfully."
+      message: "Account deleted successfully.",
     });
-
-  }  catch (err) {
+  } catch (err) {
     console.error("Error in delete account:", err);
     res.status(500).json({
       success: false,
-      message: err.message
+      message: err.message,
     });
   }
 });
 
-
-app.post('/api/additem', async (req, res) => {
+app.post("/api/additem", async (req, res) => {
   console.log(req.body);
   try {
-    
-    const { strItem, monPrice, intVendorID, intCategoryID  } = req.body;
-    const parsedUserID = parseInt(intVendorID)
-    const parsedMonPrice = parseInt(monPrice)
-    const parsedCategoryID = parseInt(intCategoryID)
+    const { strItem, monPrice, intVendorID, intCategoryID } = req.body;
+    const parsedUserID = parseInt(intVendorID);
+    const parsedMonPrice = parseInt(monPrice);
+    const parsedCategoryID = parseInt(intCategoryID);
     const pool = await sqlConnectionToServer.connect(config);
     console.log("Before Store Procedure");
-    const result = await pool.request()
+    const result = await pool
+      .request()
       .input("intVendorID", sqlConnectionToServer.Int, parsedUserID)
       .input("strItem", sqlConnectionToServer.VarChar, strItem)
       .input("monPrice", sqlConnectionToServer.Int, parsedMonPrice)
@@ -886,7 +880,7 @@ app.post('/api/additem', async (req, res) => {
       .execute("uspAddMenuItem");
     res.json({ success: true, data: result.recordset });
   } catch (err) {
-    console.log("Error")
+    console.log("Error");
     res.status(500).json({ error: err.message });
   }
 });
@@ -895,23 +889,24 @@ app.get("/api/getitem", async (req, res) => {
   const intVendorID = req.query.intVendorID;
   console.log("User ID", intVendorID);
   try {
-    console.log("request body", req.body)
+    console.log("request body", req.body);
     console.log("Hello", intVendorID);
-    const parsedUserID = parseInt(intVendorID)
+    const parsedUserID = parseInt(intVendorID);
     const pool = await sqlConnectionToServer.connect(config);
-    const result = await pool.request()
-    .input("intVendorID", sqlConnectionToServer.Int, parsedUserID)
-    .execute("uspGetMenu");
+    const result = await pool
+      .request()
+      .input("intVendorID", sqlConnectionToServer.Int, parsedUserID)
+      .execute("uspGetMenu");
     if (result && result.recordset && result.recordset.length > 0) {
       return res.json({
         success: true,
-        data: result.recordset
+        data: result.recordset,
       });
     } else {
       return res.status(404).json({
         success: false,
-        message: "No menu items found"
-      })
+        message: "No menu items found",
+      });
     }
   } catch (err) {
     console.error("Error fetching all events:", err);
@@ -921,10 +916,16 @@ app.get("/api/getitem", async (req, res) => {
     });
   }
 });
-    
+
 app.post("/api/vendor-feedback", async (req, res) => {
-  const { intVendorID, intEventID, monTotalRevenue, intRating, strVendorComment } = req.body;
-  console.log("Request received", req.body)
+  const {
+    intVendorID,
+    intEventID,
+    monTotalRevenue,
+    intRating,
+    strVendorComment,
+  } = req.body;
+  console.log("Request received", req.body);
   try {
     const pool = await sqlConnectionToServer.connect(config);
     await pool
@@ -933,7 +934,11 @@ app.post("/api/vendor-feedback", async (req, res) => {
       .input("intEventID", sqlConnectionToServer.Int, intEventID)
       .input("monTotalRevenue", sqlConnectionToServer.Money, monTotalRevenue)
       .input("intRating", sqlConnectionToServer.Int, intRating)
-      .input("strVendorComment", sqlConnectionToServer.VarChar(500), strVendorComment)
+      .input(
+        "strVendorComment",
+        sqlConnectionToServer.VarChar(500),
+        strVendorComment
+      )
       .execute("uspVendorFeedBack");
 
     res.json({ success: true });
@@ -953,46 +958,41 @@ app.get("/api/events/:eventId/comments", async (req, res) => {
       .input("intEventId", sqlConnectionToServer.Int, eventId)
       .execute("uspEventComments");
     res.json(result.recordset);
-    
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to fetch comments" });
   }
 });
 
-
 //Delete an item from a menu take UserID from session and strItem
 app.post("/api/deleteitem", async (req, res) => {
   const { strItem, intVendorID } = req.body;
-  
-  try {
-      console.log('Deleting item:', { strItem, intVendorID });
-      const pool = await sqlConnectionToServer.connect(config);
-      
-      const result = await pool
-          .request()
-          .input("intVendorID", sqlConnectionToServer.Int, intVendorID)
-          .input("strItem", sqlConnectionToServer.VarChar(50), strItem)
-          .execute("uspDeleteMenuItem");
 
-      console.log('Delete result:', result);
-      res.json({ 
-          success: true, 
-          message: "Item deleted successfully" 
-      });
+  try {
+    console.log("Deleting item:", { strItem, intVendorID });
+    const pool = await sqlConnectionToServer.connect(config);
+
+    const result = await pool
+      .request()
+      .input("intVendorID", sqlConnectionToServer.Int, intVendorID)
+      .input("strItem", sqlConnectionToServer.VarChar(50), strItem)
+      .execute("uspDeleteMenuItem");
+
+    console.log("Delete result:", result);
+    res.json({
+      success: true,
+      message: "Item deleted successfully",
+    });
   } catch (err) {
-      console.error('Error in delete item:', err);
-      res.status(500).json({ 
-          error: "Failed to delete item",
-          message: err.message,
-          details: err
-      });
+    console.error("Error in delete item:", err);
+    res.status(500).json({
+      error: "Failed to delete item",
+      message: err.message,
+      details: err,
+    });
   }
 });
 
 app.listen(API_PORT, () => {
   console.log(`Server running on port ${API_PORT}`);
 });
-
-
-

@@ -1,11 +1,10 @@
-import React from 'react'
-import Navbar from '../components/Navbar/Navbar'
-import SeachBox from '../components/SearchBox/SeachBox'
-import SmallCard from '../components/Cards/SmallCard'
-import { useState, useEffect } from 'react';
-import axios from 'axios';
-import { Link } from 'react-router-dom'
-
+import React from "react";
+import Navbar from "../components/Navbar/Navbar";
+import SeachBox from "../components/SearchBox/SeachBox";
+import SmallCard from "../components/Cards/SmallCard";
+import { useState, useEffect } from "react";
+import axios from "axios";
+import { Link } from "react-router-dom";
 
 function Event() {
   const [events, setEvents] = useState([]);
@@ -14,12 +13,12 @@ function Event() {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/allevents');
+        const response = await axios.get("http://localhost:5000/api/allevents");
         setEvents(response.data);
         setError(null);
       } catch (err) {
-        console.error('Error fetching events:', err);
-        setError(err.message || 'Error loading events');
+        console.error("Error fetching events:", err);
+        setError(err.message || "Error loading events");
       } finally {
       }
     };
@@ -27,10 +26,7 @@ function Event() {
     fetchEvents();
   }, []);
 
-  
-  useEffect(() => {
-  }, [events]);
-
+  useEffect(() => {}, [events]);
 
   return (
     <>
@@ -39,10 +35,7 @@ function Event() {
       <div className="grid lg:grid-cols-5 md:grid-cols-2 px-40 py-5 gap-8">
         {events.length > 0 ? (
           events.map((event) => (
-            <SmallCard 
-              key={event.intEventID}
-              event={event}
-            />
+            <SmallCard key={event.intEventID} event={event} />
           ))
         ) : (
           <div className="col-span-full text-center text-gray-500 py-10">
@@ -54,5 +47,4 @@ function Event() {
   );
 }
 
-
-export default Event
+export default Event;

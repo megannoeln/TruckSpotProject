@@ -82,7 +82,9 @@ const LoginForm = () => {
           <div className="md:max-w-md w-full px-4 py-4">
             <form onSubmit={handleSubmit}>
               <div className="mb-12">
-                <h3 className="text-gray-800 text-3xl font-extrabold">Sign in</h3>
+                <h3 className="text-gray-800 text-3xl font-extrabold">
+                  Sign in
+                </h3>
                 <p className="text-sm mt-4 text-gray-800">
                   Don't have an account{" "}
                   <a
@@ -95,7 +97,9 @@ const LoginForm = () => {
               </div>
 
               <div>
-                <label className="text-gray-800 text-xs block mb-2">Email</label>
+                <label className="text-gray-800 text-xs block mb-2">
+                  Email
+                </label>
                 <div className="relative flex items-center">
                   <input
                     name="strEmail"
@@ -142,7 +146,9 @@ const LoginForm = () => {
               </div>
 
               <div className="mt-8">
-                <label className="text-gray-800 text-xs block mb-2">Password</label>
+                <label className="text-gray-800 text-xs block mb-2">
+                  Password
+                </label>
                 <div className="relative flex items-center">
                   <input
                     name="strPassword"
@@ -166,7 +172,6 @@ const LoginForm = () => {
                   </svg>
                 </div>
               </div>
-
 
               <div className="mt-12">
                 <button

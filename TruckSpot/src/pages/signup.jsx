@@ -19,7 +19,7 @@ const SignUpForm = () => {
     strPhone: "",
     strPassword: "",
     confirmPassword: "",
-    accountType: ""
+    accountType: "",
   });
 
   const [errors, setErrors] = useState({});
@@ -55,7 +55,7 @@ const SignUpForm = () => {
         if (response.data.success) {
           alert("Registration successful! Redirecting to Login..."); // Change to login page after
           // Navigate to Login Page on Success
-          window.location.href = '/login';
+          window.location.href = "/login";
         } else {
           alert(response.data.message || "Something went wrong");
         }
@@ -74,13 +74,11 @@ const SignUpForm = () => {
           console.log("Error setting up request:", error.message);
           alert("Error setting up request. Please try again.");
         }
-
       }
     }
   };
 
   return (
-    
     <div className="font-[sans-serif] bg-white md:h-screen">
       <div className="grid md:grid-cols-2 items-center gap-8 h-full">
         <div className="max-md:order-1 p-4">
@@ -102,37 +100,42 @@ const SignUpForm = () => {
 
             {/* Radio */}
             <div className="mt-8 mb-2">
-            <label className="text-white text-xs block mb-2">Account Type</label>
-            <div className="flex gap-6 mt-2">
-            <div className="flex items-center">
-              <input
-                type="radio"
-                name="accountType"
-                value="vendor"
-                id="vendor"
-                onChange={handleInput}
-                className="w-4 h-4 text-yellow-400 bg-transparent border-gray-300 focus:ring-yellow-400"
-              />
-              <label htmlFor="vendor" className="text-white text-sm ml-2">
-                Vendor
+              <label className="text-white text-xs block mb-2">
+                Account Type
               </label>
+              <div className="flex gap-6 mt-2">
+                <div className="flex items-center">
+                  <input
+                    type="radio"
+                    name="accountType"
+                    value="vendor"
+                    id="vendor"
+                    onChange={handleInput}
+                    className="w-4 h-4 text-yellow-400 bg-transparent border-gray-300 focus:ring-yellow-400"
+                  />
+                  <label htmlFor="vendor" className="text-white text-sm ml-2">
+                    Vendor
+                  </label>
+                </div>
+
+                <div className="flex items-center mb-2">
+                  <input
+                    type="radio"
+                    name="accountType"
+                    value="organizer"
+                    id="organizer"
+                    onChange={handleInput}
+                    className="w-4 h-4 text-yellow-400 bg-transparent border-gray-300 focus:ring-yellow-400"
+                  />
+                  <label
+                    htmlFor="organizer"
+                    className="text-white text-sm ml-2"
+                  >
+                    Organizer
+                  </label>
+                </div>
+              </div>
             </div>
-    
-            <div className="flex items-center mb-2">
-              <input
-                type="radio"
-                name="accountType"
-                value="organizer"
-                id="organizer"
-                onChange={handleInput}
-                className="w-4 h-4 text-yellow-400 bg-transparent border-gray-300 focus:ring-yellow-400"
-              />
-              <label htmlFor="organizer" className="text-white text-sm ml-2">
-                Organizer
-              </label>
-            </div>
-          </div>
-        </div>
             <div>
               <label className="text-white text-xs block mb-2">
                 First Name
