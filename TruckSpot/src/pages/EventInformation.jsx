@@ -20,9 +20,7 @@ function EventInformation() {
   useEffect(() => {
     const fetchEventDetails = async () => {
         try {
-            console.log('Fetching event details for ID:', eventId);
             const response = await axios.get(`http://localhost:5000/api/events/${eventId}`);
-            console.log('Event details:', response.data);
             setEvent(response.data);
         } catch (err) {
             console.error('Error fetching event details:', err);
@@ -44,7 +42,6 @@ function EventInformation() {
 }, [eventId]);
 
   useEffect(() => {
-    console.log('Events state updated:', event);
   }, [event]);
 
   useEffect(() => {
@@ -55,9 +52,7 @@ function EventInformation() {
       setIsLoggedIn(true);
       setUserType(storedUserType);
     } else {
-      console.log('No session data found');
     }
-
   }, []);
 
   const handleReservation = async () => {
