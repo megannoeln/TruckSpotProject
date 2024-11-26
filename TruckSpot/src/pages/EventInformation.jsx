@@ -11,8 +11,8 @@ import ConfirmationModal from "../components/Modal/ComfirmationModal";
 import EventDetailSection from "../components/EventDetail/EventDetailSection";
 function EventInformation() {
   const { eventId } = useParams();
-  const [event, setEvent] = useState(null);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [event, setEvent] = useState(null); // Store event details
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // Track login status
   const [userType, setUserType] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [vendors, setVendors] = useState([]);
@@ -129,10 +129,11 @@ function EventInformation() {
     fetchEventDetails();
     fetchVendors();
     fetchCuisineLimits();
+    // Fetch all necessary data when eventId changes
   }, [eventId]);
 
   const handleReservation = async () => {
-    setShowModal(true);
+    setShowModal(true); // Show confirmation modal when click on a button that have On
   };
 
   const confirmReservation = async () => {
@@ -166,21 +167,21 @@ function EventInformation() {
             <div className="grid md:grid-cols-2 gap-8">
               <div className="space-y-6">
                 <div className="bg-white shadow-sm rounded-lg p-6 space-y-4">
-                  <EventDetailSection
-                    event={event}
-                    cuisineLimits={cuisineLimits}
-                    isLoggedIn={isLoggedIn}
-                    userType={userType}
-                    onReservation={handleReservation}
-                    onShowVendors={() => setShowVendorModal(true)}
-                    onShowCuisineLimit={() => setShowCuisineLimitModal(true)}
-                    showCuisineLimitModal={showCuisineLimitModal}
-                    onCloseCuisineLimit={() => setShowCuisineLimitModal(false)}
-                    newCuisineLimit={newCuisineLimit}
-                    setNewCuisineLimit={setNewCuisineLimit}
-                    handleAddCuisineLimit={handleAddCuisineLimit}
-                    cuisineTypes={cuisineTypes}
-                  />
+                <EventDetailSection
+                  event={event}                                                 // Passes the main event data object containing all event details
+                  cuisineLimits={cuisineLimits}                                 // Passes array of cuisine limits showing available spots for each cuisine type
+                  isLoggedIn={isLoggedIn}                                       // Indicate if user is logged in               
+                  userType={userType}                                           // String indicating user type            
+                  onReservation={handleReservation}                             // Function to handle when vendor clicks reserve button               
+                  onShowVendors={() => setShowVendorModal(true)}                // Function to show vendor list modal               
+                  onShowCuisineLimit={() => setShowCuisineLimitModal(true)}     // Function to show cuisine limit modal                
+                  showCuisineLimitModal={showCuisineLimitModal}                 // Control visibility of cuisine limit modal               
+                  onCloseCuisineLimit={() => setShowCuisineLimitModal(false)}   // Function to close cuisine limit modal               
+                  newCuisineLimit={newCuisineLimit}                             // Object containing new cuisine limit data            
+                  setNewCuisineLimit={setNewCuisineLimit}                       // Function to update cuisine limit state                
+                  handleAddCuisineLimit={handleAddCuisineLimit}                 // Function to handle adding new cuisine limit                 
+                  cuisineTypes={cuisineTypes}                                   // Array of cuisine types sending to CuisineLimitModal
+                />
                 </div>
               </div>
               <div className="space-y-6">
