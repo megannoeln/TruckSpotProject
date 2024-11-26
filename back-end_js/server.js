@@ -190,7 +190,8 @@ app.get("/api/events/:eventId", async (req, res) => {
                   e.strLocation,
                   o.strFirstName + ' ' + o.strLastName as strOrganizerName,
                   o.strPhone as strContact,
-				  o.strEmail
+                  o.strEmail,
+                  e.monPricePerSpace
               FROM TEvents e
               LEFT JOIN TOrganizers as O ON e.intOrganizerID = O.intOrganizerID
               WHERE e.intEventID = @eventId
@@ -959,6 +960,35 @@ app.get("/api/events/:eventId/comments", async (req, res) => {
   }
 });
 
+
+//Delete an item from a menu take UserID from session and strItem
+app.post("/api/deleteitem", async (req, res) => {
+  const { strItem, intVendorID } = req.body;
+  
+  try {
+      console.log('Deleting item:', { strItem, intVendorID });
+      const pool = await sqlConnectionToServer.connect(config);
+      
+      const result = await pool
+          .request()
+          .input("intVendorID", sqlConnectionToServer.Int, intVendorID)
+          .input("strItem", sqlConnectionToServer.VarChar(50), strItem)
+          .execute("uspDeleteMenuItem");
+
+      console.log('Delete result:', result);
+      res.json({ 
+          success: true, 
+          message: "Item deleted successfully" 
+      });
+  } catch (err) {
+      console.error('Error in delete item:', err);
+      res.status(500).json({ 
+          error: "Failed to delete item",
+          message: err.message,
+          details: err
+      });
+  }
+});
 
 app.listen(API_PORT, () => {
   console.log(`Server running on port ${API_PORT}`);

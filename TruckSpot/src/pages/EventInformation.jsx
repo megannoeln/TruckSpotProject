@@ -23,7 +23,7 @@ function EventInformation() {
       monTotalRevenue: 0
     }
   ]);
-  
+
   useEffect(() => {
     const fetchEventDetails = async () => {
         try {
@@ -110,10 +110,8 @@ function EventInformation() {
                   <span key={i} className={`text-xl ${i < feedback.Rating ? 'text-yellow-400' : 'text-gray-300'}`}>
                     ★
                   </span>
-                ))}
-                
+                ))}       
               </div>
-              
             </div>
             <p className="text-gray-600 mb-2">{feedback.Comment}</p>
             <div className="flex justify-end  mt-4">
@@ -187,6 +185,12 @@ function EventInformation() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                   </svg>
                   <span>{event.strLocation}</span>
+                </div>
+                <div className="flex items-center gap-2 text-gray-600">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span>{event.monPricePerSpace} Per Space</span>
                 </div>
               </div>
               {/* if it's a vendor show reserve button */}
