@@ -942,6 +942,23 @@ app.post("/api/vendor-feedback", async (req, res) => {
   }
 });
 
+// Get Feedback and rating to show in EventInformation Page
+app.get("/api/events/:eventId/comments", async (req, res) => {
+  const { eventId } = req.params;
+  try {
+    const pool = await sqlConnectionToServer.connect(config);
+    const result = await pool
+      .request()
+      .input("intEventId", sqlConnectionToServer.Int, eventId)
+      .execute("uspEventComments");
+    res.json(result.recordset);
+    
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch comments" });
+  }
+});
+
 
 app.listen(API_PORT, () => {
   console.log(`Server running on port ${API_PORT}`);

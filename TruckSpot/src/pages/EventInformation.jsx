@@ -15,8 +15,15 @@ function EventInformation() {
   const [showModal, setShowModal] = useState(false);
   const [vendors, setVendors] = useState([]);
   const [showVendorModal, setShowVendorModal] = useState(false);
-
-
+  const [feedbacks, setFeedbacks] = useState([
+    {
+      strVendorName: "",
+      intRating: 0,
+      strVendorComment: "",
+      monTotalRevenue: 0
+    }
+  ]);
+  
   useEffect(() => {
     const fetchEventDetails = async () => {
         try {
@@ -37,8 +44,21 @@ function EventInformation() {
       }
     };
 
+    const fetchFeedbacks = async () => {
+      try {
+        const response = await axios.get(`http://localhost:5000/api/events/${eventId}/comments`);
+        setFeedbacks(response.data);
+        
+        console.log('Fetched feedbacks:', response.data);
+
+      } catch (err) {
+        console.error('Error fetching feedbacks:', err);
+      }
+    }; 
+    fetchFeedbacks();
     fetchEventDetails();
     fetchVendors();
+    console.log("Feedback", feedbacks)
 }, [eventId]);
 
   useEffect(() => {
@@ -76,6 +96,36 @@ function EventInformation() {
       
     }
    };
+
+   const FeedbackSection = ({ feedbacks }) => (
+    <div className="max-w-6xl mx-auto mt-16">
+      <h2 className="text-2xl font-semibold mb-6">Vendor Feedback</h2>
+      <div className="grid gap-6">
+        {feedbacks.map((feedback, index) => (
+          <div key={index} className="bg-white shadow-sm rounded-lg p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-semibold text-lg">{feedback.VendorName}</h3>
+              <div className="flex">
+                {[...Array(5)].map((_, i) => (
+                  <span key={i} className={`text-xl ${i < feedback.Rating ? 'text-yellow-400' : 'text-gray-300'}`}>
+                    ★
+                  </span>
+                ))}
+                
+              </div>
+              
+            </div>
+            <p className="text-gray-600 mb-2">{feedback.Comment}</p>
+            <div className="flex justify-end  mt-4">
+              <p className="text-sm font-medium text-green-600">
+                Revenue: ${feedback.TotalRevenue}
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+   );
 
 
   if (event) {return (
@@ -180,8 +230,17 @@ function EventInformation() {
             </div>
           </div>
         </div>
+        {feedbacks ? (
+          feedbacks.length > 0 ? (
+            <div className="container mx-auto px-4 py-8 max-w-6xl">
+              <FeedbackSection feedbacks={feedbacks} />
+            </div>
+          ) : null
+        ) : null}
       </div>
+      
     </div>
+    
     </>
   )
   }}
