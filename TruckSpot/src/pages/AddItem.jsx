@@ -47,7 +47,8 @@ function AddItem() {
             );
             console.log("Server response:", response.data);
             if (response.data.success) {
-                alert("Event added successfully");
+                alert("Item added successfully");
+                window.location.href = '/foodmenu';
             } else {
                 alert(response.data.message || "Something went wrong");
             }
@@ -73,9 +74,7 @@ function AddItem() {
             <h2 className="text-xl font-semibold mb-6">Add an item to menu</h2>
             <form onSubmit={handleSubmit}>
               <div className="flex flex-col md:flex-row gap-8">
-                {/* Logo Upload Section - Left Side */}
-   
-                {/* Form Fields - Right Side */}
+
                 <div className="w-full md:w-2/3 space-y-4">
                   <div>
                     <p className="text-sm text-gray-500 mb-1">Name</p>
@@ -117,7 +116,6 @@ function AddItem() {
                     />
                   </div>
 
-                  {/* Submit Button */}
                   <div className="pt-4">
                     <button
                       type="submit"
