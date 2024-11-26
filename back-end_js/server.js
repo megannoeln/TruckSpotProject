@@ -185,6 +185,7 @@ app.get("/api/events/:eventId", async (req, res) => {
               SELECT 
               e.intEventID,
                   e.strEventName,
+                  e.intOrganizerID,
                   e.strDescription,
                   e.dtDateOfEvent,
                   e.strLocation,
@@ -990,6 +991,61 @@ app.post("/api/deleteitem", async (req, res) => {
       message: err.message,
       details: err,
     });
+  }
+});
+
+// Get cuisine limit to show in eventinformation page
+app.get("/api/events/:eventId/cuisine-limits", async (req, res) => {
+  const { eventId } = req.params;
+  try {
+    const pool = await sqlConnectionToServer.connect(config);
+    const result = await pool
+      .request()
+      .input("intEventID", sqlConnectionToServer.Int, eventId)
+      .execute("uspGetCuisineLimits");
+
+    res.json(result.recordset);
+  } catch (err) {
+    console.error('Error fetching cuisine limits:', err);
+    res.status(500).json({ error: "Failed to fetch cuisine limits" });
+  }
+});
+
+// Get Cusine Type
+app.get("/api/cuisine-types", async (req, res) => {
+  try {
+    const pool = await sqlConnectionToServer.connect(config);
+    const result = await pool
+      .request()
+      .query("SELECT intCuisineTypeID, strCuisineType FROM TCuisineTypes");
+    
+    res.json(result.recordset);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch cuisine types" });
+  }
+});
+
+app.post("/api/events/:eventId/cuisine-limits", async (req, res) => {
+  const { eventId } = req.params;
+  const { cuisineTypeId, limit } = req.body;
+  console.log("EventID received", typeof(eventId))
+  console.log("CusineType", cuisineTypeId, " Limit", typeof(limit));
+
+  const parsedEventID = parseInt(eventId)
+  try {
+    const pool = await sqlConnectionToServer.connect(config);
+    await pool
+      .request()
+      .input("intEventID", sqlConnectionToServer.Int, parsedEventID)
+      .input("intCuisineTypeID", sqlConnectionToServer.Int, cuisineTypeId)
+      .input("intLimit", sqlConnectionToServer.Int, limit)
+      .execute("uspAddCuisineLimit");
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to add cuisine limit" });
   }
 });
 
