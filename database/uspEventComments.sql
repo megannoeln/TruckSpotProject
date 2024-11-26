@@ -32,7 +32,9 @@ BEGIN
 
     SELECT 
         TVendors.strFirstName + ' ' + TVendors.strLastName AS VendorName,
-        TFoodTruckEvents.strVendorComment AS Comment
+        TFoodTruckEvents.strVendorComment AS Comment,
+		TFoodTruckEvents.intRating AS Rating,
+		TFoodTruckEvents.monTotalRevenue AS TotalRevenue
     FROM 
         TFoodTruckEvents
     INNER JOIN 
