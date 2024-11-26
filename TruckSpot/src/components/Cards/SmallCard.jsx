@@ -24,7 +24,6 @@ function SmallCard({ event }) {
       setIsLoggedIn(true);
       setUserType(storedUserType);
     } else {
-      console.log('No session data found');
     }
 
   }, []);

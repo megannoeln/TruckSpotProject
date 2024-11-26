@@ -14,9 +14,7 @@ function home() {
     useEffect(() => {
       const fetchEvents = async () => {
           try {
-            console.log('Attempting to fetch events...');
               const response = await axios.get('http://localhost:5000/api/events');
-              console.log('Response data:', response.data);
               setEvents(response.data);
           } catch (err) {
               console.error('Fetch error:', err);
@@ -28,7 +26,6 @@ function home() {
   }, []);
 
   useEffect(() => {
-    console.log('Events state updated:', events);
 }, [events]);
 
   return (

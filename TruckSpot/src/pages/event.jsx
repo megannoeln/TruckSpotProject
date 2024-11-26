@@ -15,7 +15,6 @@ function Event() {
     const fetchEvents = async () => {
       try {
         const response = await axios.get('http://localhost:5000/api/allevents');
-        console.log('Events data:', response.data);
         setEvents(response.data);
         setError(null);
       } catch (err) {
@@ -30,7 +29,6 @@ function Event() {
 
   
   useEffect(() => {
-    console.log('Events state updated:', events);
   }, [events]);
 
 
