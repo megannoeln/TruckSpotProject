@@ -139,16 +139,6 @@ function Navbar() {
                   <li>
                     <Link to="/myaccount">My Account</Link>
                   </li>
-                  {userType === "1" && (
-                    <li>
-                      <Link to="/reservation">My Reservations</Link>
-                    </li>
-                  )}
-                  {userType === "2" && (
-                    <li>
-                      <Link to="/my-events">My Events</Link>
-                    </li>
-                  )}
                   <li>
                     <button
                       onClick={handleLogout}
