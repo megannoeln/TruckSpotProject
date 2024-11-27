@@ -31,6 +31,7 @@ AS
 BEGIN
     
     DECLARE @DeletedEventSpaces TABLE (intEventSpaceID INT);
+	DECLARE @CuisineTypeID INT;
 
    
     DELETE FROM TReservations
@@ -60,6 +61,20 @@ AND intEventID = @intEventID;
         UPDATE TEventSpaces
         SET boolIsAvailable = 1
         WHERE intEventSpaceID IN (SELECT intEventSpaceID FROM @DeletedEventSpaces);
+
+
+		SELECT TOP 1 @CuisineTypeID = intCuisineTypeID
+        FROM TFoodTrucks
+        WHERE intVendorID = @intVendorID;
+
+		IF @CuisineTypeID IS NOT NULL
+        BEGIN
+            UPDATE TEventCuisines
+            SET intAvailable = intAvailable + 1
+            WHERE intCuisineTypeID = @CuisineTypeID
+            AND intEventID = @intEventID;
+        END
+
 
         PRINT 'Reservation deleted.';
     END
