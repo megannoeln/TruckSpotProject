@@ -146,6 +146,11 @@ CREATE TABLE TEventCuisines
    ,CONSTRAINT chk_LimitPerCuisine CHECK (intLimit > 0)
 );
 
+ALTER TABLE TEventCuisines
+ADD CONSTRAINT chk_AvailableNotExceedLimit 
+CHECK (intAvailable <= intLimit);
+
+
 CREATE TABLE TFoodTrucks
 (
 	 intFoodTruckID			INTEGER	IDENTITY		NOT NULL
