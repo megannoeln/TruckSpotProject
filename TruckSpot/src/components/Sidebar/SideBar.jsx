@@ -2,7 +2,6 @@ import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useEffect } from "react";
-import axios from "axios";
 
 function SideBar() {
   const navigate = useNavigate();
@@ -20,11 +19,6 @@ function SideBar() {
       setIsLoggedIn(true);
       setUserType(storedUserType);
       setUserID(storedUserID);
-      // Fetch user details when session exists
-      console.log("Is Logged In set to:", storedUserType);
-      console.log("Is Logged In set to:", storedUserID);
-
-      console.log("Is Logged In set to:", true);
     } else {
       console.log("No session data found");
     }

@@ -8,7 +8,6 @@ import { useState } from "react";
 import { useEffect } from "react";
 function home() {
   const [events, setEvents] = useState([]);
-  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -37,30 +36,30 @@ function home() {
             <BigCard
               title={events[0].strEventName}
               description={events[0].strDescription}
-              // image={events[0].EventImage}
+              image={events[0].strLogoFilePath}
               eventId={events[0].intEventID}
               date={events[0].dtDateOfEvent}
             />
           </div>
         )}
-        {/* Each medium card takes 1 column */}
-        {events.length > 0 && (
+        {/* Medium cards */}
+        {events.length > 1 && (
           <div>
             <MediumCard
               title={events[1].strEventName}
               description={events[1].strDescription}
-              // image={events[0].EventImage}
+              image={events[1].strLogoFilePath}
               eventId={events[1].intEventID}
               date={events[1].dtDateOfEvent}
             />
           </div>
         )}
-        {events.length > 0 && (
+        {events.length > 2 && (
           <div>
             <MediumCard
               title={events[2].strEventName}
               description={events[2].strDescription}
-              // image={events[0].EventImage}
+              image={events[2].strLogoFilePath}
               eventId={events[2].intEventID}
               date={events[2].dtDateOfEvent}
             />

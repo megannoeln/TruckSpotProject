@@ -2,7 +2,7 @@ import React from "react";
 import Navbar from "../components/Navbar/Navbar";
 import SideBar from "../components/Sidebar/SideBar";
 import axios from "axios";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 const CreateEvent = () => {
   const storedUserID = sessionStorage.getItem("userID");
@@ -14,7 +14,7 @@ const CreateEvent = () => {
     strDescription: "",
     intOrganizerID: storedUserID || "",
     dtDateOfEvent: "",
-    dtSetUpTime: "",
+    timeOfEvent: "",
     strLocation: "",
     intTotalSpaces: "",
     intExpectedGuests: "",
@@ -27,14 +27,12 @@ const CreateEvent = () => {
       [name]: value,
       intOrganizerID: storedUserID,
     }));
-    console.log(value);
   };
 
   const handleLogoChange = (event) => {
     const file = event.target.files[0];
     if (file) {
       setLogoFile(file);
-      // Create preview URL
       const previewUrl = URL.createObjectURL(file);
       setLogoPreview(previewUrl);
     }
@@ -43,28 +41,30 @@ const CreateEvent = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     const formData = new FormData();
-    console.log("Form Values:", values);
 
-    Object.keys(values).forEach((key) => {
-      formData.append(key, values[key]);
+    // Combine date and time for event
+    const eventDateTime = values.dtDateOfEvent && values.timeOfEvent
+      ? `${values.dtDateOfEvent}T${values.timeOfEvent}`
+      : null;
+
+    // Create the final data object
+    const finalData = {
+      ...values,
+      dtDateOfEvent: eventDateTime,
+    };
+
+    // Append all form data
+    Object.keys(finalData).forEach((key) => {
+      if (key !== 'timeOfEvent') { // Skip the separate time field
+        formData.append(key, finalData[key]);
+      }
     });
 
     if (logoFile) {
       formData.append("logo", logoFile);
-      console.log("Logo File:", {
-        name: logoFile.name,
-        size: logoFile.size,
-        type: logoFile.type,
-      });
     }
 
-    for (let pair of formData.entries()) {
-      console.log("FormData Entry:", pair[0], pair[1]);
-    }
-
-    console.log("Form values before submission:", values);
     try {
-      console.log("Sending request to server...");
       const response = await axios.post(
         "http://localhost:5000/addevent",
         formData,
@@ -74,10 +74,9 @@ const CreateEvent = () => {
           },
         }
       );
-      console.log("Server response:", response.data);
+      
       if (response.data.success) {
         alert("Event added successfully");
-        console.log("Saved logo path:", response.data.data.strLogoFilePath);
       } else {
         alert(response.data.message || "Something went wrong");
       }
@@ -86,21 +85,20 @@ const CreateEvent = () => {
       alert("Error adding event. Please try again.");
     }
   };
+
   return (
     <div className="container mx-auto px-4 py-8 gap-40">
       <div className="grid grid-cols-12 gap-8">
-        {/* Sidebar */}
         <div className="col-span-12 md:col-span-3">
           <SideBar />
         </div>
 
-        {/* Main Content */}
         <div className="col-span-12 md:col-span-9">
           <div className="rounded-lg shadow-sm p-6">
             <h2 className="text-xl font-semibold mb-6">Add an Event</h2>
             <form onSubmit={handleSubmit}>
               <div className="flex flex-col md:flex-row gap-8">
-                {/* Logo Upload Section - Left Side */}
+                {/* Logo Upload Section */}
                 <div className="w-full md:w-1/4">
                   <div className="w-full aspect-square bg-gray-200 rounded-lg mb-2 overflow-hidden">
                     {logoPreview ? (
@@ -123,7 +121,7 @@ const CreateEvent = () => {
                   />
                 </div>
 
-                {/* Form Fields - Right Side */}
+                {/* Form Fields */}
                 <div className="w-full md:w-2/3 space-y-4">
                   <div>
                     <p className="text-sm text-gray-500 mb-1">Event Name</p>
@@ -134,6 +132,7 @@ const CreateEvent = () => {
                       onChange={handleInput}
                       placeholder="Enter event name"
                       className="input input-bordered w-full"
+                      required
                     />
                   </div>
 
@@ -145,6 +144,7 @@ const CreateEvent = () => {
                       onChange={handleInput}
                       placeholder="Enter event description"
                       className="textarea textarea-bordered w-full h-24"
+                      required
                     />
                   </div>
 
@@ -152,22 +152,23 @@ const CreateEvent = () => {
                     <div>
                       <p className="text-sm text-gray-500 mb-1">Event Date</p>
                       <input
-                        type="datetime-local"
+                        type="date"
                         name="dtDateOfEvent"
                         value={values.dtDateOfEvent}
                         onChange={handleInput}
                         className="input input-bordered w-full"
+                        required
                       />
                     </div>
-
                     <div>
-                      <p className="text-sm text-gray-500 mb-1">Setup Time</p>
+                      <p className="text-sm text-gray-500 mb-1">Event Time</p>
                       <input
-                        type="datetime-local"
-                        name="dtSetUpTime"
-                        value={values.dtSetUpTime}
+                        type="time"
+                        name="timeOfEvent"
+                        value={values.timeOfEvent}
                         onChange={handleInput}
                         className="input input-bordered w-full"
+                        required
                       />
                     </div>
                   </div>
@@ -181,6 +182,7 @@ const CreateEvent = () => {
                       onChange={handleInput}
                       placeholder="Enter location"
                       className="input input-bordered w-full"
+                      required
                     />
                   </div>
 
@@ -194,13 +196,13 @@ const CreateEvent = () => {
                         onChange={handleInput}
                         placeholder="Enter total spaces"
                         className="input input-bordered w-full"
+                        min="1"
+                        required
                       />
                     </div>
 
                     <div>
-                      <p className="text-sm text-gray-500 mb-1">
-                        Expected Guests
-                      </p>
+                      <p className="text-sm text-gray-500 mb-1">Expected Guests</p>
                       <input
                         type="number"
                         name="intExpectedGuests"
@@ -208,11 +210,12 @@ const CreateEvent = () => {
                         onChange={handleInput}
                         placeholder="Enter expected guests"
                         className="input input-bordered w-full"
+                        min="1"
+                        required
                       />
                     </div>
                   </div>
 
-                  {/* Submit Button */}
                   <div className="pt-4">
                     <button
                       type="submit"

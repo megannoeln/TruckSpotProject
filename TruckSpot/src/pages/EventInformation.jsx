@@ -167,31 +167,41 @@ function EventInformation() {
             <div className="grid md:grid-cols-2 gap-8">
               <div className="space-y-6">
                 <div className="bg-white shadow-sm rounded-lg p-6 space-y-4">
-                <EventDetailSection
-                  event={event}                                                 // Passes the main event data object containing all event details
-                  cuisineLimits={cuisineLimits}                                 // Passes array of cuisine limits showing available spots for each cuisine type
-                  isLoggedIn={isLoggedIn}                                       // Indicate if user is logged in               
-                  userType={userType}                                           // String indicating user type            
-                  onReservation={handleReservation}                             // Function to handle when vendor clicks reserve button               
-                  onShowVendors={() => setShowVendorModal(true)}                // Function to show vendor list modal               
-                  onShowCuisineLimit={() => setShowCuisineLimitModal(true)}     // Function to show cuisine limit modal                
-                  showCuisineLimitModal={showCuisineLimitModal}                 // Control visibility of cuisine limit modal               
-                  onCloseCuisineLimit={() => setShowCuisineLimitModal(false)}   // Function to close cuisine limit modal               
-                  newCuisineLimit={newCuisineLimit}                             // Object containing new cuisine limit data            
-                  setNewCuisineLimit={setNewCuisineLimit}                       // Function to update cuisine limit state                
-                  handleAddCuisineLimit={handleAddCuisineLimit}                 // Function to handle adding new cuisine limit                 
-                  cuisineTypes={cuisineTypes}                                   // Array of cuisine types sending to CuisineLimitModal
-                />
+                  <EventDetailSection
+                    event={event} // Passes the main event data object containing all event details
+                    cuisineLimits={cuisineLimits} // Passes array of cuisine limits showing available spots for each cuisine type
+                    isLoggedIn={isLoggedIn} // Indicate if user is logged in
+                    userType={userType} // String indicating user type
+                    onReservation={handleReservation} // Function to handle when vendor clicks reserve button
+                    onShowVendors={() => setShowVendorModal(true)} // Function to show vendor list modal
+                    onShowCuisineLimit={() => setShowCuisineLimitModal(true)} // Function to show cuisine limit modal
+                    showCuisineLimitModal={showCuisineLimitModal} // Control visibility of cuisine limit modal
+                    onCloseCuisineLimit={() => setShowCuisineLimitModal(false)} // Function to close cuisine limit modal
+                    newCuisineLimit={newCuisineLimit} // Object containing new cuisine limit data
+                    setNewCuisineLimit={setNewCuisineLimit} // Function to update cuisine limit state
+                    handleAddCuisineLimit={handleAddCuisineLimit} // Function to handle adding new cuisine limit
+                    cuisineTypes={cuisineTypes} // Array of cuisine types sending to CuisineLimitModal
+                  />
                 </div>
               </div>
               <div className="space-y-6">
-                <div className="aspect-w-16 aspect-h-9 rounded-lg overflow-hidden">
-                  <img
-                    src="./src/assets/oktoberfest.jpg"
-                    alt="Oktoberfest event"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
+                {event.strLogoFilePath && (
+                  <div className="w-full h-64 rounded-lg overflow-hidden">
+                    <img
+                      src={`http://localhost:5000${event.strLogoFilePath}`}
+                      alt={`${event.strEventName} event`}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        console.log(
+                          "Image failed to load:",
+                          event.strLogoFilePath
+                        );
+                        e.target.onerror = null;
+                        e.target.style.display = "none";
+                      }}
+                    />
+                  </div>
+                )}
                 <div className="space-y-4">
                   <h2 className="text-xl font-semibold">
                     {event.strEventName}, {event.strLocation}

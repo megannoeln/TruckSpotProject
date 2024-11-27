@@ -53,15 +53,9 @@ function MyAccount() {
 
   // Fetch user details function
   const fetchUserDetails = async () => {
-    console.log("1. Function started");
-
     const storedUserType = sessionStorage.getItem("userType");
     const storedUserID = sessionStorage.getItem("userID");
-
-    console.log("2. Session values:", { storedUserType, storedUserID });
-
     try {
-      console.log("3. Before API call");
       const response = await axios.get(
         "http://localhost:5000/api/user-details",
         {
@@ -71,7 +65,6 @@ function MyAccount() {
           },
         }
       );
-      console.log("4. API Response:", response.data);
 
       if (response.data.success) {
         setUserName(response.data.userName);
@@ -80,7 +73,6 @@ function MyAccount() {
           phoneNumber: response.data.phoneNumber,
           email: response.data.email,
         });
-        console.log("5. User details set", { userDetails });
       }
     } catch (error) {
       console.error("Error details:", {
@@ -90,8 +82,6 @@ function MyAccount() {
         config: error.config,
       });
     }
-
-    console.log("Out of try catch block");
   };
 
   useEffect(() => {

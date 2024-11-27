@@ -21,6 +21,7 @@ app.use(
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use("/public", express.static("public"));
 
 app.get("/test", (req, res) => {
   console.log("Test route hit");
@@ -160,16 +161,24 @@ app.get("/api/events", async (req, res) => {
   try {
     const pool = await sqlConnectionToServer.connect(config);
     const result = await pool.request().query`
-      SELECT TOP 3 *
+      SELECT TOP 3 
+        intEventID,
+        strEventName,
+        strDescription,
+        dtDateOfEvent,
+        strLogoFilePath,
+        strLocation,
+        intTotalSpaces,
+        intAvailableSpaces
       FROM TEvents
       WHERE dtDateOfEvent >= GETDATE()
       ORDER BY dtDateOfEvent ASC`;
+
     res.json(result.recordset);
     console.log("Root route accessed");
   } catch (err) {
     console.error(err);
     res.status(500).send("Server Error");
-  } finally {
   }
 });
 
@@ -183,16 +192,18 @@ app.get("/api/events/:eventId", async (req, res) => {
       .request()
       .input("eventId", sqlConnectionToServer.Int, eventId).query(`
               SELECT 
-              e.intEventID,
-                  e.strEventName,
-                  e.intOrganizerID,
-                  e.strDescription,
-                  e.dtDateOfEvent,
-                  e.strLocation,
-                  o.strFirstName + ' ' + o.strLastName as strOrganizerName,
-                  o.strPhone as strContact,
-                  o.strEmail,
-                  e.monPricePerSpace
+                e.intEventID,
+                e.strEventName,
+                e.intOrganizerID,
+                e.strDescription,
+                e.dtDateOfEvent,
+                e.strLocation,
+                o.strFirstName + ' ' + o.strLastName as strOrganizerName,
+                o.strPhone as strContact,
+                o.strEmail,
+                e.monPricePerSpace,
+                e.intAvailableSpaces,
+                e.strLogoFilePath
               FROM TEvents e
               LEFT JOIN TOrganizers as O ON e.intOrganizerID = O.intOrganizerID
               WHERE e.intEventID = @eventId
@@ -233,17 +244,28 @@ app.get("/api/allevents", async (req, res) => {
   try {
     const pool = await sqlConnectionToServer.connect(config);
     const result = await pool.request().query(`
-        SELECT  e.intEventID,
-        e.strEventName,
-        e.strDescription,
-        e.dtDateOfEvent,
-        e.strLocation		  
+        SELECT  
+          e.intEventID,
+          e.strEventName,
+          e.strDescription,
+          e.dtDateOfEvent,
+          e.strLocation,
+          e.strLogoFilePath
         FROM TEvents as e
         WHERE e.dtDateOfEvent > GETDATE()
         ORDER BY e.dtDateOfEvent ASC;
-      `);
+    `);
+
     console.log(`Found ${result.recordset.length} events`);
-    res.json(result.recordset);
+
+    // Clean up and validate the data before sending
+    const cleanedEvents = result.recordset.map((event) => ({
+      ...event,
+      strDescription: event.strDescription || "",
+      strLogoFilePath: event.strLogoFilePath || null,
+    }));
+
+    res.json(cleanedEvents);
   } catch (err) {
     console.error("Error fetching all events:", err);
     res.status(500).json({
@@ -711,33 +733,128 @@ app.get("/api/truck-details", async (req, res) => {
 app.post("/addevent", upload.single("logo"), async (req, res) => {
   try {
     const eventData = req.body;
-    console.log("Received file:", req.file);
+    console.log("Received request body:", eventData); // Debug log
+
     if (req.file) {
       eventData.strLogoFilePath = `/public/uploads/eventlogos/${req.file.filename}`;
-    } else {
-      console.log("No file uploaded");
     }
 
-    console.log("Event Details:", {
-      name: eventData.strEventName,
-      description: eventData.strDescription,
-      dateOfEvent: eventData.dtDateOfEvent,
-      setupTime: eventData.dtSetUpTime,
-      location: eventData.strLocation,
-      totalSpaces: eventData.intTotalSpaces,
-      expectedGuests: eventData.intExpectedGuests,
-      organizerID: eventData.intOrganizerID,
-    });
+    // Validate required fields
+    if (
+      !eventData.intOrganizerID ||
+      !eventData.strEventName ||
+      !eventData.dtDateOfEvent
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing required fields",
+        receivedData: eventData,
+      });
+    }
 
-    console.log("Complete Event Data:", eventData);
-    res.json({
-      success: true,
-      message: "Event created successfully",
-      data: eventData,
-    });
+    const pool = await sqlConnectionToServer.connect(config);
+    console.log("Database connected"); // Debug log
+
+    try {
+      const request = pool.request();
+
+      // Debug log the values being passed to the stored procedure
+      console.log("Stored procedure parameters:", {
+        intOrganizerID: parseInt(eventData.intOrganizerID),
+        strEventName: eventData.strEventName,
+        strDescription: eventData.strDescription,
+        dtDateOfEvent: new Date(eventData.dtDateOfEvent),
+        strLocation: eventData.strLocation,
+        intTotalSpaces: parseInt(eventData.intTotalSpaces),
+        intExpectedGuests: parseInt(eventData.intExpectedGuests),
+      });
+
+      const result = await request
+        .input(
+          "intOrganizerID",
+          sqlConnectionToServer.Int,
+          parseInt(eventData.intOrganizerID)
+        )
+        .input(
+          "strEventName",
+          sqlConnectionToServer.VarChar(50),
+          eventData.strEventName
+        )
+        .input(
+          "strDescription",
+          sqlConnectionToServer.VarChar(255),
+          eventData.strDescription || ""
+        )
+        .input(
+          "dtDateOfEvent",
+          sqlConnectionToServer.DateTime,
+          new Date(eventData.dtDateOfEvent)
+        )
+        .input(
+          "dtSetUpTime",
+          sqlConnectionToServer.DateTime,
+          new Date(eventData.dtDateOfEvent)
+        ) // Using same as event date since setup time was removed
+        .input(
+          "strLocation",
+          sqlConnectionToServer.VarChar(50),
+          eventData.strLocation
+        )
+        .input(
+          "intTotalSpaces",
+          sqlConnectionToServer.Int,
+          parseInt(eventData.intTotalSpaces)
+        )
+        .input(
+          "intAvailableSpaces",
+          sqlConnectionToServer.Int,
+          parseInt(eventData.intTotalSpaces)
+        )
+        .input("monPricePerSpace", sqlConnectionToServer.Money, 50.0)
+        .input(
+          "intExpectedGuests",
+          sqlConnectionToServer.Int,
+          parseInt(eventData.intExpectedGuests)
+        )
+        .input("intStatusID", sqlConnectionToServer.Int, 1)
+        .input(
+          "strLogoFilePath",
+          sqlConnectionToServer.VarChar(500),
+          eventData.strLogoFilePath || null
+        )
+        .input("monTotalRevenue", sqlConnectionToServer.Money, 0)
+        .output("intEventID", sqlConnectionToServer.Int)
+        .execute("uspCreateEvent");
+
+      console.log("Stored procedure executed successfully", result); // Debug log
+
+      const newEventId = result.output.intEventID;
+
+      res.json({
+        success: true,
+        message: "Event created successfully",
+        data: {
+          ...eventData,
+          intEventID: newEventId,
+        },
+      });
+    } catch (dbError) {
+      console.error("Database error:", dbError);
+      res.status(500).json({
+        success: false,
+        message: "Database error",
+        error: dbError.message,
+        procedure: "uspCreateEvent",
+        parameters: eventData,
+      });
+    }
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ success: false, message: "Error creating event" });
+    console.error("Server error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+      error: error.message,
+    });
   }
 });
 
@@ -890,8 +1007,6 @@ app.get("/api/getitem", async (req, res) => {
   const intVendorID = req.query.intVendorID;
   console.log("User ID", intVendorID);
   try {
-    console.log("request body", req.body);
-    console.log("Hello", intVendorID);
     const parsedUserID = parseInt(intVendorID);
     const pool = await sqlConnectionToServer.connect(config);
     const result = await pool
@@ -1006,7 +1121,7 @@ app.get("/api/events/:eventId/cuisine-limits", async (req, res) => {
 
     res.json(result.recordset);
   } catch (err) {
-    console.error('Error fetching cuisine limits:', err);
+    console.error("Error fetching cuisine limits:", err);
     res.status(500).json({ error: "Failed to fetch cuisine limits" });
   }
 });
@@ -1018,7 +1133,7 @@ app.get("/api/cuisine-types", async (req, res) => {
     const result = await pool
       .request()
       .query("SELECT intCuisineTypeID, strCuisineType FROM TCuisineTypes");
-    
+
     res.json(result.recordset);
   } catch (err) {
     console.error(err);
@@ -1029,10 +1144,10 @@ app.get("/api/cuisine-types", async (req, res) => {
 app.post("/api/events/:eventId/cuisine-limits", async (req, res) => {
   const { eventId } = req.params;
   const { cuisineTypeId, limit } = req.body;
-  console.log("EventID received", typeof(eventId))
-  console.log("CusineType", cuisineTypeId, " Limit", typeof(limit));
+  console.log("EventID received", typeof eventId);
+  console.log("CusineType", cuisineTypeId, " Limit", typeof limit);
 
-  const parsedEventID = parseInt(eventId)
+  const parsedEventID = parseInt(eventId);
   try {
     const pool = await sqlConnectionToServer.connect(config);
     await pool

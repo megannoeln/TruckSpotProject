@@ -1,4 +1,3 @@
-// VendorModal.jsx
 import React from "react";
 import VendorTable from "./VendorTable";
 
