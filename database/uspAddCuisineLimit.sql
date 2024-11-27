@@ -30,6 +30,26 @@ CREATE PROCEDURE uspAddCuisineLimit
     @intLimit INT
 AS
 BEGIN
+    DECLARE @TotalExistingLimits INT;
+    DECLARE @EventAvailableSpaces INT;
+
+    -- get totaL available spaces for event
+    SELECT @EventAvailableSpaces = intAvailableSpaces
+    FROM TEvents
+    WHERE intEventID = @intEventID;
+
+    -- total their existing limits
+    SELECT @TotalExistingLimits = ISNULL(SUM(intLimit), 0)
+    FROM TEventCuisines
+    WHERE intEventID = @intEventID;
+
+   -- error if new limit exceeds available spaces
+    IF (@TotalExistingLimits + @intLimit) > @EventAvailableSpaces
+    BEGIN
+        PRINT 'Adding this limit would exceed the available spaces for this event.';
+        RETURN;
+    END
+
     -- check if they already set a limit
     IF EXISTS (SELECT 1 FROM TEventCuisines WHERE intEventID = @intEventID AND intCuisineTypeID = @intCuisineTypeID)
     BEGIN
