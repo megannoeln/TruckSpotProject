@@ -21,7 +21,6 @@ IF OBJECT_ID('uspAverageEventRating') IS NOT NULL DROP PROCEDURE  uspAverageEven
 
 GO
 
--- gets available spaces for an event
 CREATE PROCEDURE uspAverageEventRating
     @intEventID INT
 AS

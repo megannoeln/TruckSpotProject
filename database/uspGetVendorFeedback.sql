@@ -21,7 +21,6 @@ IF OBJECT_ID('uspGetVendorFeedback') IS NOT NULL DROP PROCEDURE uspGetVendorFeed
 
 GO
 
--- gets available spaces for an event
 CREATE PROCEDURE uspGetVendorFeedback
     @intEventID INT
 AS
