@@ -46,7 +46,7 @@ BEGIN
    -- error if new limit exceeds available spaces
     IF (@TotalExistingLimits + @intLimit) > @EventAvailableSpaces
     BEGIN
-        PRINT 'Adding this limit would exceed the available spaces for this event.';
+        RAISERROR ('Adding this limit would exceed the available spaces for this event.', 16, 1);
         RETURN;
     END
 
