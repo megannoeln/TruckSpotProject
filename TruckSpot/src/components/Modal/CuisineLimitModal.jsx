@@ -1,4 +1,3 @@
-// components/CuisineLimits/CuisineLimitModal.jsx
 import React from "react";
 
 const CuisineLimitModal = ({

@@ -102,7 +102,7 @@ function EventInformation() {
       );
 
       if (response.data.success) {
-        alert("Cuisine limit added successfully");
+        alert("Cuisine limit updated successfully");
         setShowCuisineLimitModal(false);
         setNewCuisineLimit({ cuisineTypeId: "", limit: "" });
         fetchCuisineLimits();
