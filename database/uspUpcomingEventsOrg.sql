@@ -29,8 +29,8 @@ BEGIN
 
     SELECT 
         TEvents.strEventName as EventName,
-        TEvents.monTotalRevenue as TotalRevenue,
-        COUNT(DISTINCT TFoodTruckEvents.intFoodTruckID) AS VendorCount,
+         ISNULL(TEvents.monTotalRevenue, 0) AS TotalRevenue,
+         ISNULL(COUNT(DISTINCT TFoodTruckEvents.intFoodTruckID), 0) as VendorCount,
         TEvents.dtDateOfEvent as EventDate
     FROM 
         TEvents
