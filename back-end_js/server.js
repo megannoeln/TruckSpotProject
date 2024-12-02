@@ -372,11 +372,19 @@ app.get("/api/mycreatedevent", async (req, res) => {
     const pool = await sqlConnectionToServer.connect(config);
     console.log("attempting");
     const result = await pool.request().query(`
-            SELECT intEventID,strEventName,dtDateOfEvent
-            FROM TEvents JOIN TOrganizers ON TEvents.intOrganizerID = TOrganizers.intOrganizerID
-            WHERE TEvents.dtDateOfEvent > GETDATE() AND TEvents.intOrganizerID = ${parsedUserID}
-            ORDER BY TEvents.dtDateOfEvent DESC;
-                `);
+            SELECT  
+          e.intEventID,
+          e.strEventName,
+          e.strDescription,
+          e.dtDateOfEvent,
+          e.strLocation,
+          e.strLogoFilePath
+        FROM TEvents AS e
+           JOIN 
+            TOrganizers ON e.intOrganizerID = TOrganizers.intOrganizerID
+            WHERE e.dtDateOfEvent > GETDATE() AND e.intOrganizerID = ${parsedUserID}
+            ORDER BY e.dtDateOfEvent DESC;
+      `);
 
     console.log(result.query);
     console.log(`Found ${result.recordset.length} events`);
