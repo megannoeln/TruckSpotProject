@@ -289,6 +289,7 @@ app.get("/api/myreservation", async (req, res) => {
                   E.intEventID,
                   E.strEventName,
                   E.dtDateOfEvent,
+                  E.strLogoFilePath,
                   FT.intFoodTruckID,
                   FT.strTruckName
               FROM 
