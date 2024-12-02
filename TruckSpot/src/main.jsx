@@ -1,82 +1,79 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import App from './App.jsx'
-import {
-  createBrowserRouter,
-  RouterProvider,
-} from "react-router-dom";
-import Login from './pages/login.jsx';
-import Signup from './pages/signup.jsx';
-import Event from './pages/event.jsx';
-import Home from './pages/home.jsx';
-import Reservation from './pages/reservation.jsx';
-import MyAccount from './pages/MyAccount.jsx';
-import UpdateAccount from './pages/UpdateAccount.jsx';
-import EventInformation from './pages/EventInformation.jsx';
-import Trucks from './pages/Trucks.jsx';
-import AddTruck from './Pages/AddTruck.jsx';
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import "./index.css";
+import App from "./App.jsx";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import Login from "./pages/login.jsx";
+import Signup from "./pages/signup.jsx";
+import Event from "./pages/event.jsx";
+import Home from "./pages/home.jsx";
+import Reservation from "./pages/reservation.jsx";
+import MyAccount from "./pages/MyAccount.jsx";
+import UpdateAccount from "./pages/UpdateAccount.jsx";
+import EventInformation from "./pages/EventInformation.jsx";
+import Trucks from "./pages/Trucks.jsx";
+import AddTruck from "./Pages/AddTruck.jsx";
 import UpdateTruck from "./Pages/UpdateTruck.jsx";
-import AddEvent from './pages/AddEvent.jsx';
-import MyEvent from './Pages/MyEvent.jsx';
-import MyEventDashboard from './pages/MyEventDashboard.jsx';
-import MyActivity from './pages/MyActivity.jsx';
-import FoodMenu from './pages/FoodMenu.jsx';
-import AddItem from './pages/AddItem.jsx';
-import VendorDashboard from './pages/VendorDashboard.jsx';
-import OrganizerDashboard from './Pages/OrganizerDashboard.jsx';
+import AddEvent from "./pages/AddEvent.jsx";
+import MyEvent from "./Pages/MyEvent.jsx";
+import MyActivity from "./pages/MyActivity.jsx";
+import FoodMenu from "./pages/FoodMenu.jsx";
+import AddItem from "./pages/AddItem.jsx";
+import VendorDashboard from "./pages/VendorDashboard.jsx";
+import OrganizerDashboard from "./Pages/OrganizerDashboard.jsx";
+import UpdateEvent from "./Pages/UpdateEvent.jsx";
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Home/>
+    element: <Home />,
   },
   {
     path: "home",
-    element: <Home/>
+    element: <Home />,
   },
   {
     path: "login",
-    element: <Login/>
+    element: <Login />,
   },
   {
     path: "signup",
-    element: <Signup/>
+    element: <Signup />,
   },
   {
     path: "event",
-    element: <Event/>
+    element: <Event />,
   },
   {
     path: "reservation",
-    element: <Reservation/>
+    element: <Reservation />,
   },
   {
     path: "myaccount",
-    element: <MyAccount/>
+    element: <MyAccount />,
   },
   {
     path: "updateaccount",
-    element: <UpdateAccount/>
+    element: <UpdateAccount />,
   },
   {
     path: "eventinformation/:eventId",
-    element: <EventInformation/>
+    element: <EventInformation />,
   },
   {
     path: "vendordashboard",
-    element: <VendorDashboard/>
+    element: <VendorDashboard />,
   },
   {
     path: "organizerdashboard",
-    element: <OrganizerDashboard/>
+    element: <OrganizerDashboard />,
   },
   {
     path: "trucks",
-    element: <Trucks/>
+    element: <Trucks />,
   },
   {
     path: "addtruck",
-    element: <AddTruck/>
+    element: <AddTruck />,
   },
   {
     path: "updatetruck",
@@ -84,38 +81,32 @@ const router = createBrowserRouter([
   },
   {
     path: "addevent",
-    element: <AddEvent/>
-  }
-  ,
-  {
-    path: "myevent",
-    element: <MyEvent/>
+    element: <AddEvent />,
   },
   {
-    path: "myeventdashboard",
-    element: <MyEventDashboard/>
+    path: "myevent",
+    element: <MyEvent />,
   },
   {
     path: "myactivity",
-    element: <MyActivity/>
+    element: <MyActivity />,
   },
   {
     path: "foodmenu",
-    element: <FoodMenu/>
+    element: <FoodMenu />,
   },
   {
     path: "additem",
-    element: <AddItem/>
-  }
+    element: <AddItem />,
+  },
+  {
+    path: "updateevent/:eventId",
+    element: <UpdateEvent />,
+  },
+]);
 
-
-
-  
-])
-
-
-createRoot(document.getElementById('root')).render(
+createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <RouterProvider router={router}/>
-  </StrictMode>,
-)
+    <RouterProvider router={router} />
+  </StrictMode>
+);

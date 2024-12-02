@@ -1,10 +1,13 @@
 import React from "react";
 import Navbar from "../components/Navbar/Navbar";
 import SideBar from "../components/Sidebar/SideBar";
+import { useParams, useLocation } from "react-router-dom";
 import axios from "axios";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
-const CreateEvent = () => {
+const EditEvent = () => {
+  const location = useLocation();
+  const eventId = location.pathname.split("/").pop();
   const storedUserID = sessionStorage.getItem("userID");
   const [logoFile, setLogoFile] = useState(null);
   const [logoPreview, setLogoPreview] = useState(null);
@@ -12,7 +15,7 @@ const CreateEvent = () => {
   const [values, setValues] = useState({
     strEventName: "",
     strDescription: "",
-    intOrganizerID: storedUserID || "",
+    intOrganizerID: storedUserID,
     dtDateOfEvent: "",
     timeOfEvent: "",
     strLocation: "",
@@ -20,6 +23,41 @@ const CreateEvent = () => {
     intExpectedGuests: "",
     monPricePerSpace: "",
   });
+
+  useEffect(() => {
+    const fetchEvent = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:5000/api/updateevent/${eventId}`
+        );
+        const event = response.data;
+
+        const eventDate = new Date(event.dtDateOfEvent);
+        const date = eventDate.toISOString().split("T")[0];
+        const time = eventDate.toTimeString().slice(0, 5);
+
+        setValues({
+          strEventName: event.strEventName,
+          strDescription: event.strDescription,
+          intOrganizerID: event.intOrganizerID,
+          dtDateOfEvent: date,
+          timeOfEvent: time,
+          strLocation: event.strLocation,
+          intTotalSpaces: event.intTotalSpaces,
+          intExpectedGuests: event.intExpectedGuests,
+          monPricePerSpace: event.monPricePerSpace,
+        });
+
+        if (event.strLogoFilePath) {
+          setLogoPreview(`http://localhost:5000${event.strLogoFilePath}`);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchEvent();
+  }, [eventId]);
 
   const handleInput = (event) => {
     const { name, value } = event.target;
@@ -43,22 +81,18 @@ const CreateEvent = () => {
     event.preventDefault();
     const formData = new FormData();
 
-    // Combine date and time for event
     const eventDateTime =
       values.dtDateOfEvent && values.timeOfEvent
         ? `${values.dtDateOfEvent}T${values.timeOfEvent}`
         : null;
 
-    // Create the final data object
     const finalData = {
       ...values,
       dtDateOfEvent: eventDateTime,
     };
 
-    // Append all form data
     Object.keys(finalData).forEach((key) => {
       if (key !== "timeOfEvent") {
-        // Skip the separate time field
         formData.append(key, finalData[key]);
       }
     });
@@ -69,7 +103,7 @@ const CreateEvent = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/addevent",
+        `http://localhost:5000/api/updateevent/${eventId}`,
         formData,
         {
           headers: {
@@ -77,15 +111,12 @@ const CreateEvent = () => {
           },
         }
       );
-
       if (response.data.success) {
-        alert("Event added successfully");
-      } else {
-        alert(response.data.message || "Something went wrong");
+        alert("Event updated successfully");
       }
     } catch (error) {
-      console.error("Error details:", error);
-      alert("Error adding event. Please try again.");
+      console.error(error);
+      alert("Error updating event");
     }
   };
 
@@ -255,15 +286,15 @@ const CreateEvent = () => {
   );
 };
 
-function AddEvent() {
+function UpdateEvent() {
   return (
     <>
       <Navbar />
       <div className="container mx-auto px-4">
-        <CreateEvent />
+        <EditEvent />
       </div>
     </>
   );
 }
 
-export default AddEvent;
+export default UpdateEvent;

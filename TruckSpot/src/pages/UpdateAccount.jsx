@@ -29,13 +29,8 @@ function UpdateAccount() {
           setStatusMessage("User session not found.");
           return;
         }
-
         const endpoint = `http://localhost:5000/api/user-details?userID=${userID}&userType=${userType}`;
-        console.log("Requesting endpoint:", endpoint);
-
         const response = await axios.get(endpoint);
-
-        console.log("API response:", response);
 
         if (response.data.success) {
           const { userName, phoneNumber, email } = response.data;

@@ -6,6 +6,8 @@ import axios from "axios";
 import EventTable from "../components/EventTable/EventTable";
 
 function MyActivity({ event }) {
+  const storedUserType = sessionStorage.getItem("userType");
+
   return (
     <>
       <Navbar />
@@ -17,7 +19,17 @@ function MyActivity({ event }) {
           </div>
           <div className="col-span-12 md:col-span-9">
             <div className=" rounded-lg shadow-sm p-6">
-              <h2 className="text-xl font-semibold mb-6">My Activity</h2>
+              <div className="flex items-center gap-4 mb-6">
+                <h2 className="text-xl font-semibold">My Activity</h2>
+                {storedUserType === "2" && (
+                  <Link to="/addevent">
+                    <button className="bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-600 transition-colors">
+                      Add an event
+                    </button>
+                  </Link>
+                )}
+              </div>
+
               <EventTable />
             </div>
           </div>

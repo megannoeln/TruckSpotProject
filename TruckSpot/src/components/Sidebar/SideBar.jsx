@@ -78,29 +78,7 @@ function SideBar() {
               </Link>
             </li>
             {/* Show Create Event only for organizers (userType === '2') */}
-            {isLoggedIn && userType === "2" && (
-              <li>
-                <Link
-                  to="/myeventdashboard"
-                  className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
-                >
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
-                    />
-                  </svg>
-                  <span className="ms-3">My Events</span>
-                </Link>
-              </li>
-            )}
+           
 
             {/* Show My Reservation only for vendors (userType === '1') */}
             {isLoggedIn && userType === "1" && (

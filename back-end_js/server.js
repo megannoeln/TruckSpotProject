@@ -758,17 +758,6 @@ app.post("/addevent", upload.single("logo"), async (req, res) => {
     try {
       const request = pool.request();
 
-      // Debug log the values being passed to the stored procedure
-      console.log("Stored procedure parameters:", {
-        intOrganizerID: parseInt(eventData.intOrganizerID),
-        strEventName: eventData.strEventName,
-        strDescription: eventData.strDescription,
-        dtDateOfEvent: new Date(eventData.dtDateOfEvent),
-        strLocation: eventData.strLocation,
-        intTotalSpaces: parseInt(eventData.intTotalSpaces),
-        intExpectedGuests: parseInt(eventData.intExpectedGuests),
-      });
-
       const result = await request
         .input(
           "intOrganizerID",
@@ -810,7 +799,11 @@ app.post("/addevent", upload.single("logo"), async (req, res) => {
           sqlConnectionToServer.Int,
           parseInt(eventData.intTotalSpaces)
         )
-        .input("monPricePerSpace", sqlConnectionToServer.Money, 50.0)
+        .input(
+          "monPricePerSpace",
+          sqlConnectionToServer.Money,
+          eventData.monPricePerSpace
+        )
         .input(
           "intExpectedGuests",
           sqlConnectionToServer.Int,
@@ -1163,6 +1156,215 @@ app.post("/api/events/:eventId/cuisine-limits", async (req, res) => {
     res.status(500).json({ error: "Failed to add cuisine limit" });
   }
 });
+
+// Get Organizer statistic for dashboard
+app.get("/api/organizer/stats/:userId", async (req, res) => {
+  try {
+    const pool = await sqlConnectionToServer.connect(config);
+    const userId = req.params.userId;
+
+    // Execute stored procedures
+    const [pastEvents, futureEvents, totalEvents, profitableEvent, avgRevenue] =
+      await Promise.all([
+        pool
+          .request()
+          .input("intOrganizerID", sqlConnectionToServer.Int, userId)
+          .execute("uspCountOrganizersPastEvents"),
+
+        pool
+          .request()
+          .input("intOrganizerID", sqlConnectionToServer.Int, userId)
+          .execute("uspCountOrganizersFutureEvents"),
+
+        pool
+          .request()
+          .input("intOrganizerID", sqlConnectionToServer.Int, userId)
+          .execute("uspCountOrganizersTotalEvents"),
+
+        pool
+          .request()
+          .input("intOrganizerID", sqlConnectionToServer.Int, userId)
+          .execute("uspOrganizerMostProfitableEvent"),
+
+        pool
+          .request()
+          .input("intOrganizerID", sqlConnectionToServer.Int, userId)
+          .execute("uspAverageRevenueForOrganizer"),
+      ]);
+    res.json({
+      pastEvents: pastEvents.recordset[0]?.PastEventCount || 0,
+      futureEvents: futureEvents.recordset[0]?.FutureEventCount || 0,
+      totalEvents: totalEvents.recordset[0]?.TotalEventCount || 0,
+      mostProfitable: {
+        name: profitableEvent.recordset[0]?.strEventName || "",
+        revenue: profitableEvent.recordset[0]?.monTotalRevenue || 0,
+      },
+      averageRevenue: avgRevenue.recordset[0]?.AverageRevenue || 0,
+    });
+  } catch (error) {
+    console.error(error);
+    console.log(userID);
+    res.status(500).json({ error: "Failed to fetch organizer statistics" });
+  }
+});
+
+app.get("/api/organizer/upcoming-events/:userId", async (req, res) => {
+  try {
+    const pool = await sqlConnectionToServer.connect(config);
+    const userId = req.params.userId;
+
+    const result = await pool
+      .request()
+      .input("intOrganizerID", sqlConnectionToServer.Int, userId)
+      .execute("uspUpcomingEventsOrg");
+
+    res.json(result.recordset);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to fetch upcoming events" });
+  }
+});
+
+// Get Vendor statistic for dashboard
+app.get("/api/vendor/stats/:userId", async (req, res) => {
+  try {
+    const pool = await sqlConnectionToServer.connect(config);
+    const userId = req.params.userId;
+
+    console.log(userId);
+    // Execute stored procedures
+    const [pastEvents, futureEvents, totalEvents, profitableEvent, avgRevenue] =
+      await Promise.all([
+        pool
+          .request()
+          .input("intVendorID", sqlConnectionToServer.Int, userId)
+          .execute("uspCountVendorsPastEvents"),
+
+        pool
+          .request()
+          .input("intVendorID", sqlConnectionToServer.Int, userId)
+          .execute("uspCountVendorsFutureEvents"),
+
+        pool
+          .request()
+          .input("intVendorID", sqlConnectionToServer.Int, userId)
+          .execute("uspCountVendorsTotalEvents"),
+
+        pool
+          .request()
+          .input("intVendorID", sqlConnectionToServer.Int, userId)
+          .execute("uspVendorMostProfitableEvent"),
+
+        pool
+          .request()
+          .input("intVendorID", sqlConnectionToServer.Int, userId)
+          .execute("uspVendorAverageRevenue "),
+      ]);
+    res.json({
+      pastEvents: pastEvents.recordset[0]?.PastEventCount || 0,
+      futureEvents: futureEvents.recordset[0]?.FutureEventCount || 0,
+      totalEvents: totalEvents.recordset[0]?.TotalEventCount || 0,
+      mostProfitable: {
+        name: profitableEvent.recordset[0]?.EventName || "",
+        revenue: profitableEvent.recordset[0]?.TotalRevenue || 0,
+      },
+      averageRevenue: avgRevenue.recordset[0]?.AverageRevenue || 0,
+    });
+  } catch (error) {
+    console.error(error);
+    console.log(userID);
+    res.status(500).json({ error: "Failed to fetch organizer statistics" });
+  }
+});
+// Get information to show in update event page
+app.get("/api/updateevent/:eventId", async (req, res) => {
+  try {
+    const pool = await sqlConnectionToServer.connect(config);
+    const result = await pool
+      .request()
+      .input("intEventID", sqlConnectionToServer.Int, req.params.eventId)
+      .execute("uspGetEvent");
+
+    if (result.recordset.length > 0) {
+      res.json(result.recordset[0]);
+    } else {
+      res.status(404).json({ error: "Event not found" });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Database error" });
+  }
+});
+
+app.post(
+  "/api/updateevent/:eventId",
+  upload.single("logo"),
+  async (req, res) => {
+    try {
+      const eventData = req.body;
+      if (req.file) {
+        eventData.strLogoFilePath = `/public/uploads/eventlogos/${req.file.filename}`;
+      }
+
+      const pool = await sqlConnectionToServer.connect(config);
+      const result = await pool
+        .request()
+        .input("intEventID", sqlConnectionToServer.Int, req.params.eventId)
+        .input(
+          "strEventName",
+          sqlConnectionToServer.VarChar(50),
+          eventData.strEventName
+        )
+        .input(
+          "strDescription",
+          sqlConnectionToServer.VarChar(255),
+          eventData.strDescription
+        )
+        .input(
+          "dtDateOfEvent",
+          sqlConnectionToServer.DateTime,
+          eventData.dtDateOfEvent
+        )
+        .input(
+          "strLocation",
+          sqlConnectionToServer.VarChar(50),
+          eventData.strLocation
+        )
+        .input(
+          "intTotalSpaces",
+          sqlConnectionToServer.Int,
+          eventData.intTotalSpaces
+        )
+        .input(
+          "intExpectedGuests",
+          sqlConnectionToServer.Int,
+          eventData.intExpectedGuests
+        )
+        .input(
+          "strLogoFilePath",
+          sqlConnectionToServer.VarChar(500),
+          eventData.strLogoFilePath
+        )
+        .input(
+          "monPricePerSpace",
+          sqlConnectionToServer.Money,
+          eventData.monPricePerSpace
+        )
+        .execute("uspUpdateEvent");
+
+      res.json({
+        success: true,
+        message: "Event updated successfully",
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({
+        success: false,
+        message: "Error updating event",
+      });
+    }
+  }
+);
 
 app.listen(API_PORT, () => {
   console.log(`Server running on port ${API_PORT}`);

@@ -1,5 +1,6 @@
 import React from "react";
 import CuisineLimitModal from "../Modal/CuisineLimitModal";
+import { Link } from "react-router-dom";
 const EventDetailSection = ({
   event,
   cuisineLimits,
@@ -160,7 +161,7 @@ const EventDetailSection = ({
               <span className="font-semibold">Cuisine Limits:</span>
             </div>
 
-            <div className="ml-7 mt-2 space-y-2 bg-gray-50 p-3 rounded-md">
+            <div className="ml-7 mt-2 space-y-2 bg-gray-50 p-3 rounded-md mb-2">
               {cuisineLimits.map((cuisine, index) => (
                 <div
                   key={index}
@@ -179,12 +180,12 @@ const EventDetailSection = ({
                 </div>
               ))}
             </div>
-            <div className="flex justify-center items-center space-x-4">
+            <div className="flex justify-center space-x-3">
               {isLoggedIn &&
                 userType === "1" &&
                 new Date(event.dtDateOfEvent) > new Date() && (
                   <button
-                    className="bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-600 transition-colors"
+                    className="bg-blue-500 text-white px-4 py-1.5 text-sm rounded hover:bg-blue-600 transition-colors"
                     onClick={onReservation}
                   >
                     Reserve a spot
@@ -194,7 +195,7 @@ const EventDetailSection = ({
               {isLoggedIn && userType === "2" && (
                 <button
                   onClick={onShowVendors}
-                  className="bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-600 transition-colors"
+                  className="bg-blue-500 text-white px-4 py-1.5 text-sm rounded hover:bg-blue-600 transition-colors"
                 >
                   Show Vendors
                 </button>
@@ -204,13 +205,18 @@ const EventDetailSection = ({
                 userType === "2" &&
                 event.intOrganizerID ===
                   parseInt(sessionStorage.getItem("userID")) && (
-                  <div className="flex space-x-4">
+                  <div className="flex space-x-3">
                     <button
                       onClick={onShowCuisineLimit}
-                      className="bg-green-500 text-white px-6 py-2 rounded-md hover:bg-green-600 transition-colors"
+                      className="bg-green-500 text-white px-4 py-1.5 text-sm rounded hover:bg-green-600 transition-colors"
                     >
                       Add Cuisine Limit
                     </button>
+                    <Link to={`/updateevent/${event.intEventID}`}>
+                      <button className="bg-blue-500 text-white px-4 py-1.5 text-sm rounded hover:bg-blue-600 transition-colors">
+                        Edit Event
+                      </button>
+                    </Link>
                     <CuisineLimitModal
                       show={showCuisineLimitModal}
                       onClose={onCloseCuisineLimit}

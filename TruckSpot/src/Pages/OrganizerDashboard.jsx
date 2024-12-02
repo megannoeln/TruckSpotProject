@@ -1,14 +1,51 @@
 import React from "react";
 import Navbar from "../components/Navbar/Navbar";
 import SideBar from "../components/Sidebar/SideBar";
+import DashboardCard from "../components/DashboardCard/DashboardCard";
+import { useState, useEffect } from "react";
+import axios from "axios";
 
 function OrganizerDashboard() {
-  const stats = {
-    totalEvents: 25,
-    upcomingEvents: 8,
-    pastEvents: 15,
-    avgAttendance: 150,
-  };
+  const [stats, setStats] = useState({
+    pastEvents: 0,
+    futureEvents: 0,
+    totalEvents: 0,
+    mostProfitable: { name: "", revenue: 0 },
+    averageRevenue: 0,
+  });
+  const [upcomingEvents, setUpcomingEvents] = useState([]);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      const userId = sessionStorage.getItem("userID");
+      try {
+        const response = await axios.get(
+          `http://localhost:5000/api/organizer/stats/${userId}`
+        );
+        setStats(response.data);
+        console.log(response.data);
+      } catch (error) {
+        console.error("Error fetching stats:", error);
+      }
+    };
+
+    fetchStats();
+  }, []);
+
+  useEffect(() => {
+    const fetchUpcomingEvents = async () => {
+      const userId = sessionStorage.getItem("userID");
+      try {
+        const response = await axios.get(
+          `http://localhost:5000/api/organizer/upcoming-events/${userId}`
+        );
+        setUpcomingEvents(response.data);
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    };
+    fetchUpcomingEvents();
+  }, []);
 
   return (
     <>
@@ -22,50 +59,68 @@ function OrganizerDashboard() {
           <div className="col-span-12 md:col-span-9">
             <h1 className="text-2xl font-bold mb-6">Dashboard</h1>
 
-            {/* Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-              <div className="bg-white p-6 rounded-lg shadow-sm">
-                <h3 className="text-gray-500 text-sm">Total Events</h3>
-                <p className="text-2xl font-semibold">{stats.totalEvents}</p>
-              </div>
-              <div className="bg-white p-6 rounded-lg shadow-sm">
-                <h3 className="text-gray-500 text-sm">Upcoming Events</h3>
-                <p className="text-2xl font-semibold">{stats.upcomingEvents}</p>
-              </div>
-              <div className="bg-white p-6 rounded-lg shadow-sm">
-                <h3 className="text-gray-500 text-sm">Past Events</h3>
-                <p className="text-2xl font-semibold">{stats.pastEvents}</p>
-              </div>
-              <div className="bg-white p-6 rounded-lg shadow-sm">
-                <h3 className="text-gray-500 text-sm">Average Attendance</h3>
-                <p className="text-2xl font-semibold">{stats.avgAttendance}</p>
-              </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-5">
+              <DashboardCard title="Total Events" data={stats.totalEvents} />
+              <DashboardCard
+                title="Upcoming Events"
+                data={stats.futureEvents}
+              />
+              <DashboardCard title="Past Events" data={stats.pastEvents} />
             </div>
 
-            {/* Recent Events */}
-            <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
-              <h2 className="text-xl font-semibold mb-4">Recent Events</h2>
-              <table className="min-w-full">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-500">
-                      Event Name
-                    </th>
-                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-500">
-                      Date
-                    </th>
-                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-500">
-                      Location
-                    </th>
-                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-500">
-                      Status
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200">
-                  {/* Add event rows here */}
-                </tbody>
-              </table>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-5">
+              <DashboardCard
+                title="Most Profitable Event"
+                data={stats.mostProfitable}
+                isCurrency={true}
+              />
+              <DashboardCard
+                title="Average Revenue"
+                data={`$${parseFloat(stats.averageRevenue).toFixed(2)}`}
+                isCurrency={false}
+              />
+            </div>
+
+            <div className="bg-white rounded-lg shadow">
+              <h3 className="p-4 text-lg font-semibold border-b">
+                Upcoming Events
+              </h3>
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600">
+                        Event Name
+                      </th>
+                      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600">
+                        Attending Vendor
+                      </th>
+                      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600">
+                        Total Revenue
+                      </th>
+                      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600">
+                        Date
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200">
+                    {upcomingEvents.map((event) => (
+                      <tr key={event.intEventID}>
+                        <td className="px-6 py-4 text-sm">{event.EventName}</td>
+                        <td className="px-6 py-4 text-sm">
+                          {event.VendorCount}
+                        </td>
+                        <td className="px-6 py-4 text-sm">
+                          ${event.TotalRevenue.toLocaleString()}
+                        </td>
+                        <td className="px-6 py-4 text-sm">
+                          {new Date(event.EventDate).toLocaleDateString()}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
