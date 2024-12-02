@@ -383,7 +383,7 @@ app.get("/api/mycreatedevent", async (req, res) => {
            JOIN 
             TOrganizers ON e.intOrganizerID = TOrganizers.intOrganizerID
             WHERE e.dtDateOfEvent > GETDATE() AND e.intOrganizerID = ${parsedUserID}
-            ORDER BY e.dtDateOfEvent DESC;
+            ORDER BY e.dtDateOfEvent ASC;
       `);
 
     console.log(result.query);
