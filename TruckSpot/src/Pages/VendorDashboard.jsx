@@ -98,7 +98,7 @@ function VendorDashboard() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-5">
               <DashboardCard
-                title="Total Events Attened"
+                title="Total Events Attended"
                 data={stats.totalEvents}
               />
               <DashboardCard
