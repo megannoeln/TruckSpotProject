@@ -17,23 +17,37 @@ SET NOCOUNT ON;
 -- Drop
 -- --------------------------------------------------------------------------------
 
-IF OBJECT_ID('uspAverageRevenueForOrganizer') IS NOT NULL DROP PROCEDURE  uspAverageRevenueForOrganizer
+IF OBJECT_ID('uspVendorAverageRevenue') IS NOT NULL DROP PROCEDURE  uspVendorAverageRevenue
 
 GO
 
-CREATE PROCEDURE uspAverageRevenueForOrganizer
-    @intOrganizerID INT
+CREATE PROCEDURE uspVendorAverageRevenue
+    @intVendorID INT
 AS
 BEGIN
     SET NOCOUNT ON;
 
+ 
+    DECLARE @intFoodTruckID INT;
+
+   
+    SELECT 
+        @intFoodTruckID = TFoodTrucks.intFoodTruckID
+    FROM 
+        TFoodTrucks
+    WHERE 
+        TFoodTrucks.intVendorID = @intVendorID;
+
+   
     SELECT
-        AVG(monTotalRevenue) as AverageRevenue
+        AVG(TFoodTruckEvents.monTotalRevenue) AS AverageRevenue
     FROM
-        TEvents
+        TFoodTruckEvents
     WHERE
-        intOrganizerID = @intOrganizerID
+        TFoodTruckEvents.intFoodTruckID = @intFoodTruckID;
 END;
+
 
 GO
 
+--exec uspVendorAverageRevenue 1

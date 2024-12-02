@@ -22,27 +22,36 @@ IF OBJECT_ID('uspVendorMostProfitableEvent') IS NOT NULL DROP PROCEDURE  uspVend
 GO
 
 CREATE PROCEDURE uspVendorMostProfitableEvent
-    @intFoodTruckID INT
+    @intVendorID INT
 AS
 BEGIN
     SET NOCOUNT ON
 
+	DECLARE @intFoodTruckID INT;
+
+    SELECT 
+        @intFoodTruckID = TFoodTrucks.intFoodTruckID
+    FROM 
+        TFoodTrucks
+    WHERE 
+        TFoodTrucks.intVendorID = @intVendorID;
+
+
     SELECT
-        TEvents.strEventName, TFoodTruckEvents.monTotalRevenue
+        TEvents.strEventName as EventName, 
+        TFoodTruckEvents.monTotalRevenue as TotalRevenue
     FROM
-        TFoodTruckEvents INNER JOIN TEvents
-    ON
-        TFoodTruckEvents.intEventID = TEvents.intEventID
+        TFoodTruckEvents
+    INNER JOIN 
+        TEvents ON TFoodTruckEvents.intEventID = TEvents.intEventID
     WHERE
-          TFoodTruckEvents.intFoodTruckID = @intFoodTruckID
+        TFoodTruckEvents.intFoodTruckID = @intFoodTruckID
         AND TFoodTruckEvents.monTotalRevenue = (
-            SELECT
-                MAX(monTotalRevenue)
-            FROM
-                TFoodTruckEvents
-            WHERE
-                intFoodTruckID = @intFoodTruckID
-            )
+            SELECT MAX(monTotalRevenue)
+            FROM TFoodTruckEvents
+            WHERE intFoodTruckID = @intFoodTruckID
+        );
 END;
+
 
 GO
