@@ -28,7 +28,7 @@ BEGIN
     SET NOCOUNT ON;
 
     SELECT
-        AVG(monTotalRevenue)
+        AVG(monTotalRevenue) as AverageRevenue
     FROM
         TEvents
     WHERE
@@ -36,3 +36,4 @@ BEGIN
 END;
 
 GO
+
