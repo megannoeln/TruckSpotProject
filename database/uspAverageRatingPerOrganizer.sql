@@ -28,7 +28,7 @@ BEGIN
     SET NOCOUNT ON;
 
     SELECT
-        AVG(intRating)
+        AVG(intRating) as AverageRating
     FROM
         TFoodTruckEvents INNER JOIN TEvents
     ON
