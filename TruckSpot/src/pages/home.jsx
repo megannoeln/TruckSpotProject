@@ -16,7 +16,6 @@ function home() {
         setEvents(response.data);
       } catch (err) {
         console.error("Fetch error:", err);
-        setError(err.message || "Error fetching events");
       }
     };
 
