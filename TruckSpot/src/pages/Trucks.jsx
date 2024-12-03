@@ -8,7 +8,7 @@ function Trucks() {
   const [truckDetails, setTruckDetails] = useState({
     truckName: "",
     cusineType: "",
-    operatingLicense: "",
+    strOperatingLicense: "",
   });
 
   const fetchTruckDetails = async () => {
@@ -26,7 +26,7 @@ function Trucks() {
         setTruckDetails({
           truckName: response.data.truckName,
           cusineType: response.data.custineType,
-          operatingLicense: response.data.operatingLicense,
+          strOperatingLicense: response.data.strOperatingLicense,
         });
       }
     } catch (error) {
@@ -87,7 +87,7 @@ function Trucks() {
                       Operating License
                     </p>
                     <p className="font-medium mb-5">
-                      {truckDetails.operatingLicense}
+                      {truckDetails.strOperatingLicense}
                     </p>
                   </div>
                 </div>
@@ -95,7 +95,7 @@ function Trucks() {
 
               {/* Contact Details */}
               <div className="space-y-6">
-                <Link to="/updateaccount">
+                <Link to="/updatetruck">
                   <button className="w-32 bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition-colors">
                     Edit
                   </button>
