@@ -12,6 +12,7 @@ const CreateTruck = () => {
     strTruckName: "",
     intCuisineTypeID: "",
     intVendorID: storedUserID || "",
+    strOperatingLicense: ""
   });
 
   const [error, setError] = useState("");
@@ -84,25 +85,25 @@ const CreateTruck = () => {
 
                 <div className="mb-10">
                   <div>
-                    <p className="text-sm text-gray-500 mb-1">Truck Name</p>
+                    <p className="text-sm text-gray-500 mb-3">Truck Name</p>
                     <input
                       type="text"
                       name="strTruckName"
                       value={values.strTruckName}
                       onChange={handleInput}
                       placeholder="Type here"
-                      className="input input-bordered w-full max-w-xs"
+                      className="input input-bordered w-full max-w-xs mb-5"
                     />
                   </div>
                   <div>
-                    <p className="text-sm text-gray-500 mb-1">
+                    <p className="text-sm text-gray-500 mb-3">
                       Type of Cuisine
                     </p>
                     <select
                       name="intCuisineTypeID"
                       value={values.intCuisineTypeID}
                       onChange={handleInput}
-                      className="select select-bordered w-full max-w-xs"
+                      className="select select-bordered w-full max-w-xs mb-5"
                     >
                       <option value="" disabled>
                         Select cuisine type
@@ -115,6 +116,17 @@ const CreateTruck = () => {
                       <option value="6">Bakery/Desserts</option>
                       <option value="7">Other</option>
                     </select>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500 mb-3">Operating License</p>
+                    <input
+                      type="text"
+                      name="strTruckName"
+                      value={values.operatingLicense}
+                      onChange={handleInput}
+                      placeholder="Type here"
+                      className="input input-bordered w-full max-w-xs"
+                    />
                   </div>
                 </div>
               </div>

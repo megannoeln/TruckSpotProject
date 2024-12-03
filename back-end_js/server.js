@@ -612,7 +612,7 @@ app.post("/api/update-user", async (req, res) => {
 
 app.post("/addtruck", async (req, res) => {
   try {
-    const { strTruckName, intCuisineTypeID, intVendorID } = req.body;
+    const { strTruckName, intCuisineTypeID, intVendorID, strOperatingLicense } = req.body;
 
     const pool = await sql.connect(config);
     const result = await pool
@@ -620,6 +620,7 @@ app.post("/addtruck", async (req, res) => {
       .input("intVendorID", sql.Int, intVendorID)
       .input("intCuisineTypeID", sql.Int, intCuisineTypeID)
       .input("strTruckName", sql.VarChar(50), strTruckName)
+      .input("strOperatingLicense", sql.VarChar(50), strOperatingLicense)
       .output("intFoodTruckID", sql.Int)
       .execute("uspCreateFoodTruck");
 
@@ -707,12 +708,12 @@ app.get("/api/truck-details", async (req, res) => {
       const truck = result.recordset[0];
       const truckName = `${truck.strTruckName}`;
       const custineType = `${truck.strCuisineType}`;
-      const operatingLicense = `${truck.strOperatingLicense}`;
+      const strOperatingLicense = `${truck.strOperatingLicense}`;
       res.json({
         success: true,
         truckName: truckName,
         custineType: custineType,
-        operatingLicense: operatingLicense,
+        strOperatingLicense: strOperatingLicense,
       });
     } else {
       res.status(404).json({
@@ -1416,6 +1417,64 @@ app.post("/api/updateunits", async (req, res) => {
     res.status(500).json({ success: false, error: "Failed to update units" });
   }
 });
+
+app.get("/api/foodtruck", async (req, res) => {
+  try {
+    const pool = await sqlConnectionToServer.connect(config);
+    const { intVendorID } = req.query;
+
+    const result = await pool
+      .request()
+      .input("intVendorID", sqlConnectionToServer.Int, intVendorID)
+      .execute("uspGetFoodTruck");
+
+    if (result.recordset && result.recordset.length > 0) {
+      res.json({
+        success: true,
+        data: result.recordset[0]
+      });
+    } else {
+      res.json({
+        success: false,
+        message: "No truck found"
+      });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch truck details"
+    });
+  }
+});
+
+// Update truck details
+app.post("/api/updatetruck", async (req, res) => {
+  try {
+    const pool = await sqlConnectionToServer.connect(config);
+    const { intVendorID, strTruckName, intCuisineTypeID, strOperatingLicense } = req.body;
+    console.log("Reqeustbody",req.body)
+    await pool
+      .request()
+      .input("intVendorID", sqlConnectionToServer.Int, intVendorID)
+      .input("strTruckName", sqlConnectionToServer.VarChar, strTruckName)
+      .input("intCuisineTypeID", sqlConnectionToServer.Int, intCuisineTypeID)
+      .input("strOperatingLicense", sqlConnectionToServer.VarChar, strOperatingLicense)
+      .execute("uspUpdateFoodTruck");
+
+    res.json({
+      success: true,
+      message: "Truck updated successfully"
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to update truck details"
+    });
+  }
+});
+
 
 app.listen(API_PORT, () => {
   console.log(`Server running on port ${API_PORT}`);
