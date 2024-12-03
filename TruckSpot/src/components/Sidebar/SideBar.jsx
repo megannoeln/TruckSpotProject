@@ -77,39 +77,7 @@ function SideBar() {
                 <span className="flex-1 ms-3 whitespace-nowrap">Profile</span>
               </Link>
             </li>
-            {/* Show Create Event only for organizers (userType === '2') */}
-           
 
-            {/* Show My Reservation only for vendors (userType === '1') */}
-            {isLoggedIn && userType === "1" && (
-              <li>
-                <Link
-                  to="/trucks"
-                  className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
-                >
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"
-                    />
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0"
-                    />
-                  </svg>
-                  <span className="ms-3">My Truck</span>
-                </Link>
-              </li>
-            )}
             {isLoggedIn && userType === "1" && (
               <li>
                 <Link

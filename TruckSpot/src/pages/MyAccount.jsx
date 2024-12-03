@@ -12,47 +12,37 @@ function MyAccount() {
     email: "",
     avatar: "",
   });
+  const [truckDetails, setTruckDetails] = useState(null);
 
-  //delete account function
   const handleDeleteAccount = async () => {
     const storedUserID = sessionStorage.getItem("userID");
     const storedUserType = sessionStorage.getItem("userType");
 
-    if (storedUserID && storedUserType) {
-      if (!window.confirm("Are you sure you want to delete your account?")) {
-        return;
-      }
+    if (!window.confirm("Are you sure you want to delete your account?")) {
+      return;
+    }
 
-      try {
-        // Call the backend to delete the account
-        const response = await axios.post(
-          "http://localhost:5000/api/delete-account",
-          {
-            userID: storedUserID,
-            userType: storedUserType,
-          }
-        );
-
-        // Check for success response from backend
-        if (response.data.success) {
-          sessionStorage.clear();
-
-          // Redirect to homepage after account deletion
-          window.location.href = "/"; // Redirect to home page (adjust URL as needed)
-        } else {
-          // Handle failure
-          alert(response.data.message); // Show the message returned by the backend
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/api/delete-account",
+        {
+          userID: storedUserID,
+          userType: storedUserType,
         }
-      } catch (error) {
-        console.error("Error deleting account:", error);
-        alert("There was an error deleting the account.");
+      );
+
+      if (response.data.success) {
+        sessionStorage.clear();
+        window.location.href = "/";
+      } else {
+        alert(response.data.message);
       }
-    } else {
-      alert("User ID or User Type is missing.");
+    } catch (error) {
+      console.error("Error deleting account:", error);
+      alert("There was an error deleting the account.");
     }
   };
 
-  // Fetch user details function
   const fetchUserDetails = async () => {
     const storedUserType = sessionStorage.getItem("userType");
     const storedUserID = sessionStorage.getItem("userID");
@@ -77,18 +67,46 @@ function MyAccount() {
         });
       }
     } catch (error) {
-      console.error("Error details:", {
-        message: error.message,
-        response: error.response?.data,
-        status: error.response?.status,
-        config: error.config,
-      });
+      console.error("Error fetching user details:", error);
+    }
+  };
+
+  const fetchTruckDetails = async () => {
+    const storedUserID = sessionStorage.getItem("userID");
+    const storedUserType = sessionStorage.getItem("userType");
+
+    if (storedUserType === "1") {
+      try {
+        const response = await axios.get(
+          "http://localhost:5000/api/truck-details",
+          {
+            params: {
+              userID: storedUserID,
+            },
+          }
+        );
+        if (response.data.success && response.data.truckName) {
+          setTruckDetails({
+            truckName: response.data.truckName,
+            cusineType: response.data.custineType,
+            strOperatingLicense: response.data.strOperatingLicense,
+          });
+        } else {
+          setTruckDetails(null);
+        }
+      } catch (error) {
+        console.error("Error fetching truck details:", error);
+        setTruckDetails(null);
+      }
     }
   };
 
   useEffect(() => {
     fetchUserDetails();
+    fetchTruckDetails();
   }, []);
+
+  const isVendor = userDetails.accountType === "Vendor";
 
   return (
     <>
@@ -102,11 +120,12 @@ function MyAccount() {
             <div className="col-span-12 md:col-span-9">
               <div className="space-y-8">
                 <h2 className="text-xl font-semibold text-gray-100">
-                  Personal Details
+                  Account Information
                 </h2>
 
                 <div className="flex gap-8">
-                  <div>
+                  {/* Avatar on the left */}
+                  <div className="flex-shrink-0">
                     <div className="w-48 h-48 rounded-lg overflow-hidden">
                       <img
                         src={userDetails.avatar || "/api/placeholder/192/192"}
@@ -116,34 +135,92 @@ function MyAccount() {
                     </div>
                   </div>
 
-                  <div className="space-y-8 flex-1 max-w-sm py-2">
-                    <div>
-                      <p className="text-sm text-gray-400">Name</p>
-                      <p className="mt-2">{userName}</p>
+                  {/* Details container */}
+                  <div className="flex-1">
+                    <div className="grid grid-cols-2 gap-8">
+                      {/* Personal Details */}
+                      <div className="space-y-4">
+                        <h3 className="text-lg font-semibold text-gray-100">
+                          Personal Details
+                        </h3>
+                        <div>
+                          <p className="text-sm text-gray-400">Name</p>
+                          <p className="mt-1">{userName}</p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-gray-400">Phone Number</p>
+                          <p className="mt-1">{userDetails.phoneNumber}</p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-gray-400">Email</p>
+                          <p className="mt-1">{userDetails.email}</p>
+                        </div>
+                      </div>
+
+                      {/* Truck Details - Only shown for vendors */}
+                      {isVendor && (
+                        <div className="space-y-4">
+                          <h3 className="text-lg font-semibold text-gray-100">
+                            Truck Details
+                          </h3>
+                          {truckDetails ? (
+                            <>
+                              <div>
+                                <p className="text-sm text-gray-400">
+                                  Truck Name
+                                </p>
+                                <p className="mt-1">{truckDetails.truckName}</p>
+                              </div>
+                              <div>
+                                <p className="text-sm text-gray-400">
+                                  Cuisine Type
+                                </p>
+                                <p className="mt-1">
+                                  {truckDetails.cusineType}
+                                </p>
+                              </div>
+                              <div>
+                                <p className="text-sm text-gray-400">
+                                  Operating License
+                                </p>
+                                <p className="mt-1">
+                                  {truckDetails.strOperatingLicense}
+                                </p>
+                              </div>
+                            </>
+                          ) : (
+                            <div className="space-y-4">
+                              <p className="text-gray-400">
+                                No truck data available for this vendor.
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </div>
-                    <div>
-                      <p className="text-sm text-gray-400">Phone Number</p>
-                      <p className="mt-2">{userDetails.phoneNumber}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-400">Email</p>
-                      <p className="mt-2">{userDetails.email}</p>
+
+                    {/* Action Buttons */}
+                    <div className="flex gap-4 mt-8">
+                      <Link to="/updateaccount">
+                        <button className="w-24 py-1.5 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
+                          Edit Profile
+                        </button>
+                      </Link>
+                      {isVendor && (
+                        <Link to={truckDetails ? "/updatetruck" : "/addtruck"}>
+                          <button className="w-24 py-1.5 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
+                            {truckDetails ? "Edit Truck" : "Add Truck"}
+                          </button>
+                        </Link>
+                      )}
+                      <button
+                        onClick={handleDeleteAccount}
+                        className="w-32 py-1.5 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+                      >
+                        Delete Account
+                      </button>
                     </div>
                   </div>
-                </div>
-
-                <div className="flex gap-4">
-                  <Link to="/updateaccount">
-                    <button className="w-24 py-1.5 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
-                      Edit
-                    </button>
-                  </Link>
-                  <button
-                    onClick={handleDeleteAccount}
-                    className="w-32 py-1.5 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
-                  >
-                    Delete Account
-                  </button>
                 </div>
               </div>
             </div>
@@ -153,4 +230,5 @@ function MyAccount() {
     </>
   );
 }
+
 export default MyAccount;

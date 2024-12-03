@@ -112,12 +112,26 @@ function Navbar() {
               role="button"
               className="btn btn-ghost btn-circle avatar"
             >
-              <div className="w-10 h-10 rounded-full overflow-hidden">
-                <img
-                  src={userAvatar}
-                  alt="user avatar"
-                  className="w-full h-full object-cover"
-                />
+              <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center bg-gray-700">
+                {userAvatar ? (
+                  <img
+                    src={userAvatar}
+                    alt="user avatar"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <svg
+                    className="w-10 h-10 text-gray-400"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                )}
               </div>
             </div>
             <ul

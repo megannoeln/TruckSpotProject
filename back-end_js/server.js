@@ -627,14 +627,14 @@ app.post("/addtruck", async (req, res) => {
     const { strTruckName, intCuisineTypeID, intVendorID, strOperatingLicense } =
       req.body;
 
-    const pool = await sql.connect(config);
+    const pool = await sqlConnectionToServer.connect(config);
     const result = await pool
       .request()
-      .input("intVendorID", sql.Int, intVendorID)
-      .input("intCuisineTypeID", sql.Int, intCuisineTypeID)
-      .input("strTruckName", sql.VarChar(50), strTruckName)
-      .input("strOperatingLicense", sql.VarChar(50), strOperatingLicense)
-      .output("intFoodTruckID", sql.Int)
+      .input("intVendorID", sqlConnectionToServer.Int, intVendorID)
+      .input("intCuisineTypeID", sqlConnectionToServer.Int, intCuisineTypeID)
+      .input("strTruckName", sqlConnectionToServer.VarChar(50), strTruckName)
+      .input("strOperatingLicense", sqlConnectionToServer.VarChar(50), strOperatingLicense)
+      .output("intFoodTruckID", sqlConnectionToServer.Int)
       .execute("uspCreateFoodTruck");
 
     res.status(200).json({

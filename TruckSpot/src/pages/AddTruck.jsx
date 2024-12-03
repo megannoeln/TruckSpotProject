@@ -12,7 +12,7 @@ const CreateTruck = () => {
     strTruckName: "",
     intCuisineTypeID: "",
     intVendorID: storedUserID || "",
-    strOperatingLicense: ""
+    strOperatingLicense: "",
   });
 
   const [error, setError] = useState("");
@@ -118,11 +118,13 @@ const CreateTruck = () => {
                     </select>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-500 mb-3">Operating License</p>
+                    <p className="text-sm text-gray-500 mb-3">
+                      Operating License
+                    </p>
                     <input
                       type="text"
-                      name="strTruckName"
-                      value={values.operatingLicense}
+                      name="strOperatingLicense"
+                      value={values.strOperatingLicense}
                       onChange={handleInput}
                       placeholder="Type here"
                       className="input input-bordered w-full max-w-xs"
