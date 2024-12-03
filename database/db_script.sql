@@ -987,7 +987,8 @@ CREATE PROCEDURE uspUpdateVendor
     @strLastName VARCHAR(50) = NULL,
 
     @strEmail VARCHAR(50) = NULL,
-    @strPhone VARCHAR(15) = NULL
+    @strPhone VARCHAR(15) = NULL,
+	@strPictureFilePath VARCHAR(500) = NULL 
 AS
 BEGIN
     SET NOCOUNT ON;  
@@ -1003,7 +1004,8 @@ BEGIN
             strLastName = COALESCE(@strLastName, strLastName),
 
             strEmail = COALESCE(@strEmail, strEmail),
-            strPhone = COALESCE(@strPhone, strPhone)
+            strPhone = COALESCE(@strPhone, strPhone),
+			strPictureFilePath = COALESCE(@strPictureFilePath, strPictureFilePath)
         WHERE intVendorID = @intVendorID;
 
         COMMIT TRANSACTION;  
@@ -1037,7 +1039,8 @@ CREATE PROCEDURE uspUpdateOrganizer
     @strLastName VARCHAR(50) = NULL,
     
     @strEmail VARCHAR(50) = NULL,
-    @strPhone VARCHAR(15) = NULL
+    @strPhone VARCHAR(15) = NULL,
+	@strPictureFilePath VARCHAR(500) = NULL 
 AS
 BEGIN
     SET NOCOUNT ON;  
@@ -1053,7 +1056,8 @@ BEGIN
             strLastName = COALESCE(@strLastName, strLastName),
 
             strEmail = COALESCE(@strEmail, strEmail),
-            strPhone = COALESCE(@strPhone, strPhone)
+            strPhone = COALESCE(@strPhone, strPhone),
+			strPictureFilePath = COALESCE(@strPictureFilePath, strPictureFilePath)
         WHERE intOrganizerID = @intOrganizerID;
 
         COMMIT TRANSACTION;  
