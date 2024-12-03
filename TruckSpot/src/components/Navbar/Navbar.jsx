@@ -10,6 +10,7 @@ function Navbar() {
   const [userType, setUserType] = useState(null);
   const [userID, setUserID] = useState(null);
   const [userName, setUserName] = useState("");
+  const [userAvatar, setUserAvatar] = useState("");
 
   const fetchUserDetails = async () => {
     const storedUserType = sessionStorage.getItem("userType");
@@ -26,7 +27,9 @@ function Navbar() {
         }
       );
       if (response.data.success) {
+        console.log(response.data)
         setUserName(response.data.userName);
+        setUserAvatar(response.data.avatar)
       }
     } catch (error) {
       console.error("Error details:", {
@@ -107,26 +110,19 @@ function Navbar() {
         </div>
         <div className="navbar-end">
           <div className="dropdown dropdown-end">
-            <div
-              tabIndex={0}
-              role="button"
-              className="btn btn-ghost btn-circle avatar"
-            >
-              <div className="relative w-10 h-10 overflow-hidden bg-gray-100 rounded-full dark:bg-gray-600">
-                <svg
-                  className="absolute w-12 h-12 text-gray-400 -left-1"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-                    clipRule="evenodd"
-                  ></path>
-                </svg>
-              </div>
+          <div
+            tabIndex={0}
+            role="button"
+            className="btn btn-ghost btn-circle avatar"
+          >
+            <div className="w-10 h-10 rounded-full overflow-hidden">
+              <img 
+                src={userAvatar} 
+                alt="user avatar" 
+                className="w-full h-full object-cover"
+              />
             </div>
+          </div>
             <ul
               tabIndex={0}
               className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow"

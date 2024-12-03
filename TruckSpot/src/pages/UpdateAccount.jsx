@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Navbar from "../components/Navbar/Navbar";
 import SideBar from "../components/Sidebar/SideBar";
 import axios from "axios";
-
+import { useNavigate } from "react-router-dom";
 function UpdateAccount() {
   const [formData, setFormData] = useState({
     firstName: "",
@@ -13,14 +13,18 @@ function UpdateAccount() {
   });
   const [statusMessage, setStatusMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const avatars = [
-    `https://api.dicebear.com/7.x/fun-emoji/svg?seed=Felix`,
-    `https://api.dicebear.com/7.x/fun-emoji/svg?seed=Aneka`,
-    `https://api.dicebear.com/7.x/fun-emoji/svg?seed=Jasper`,
-    `https://api.dicebear.com/7.x/fun-emoji/svg?seed=Maya`,
-    `https://api.dicebear.com/7.x/fun-emoji/svg?seed=Zoe`,
-    `https://api.dicebear.com/7.x/fun-emoji/svg?seed=Leo`
+    `https://api.dicebear.com/7.x/fun-emoji/svg?seed=Felix`, 
+    `https://api.dicebear.com/7.x/fun-emoji/svg?seed=Sophie`,
+    `https://api.dicebear.com/7.x/fun-emoji/svg?seed=Alex`, 
+    `https://api.dicebear.com/7.x/fun-emoji/svg?seed=Luna`,
+    `https://api.dicebear.com/7.x/fun-emoji/svg?seed=Max`,  
+    `https://api.dicebear.com/7.x/fun-emoji/svg?seed=Zoe`, 
+    `https://api.dicebear.com/7.x/fun-emoji/svg?seed=Leo`,  
+    `https://api.dicebear.com/7.x/fun-emoji/svg?seed=Mia`, 
+    `https://api.dicebear.com/7.x/fun-emoji/svg?seed=Sam` 
   ];
 
   useEffect(() => {
@@ -28,34 +32,38 @@ function UpdateAccount() {
       try {
         const userID = sessionStorage.getItem("userID");
         const userType = sessionStorage.getItem("userType");
-
+  
         if (!userID || !userType) {
           setStatusMessage("User session not found.");
           return;
         }
         const endpoint = `http://localhost:5000/api/user-details?userID=${userID}&userType=${userType}`;
         const response = await axios.get(endpoint);
-
+  
         if (response.data.success) {
-          const { userName, phoneNumber, email, avatar } = response.data;
+          const { userName, phoneNumber, email, strPictureFilePath } = response.data; // Change avatar to strPictureFilePath
           const [firstName, lastName] = userName.split(" ");
           const formattedPhone = phoneNumber.replace(/-/g, "");
-
+  
+          // Find the index of the avatar URL in the avatars array
+          const avatarIndex = avatars.findIndex(avatar => avatar === strPictureFilePath);
+  
           setFormData({
             firstName: firstName || "",
             lastName: lastName || "",
             phone: formattedPhone || "",
             email: email || "",
-            selectedAvatar: avatar || 0
+            selectedAvatar: avatarIndex !== -1 ? avatarIndex : 0 // Set to found index or default to 0
           });
         } else {
           setStatusMessage("Failed to load user details.");
         }
       } catch (error) {
+        console.error("Error details:", error);
         setStatusMessage("An error occurred while loading user details.");
       }
     };
-
+  
     fetchUserDetails();
   }, []);
 
@@ -107,6 +115,7 @@ function UpdateAccount() {
 
       if (response.data.success) {
         setStatusMessage("User updated successfully!");
+        navigate('/myaccount'); // Redirect to MyAccount page
       } else {
         setStatusMessage("Failed to update user: " + response.data.message);
       }

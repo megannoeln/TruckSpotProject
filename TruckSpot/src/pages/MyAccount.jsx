@@ -10,6 +10,7 @@ function MyAccount() {
     accountType: "",
     phoneNumber: "",
     email: "",
+    avatar: "",
   });
 
   //delete account function
@@ -72,6 +73,7 @@ function MyAccount() {
           accountType: storedUserType === "1" ? "Vendor" : "Organizer",
           phoneNumber: response.data.phoneNumber,
           email: response.data.email,
+          avatar: response.data.avatar
         });
       }
     } catch (error) {
@@ -90,62 +92,53 @@ function MyAccount() {
 
   return (
     <>
-      <Navbar />
-      <div className="container mx-auto px-4 py-8 gap-40">
+    <Navbar />
+    <div className="min-h-screen text-gray-300">
+      <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-12 gap-8">
-          {/* Sidebar */}
           <div className="col-span-12 md:col-span-3">
             <SideBar />
           </div>
-          {/* Main Content */}
           <div className="col-span-12 md:col-span-9">
-            <div className=" rounded-lg shadow-sm p-6">
-              <h2 className="text-xl font-semibold mb-6">Personal Details</h2>
-
-              <div className="flex items-start gap-8">
+            <div className="space-y-8">
+              <h2 className="text-xl font-semibold text-gray-100">Personal Details</h2>
+              
+              <div className="flex gap-8">
                 <div>
-                  <div className="w-full aspect-square bg-gray-200 rounded-lg mb-2 overflow-hidden">
-                    (
+                  <div className="w-48 h-48 rounded-lg overflow-hidden">
                     <img
-                      // src={logoPreview}
-                      alt="Event Logo Preview"
-                      className="w-80 aspect-square object-cover"
+                      src={userDetails.avatar || "/api/placeholder/192/192"}
+                      alt="Profile"
+                      className="w-full h-full object-cover"
                     />
-                    ) : (
-                    <div className="w-70 aspect-square object-cover">
-                      <span className="text-gray-500">No picture selected</span>
-                    </div>
-                    )
                   </div>
                 </div>
-                <div className="mb-15">
+
+                <div className="space-y-8 flex-1 max-w-sm py-2">
                   <div>
-                    <p className="text-sm text-gray-500 mb-1">Name</p>
-                    <p className="font-medium mb-5">{userName}</p>
+                    <p className="text-sm text-gray-400">Name</p>
+                    <p className="mt-2">{userName}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-500 mb-1">Phone Number</p>
-                    <p className="font-medium mb-5">
-                      {userDetails.phoneNumber}
-                    </p>
+                    <p className="text-sm text-gray-400">Phone Number</p>
+                    <p className="mt-2">{userDetails.phoneNumber}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-500 mb-1">Email</p>
-                    <p className="font-medium mb-5">{userDetails.email}</p>
+                    <p className="text-sm text-gray-400">Email</p>
+                    <p className="mt-2">{userDetails.email}</p>
                   </div>
                 </div>
               </div>
 
-              {/* Contact Details */}
-              <div className="space-y-6">
+              <div className="flex gap-4">
                 <Link to="/updateaccount">
-                  <button className="w-32 bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition-colors">
+                  <button className="w-24 py-1.5 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
                     Edit
                   </button>
                 </Link>
                 <button
-                  className="w-32 bg-red-500 text-white py-2 rounded-md hover:bg-red-600 transition-colors"
                   onClick={handleDeleteAccount}
+                  className="w-32 py-1.5 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
                 >
                   Delete Account
                 </button>
@@ -154,8 +147,8 @@ function MyAccount() {
           </div>
         </div>
       </div>
-    </>
-  );
+    </div>
+  </>
+);
 }
-
 export default MyAccount;

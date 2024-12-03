@@ -500,12 +500,14 @@ app.get("/api/user-details", async (req, res) => {
       const fullName = `${user.strFirstName} ${user.strLastName}`;
       const phoneNumber = `${user.strPhone}`;
       const email = `${user.strEmail}`;
+      const avatar = `${user.strPictureFilePath}`
 
       res.json({
         success: true,
         userName: fullName,
         phoneNumber: phoneNumber,
         email: email,
+        avatar: avatar
       });
     } else {
       res.status(404).json({
@@ -530,8 +532,9 @@ app.get("/api/user-details", async (req, res) => {
   }
 });
 
+
 app.post("/api/update-user", async (req, res) => {
-  const { userID, userType, firstName, lastName, email, phone } = req.body;
+  const { userID, userType, firstName, lastName, email, phone, avatarUrl } = req.body;
 
   console.log("Update request received:", {
     userID,
@@ -540,49 +543,30 @@ app.post("/api/update-user", async (req, res) => {
     lastName,
     email,
     phone,
+    avatarUrl
   });
-
-  console.log("request body", req.body);
 
   try {
     const pool = await sqlConnectionToServer.connect(config);
     const request = pool.request();
 
     if (userType === "1") {
-      // Use uspGetVendor stored procedure
+      // Vendor update
       request.input("intVendorID", sqlConnectionToServer.Int, parseInt(userID));
-      request.input(
-        "strFirstName",
-        sqlConnectionToServer.VarChar,
-        firstName || null
-      );
-      request.input(
-        "strLastName",
-        sqlConnectionToServer.VarChar,
-        lastName || null
-      );
+      request.input("strFirstName", sqlConnectionToServer.VarChar, firstName || null);
+      request.input("strLastName", sqlConnectionToServer.VarChar, lastName || null);
       request.input("strEmail", sqlConnectionToServer.VarChar, email || null);
       request.input("strPhone", sqlConnectionToServer.VarChar, phone || null);
+      request.input("strPictureFilePath", sqlConnectionToServer.VarChar(500), avatarUrl || null); // Use avatarUrl and increase length
       result = await request.execute("uspUpdateVendor");
     } else if (userType === "2") {
-      // Use uspGetOrganizer stored procedure
-      request.input(
-        "intOrganizerID",
-        sqlConnectionToServer.Int,
-        parseInt(userID)
-      );
-      request.input(
-        "strFirstName",
-        sqlConnectionToServer.VarChar,
-        firstName || null
-      );
-      request.input(
-        "strLastName",
-        sqlConnectionToServer.VarChar,
-        lastName || null
-      );
+      // Organizer update
+      request.input("intOrganizerID", sqlConnectionToServer.Int, parseInt(userID));
+      request.input("strFirstName", sqlConnectionToServer.VarChar, firstName || null);
+      request.input("strLastName", sqlConnectionToServer.VarChar, lastName || null);
       request.input("strEmail", sqlConnectionToServer.VarChar, email || null);
       request.input("strPhone", sqlConnectionToServer.VarChar, phone || null);
+      request.input("strPictureFilePath", sqlConnectionToServer.VarChar(500), avatarUrl || null); // Use avatarUrl and increase length
       result = await request.execute("uspUpdateOrganizer");
     } else {
       throw new Error("Invalid user type");
@@ -599,7 +583,7 @@ app.post("/api/update-user", async (req, res) => {
       success: false,
       error: "Database error",
       message: err.message,
-      details: err.stack, // Stack trace for debugging
+      details: err.stack,
     });
   } finally {
     try {
