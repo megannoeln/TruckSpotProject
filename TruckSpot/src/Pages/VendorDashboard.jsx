@@ -4,6 +4,7 @@ import SideBar from "../components/Sidebar/SideBar";
 import DashboardCard from "../components/DashboardCard/DashboardCard";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import ItemSoldDashboard from "../components/ItemSoldDashboard/ItemSoldDashboard";
 
 function VendorDashboard() {
   const [stats, setStats] = useState({
@@ -13,44 +14,6 @@ function VendorDashboard() {
     mostProfitable: { name: "", revenue: 0 },
     averageRevenue: 0,
   });
-
-  const upcomingEvents = [
-    {
-      intEventID: 1,
-      strEventName: "Summer Food Festival",
-      VendorCount: 12,
-      TotalRevenue: 15000,
-      dtDateOfEvent: "2024-06-15T14:00:00",
-    },
-    {
-      intEventID: 2,
-      strEventName: "Taste of Asia",
-      VendorCount: 8,
-      TotalRevenue: 8500,
-      dtDateOfEvent: "2024-05-20T11:00:00",
-    },
-    {
-      intEventID: 3,
-      strEventName: "Street Food Market",
-      VendorCount: 15,
-      TotalRevenue: 12000,
-      dtDateOfEvent: "2024-07-01T12:00:00",
-    },
-    {
-      intEventID: 4,
-      strEventName: "BBQ & Craft Beer Fest",
-      VendorCount: 10,
-      TotalRevenue: 9000,
-      dtDateOfEvent: "2024-08-12T15:00:00",
-    },
-    {
-      intEventID: 5,
-      strEventName: "International Food Fair",
-      VendorCount: 20,
-      TotalRevenue: 25000,
-      dtDateOfEvent: "2024-09-05T13:00:00",
-    },
-  ];
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -121,49 +84,8 @@ function VendorDashboard() {
               />
             </div>
 
-            <div className="bg-white rounded-lg shadow">
-              <h3 className="p-4 text-lg font-semibold border-b">
-                Upcoming Events
-              </h3>
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600">
-                        Event Name
-                      </th>
-                      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600">
-                        Vendor Count
-                      </th>
-                      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600">
-                        Total Revenue
-                      </th>
-                      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600">
-                        Date
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-200">
-                    {upcomingEvents.map((event) => (
-                      <tr key={event.intEventID}>
-                        <td className="px-6 py-4 text-sm">
-                          {event.strEventName}
-                        </td>
-                        <td className="px-6 py-4 text-sm">
-                          {event.VendorCount}
-                        </td>
-                        <td className="px-6 py-4 text-sm">
-                          ${event.TotalRevenue.toLocaleString()}
-                        </td>
-                        <td className="px-6 py-4 text-sm">
-                          {new Date(event.dtDateOfEvent).toLocaleDateString()}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
+            <ItemSoldDashboard/>
+
           </div>
         </div>
       </div>

@@ -3,6 +3,7 @@ import Navbar from "../components/Navbar/Navbar";
 import SideBar from "../components/Sidebar/SideBar";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import UpdateUnitsModal from "../components/Modal/UpdateUnitsModal";
 
 function FoodMenu() {
   const [foodItems, setFoodItems] = useState([
@@ -12,6 +13,8 @@ function FoodMenu() {
       strCategory: "",
     },
   ]);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState("");
 
   const fetchMenuDetails = async () => {
     const storeUserID = sessionStorage.getItem("userID");
@@ -48,25 +51,25 @@ function FoodMenu() {
     };
   };
 
-  const handleDelete = async (strItem) => {
-    if (window.confirm("Are you sure you want to delete this item?")) {
-      const userID = sessionStorage.getItem("userID");
-      try {
-        const response = await axios.post(
-          "http://localhost:5000/api/deleteitem",
-          {
-            strItem: strItem,
-            intVendorID: userID,
-          }
-        );
-        if (response.data.success) {
-          alert("Item deleted successfully");
-          fetchMenuDetails();
+  const handleUpdateUnits = async (itemName, unitsSold) => {
+    const userId = sessionStorage.getItem("userID");
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/api/updateunits",
+        {
+          intVendorID: userId,
+          strItem: itemName,
+          intUnitsSold: unitsSold,
         }
-      } catch (error) {
-        console.error("Error deleting item:", error);
-        alert("Failed to delete item");
+      );
+      if (response.data.success) {
+        alert("Units updated successfully");
+        fetchMenuDetails();
+        setModalOpen(false);
       }
+    } catch (error) {
+      console.error("Error updating units:", error);
+      alert("Failed to update units");
     }
   };
 
@@ -82,6 +85,27 @@ function FoodMenu() {
             <h3 className="font-medium">{item.strItem}</h3>
             <div className="flex items-center space-x-4">
               <p className="text-gray-600">${item.monPrice}</p>
+              <button
+                onClick={() => {
+                  setSelectedItem(item.strItem);
+                  setModalOpen(true);
+                }}
+                className="text-blue-500 hover:text-blue-700"
+              >
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M12 4v16m8-8H4"
+                  />
+                </svg>
+              </button>
               <button
                 onClick={() => handleDelete(item.strItem)}
                 className="text-red-500 hover:text-red-700"
@@ -109,6 +133,28 @@ function FoodMenu() {
     </div>
   );
 
+  const handleDelete = async (strItem) => {
+    if (window.confirm("Are you sure you want to delete this item?")) {
+      const userID = sessionStorage.getItem("userID");
+      try {
+        const response = await axios.post(
+          "http://localhost:5000/api/deleteitem",
+          {
+            strItem: strItem,
+            intVendorID: userID,
+          }
+        );
+        if (response.data.success) {
+          alert("Item deleted successfully");
+          fetchMenuDetails();
+        }
+      } catch (error) {
+        console.error("Error deleting item:", error);
+        alert("Failed to delete item");
+      }
+    }
+  };
+
   return (
     <>
       <Navbar />
@@ -128,8 +174,19 @@ function FoodMenu() {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {Object.entries(categorizeItems()).map(([category, items]) => (
-                <CategoryBox key={category} title={category} items={items} />
+                <CategoryBox
+                  key={category}
+                  title={category}
+                  items={items}
+                  onUpdate={handleUpdateUnits}
+                />
               ))}
+              <UpdateUnitsModal
+                isOpen={modalOpen}
+                onClose={() => setModalOpen(false)}
+                onSubmit={handleUpdateUnits}
+                itemName={selectedItem}
+              />
             </div>
           </div>
         </div>

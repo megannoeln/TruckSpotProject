@@ -387,8 +387,6 @@ app.get("/api/mycreatedevent", async (req, res) => {
             ORDER BY e.dtDateOfEvent ASC;
       `);
 
-    console.log(result.query);
-    console.log(`Found ${result.recordset.length} events`);
     res.json(result.recordset);
   } catch (err) {
     console.error("Error fetching all events:", err);
@@ -1374,6 +1372,50 @@ app.post(
     }
   }
 );
+
+// Get data to show in chart
+app.get("/api/vendor/menu-items/:userId", async (req, res) => {
+  try {
+    const pool = await sqlConnectionToServer.connect(config);
+    const userId = req.params.userId;
+    console.log("Heelloo");
+    const result = await pool
+      .request()
+      .input("intVendorID", sqlConnectionToServer.Int, userId)
+      .execute("uspMenuItemsSold");
+
+    console.log(result.recordset);
+    res.json(
+      result.recordset.map((item) => ({
+        Item: item.Item,
+        UnitsSold: item.UnitsSold,
+      }))
+    );
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to fetch menu items data" });
+  }
+});
+
+// Update units sold
+app.post("/api/updateunits", async (req, res) => {
+  try {
+    const pool = await sqlConnectionToServer.connect(config);
+    const { intVendorID, strItem, intUnitsSold } = req.body;
+
+    await pool
+      .request()
+      .input("intVendorID", sqlConnectionToServer.Int, intVendorID)
+      .input("strItem", sqlConnectionToServer.VarChar, strItem)
+      .input("intUnitsSold", sqlConnectionToServer.Int, intUnitsSold)
+      .execute("uspUpdateUnitsSold");
+
+    res.json({ success: true });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, error: "Failed to update units" });
+  }
+});
 
 app.listen(API_PORT, () => {
   console.log(`Server running on port ${API_PORT}`);
