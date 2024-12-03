@@ -500,14 +500,14 @@ app.get("/api/user-details", async (req, res) => {
       const fullName = `${user.strFirstName} ${user.strLastName}`;
       const phoneNumber = `${user.strPhone}`;
       const email = `${user.strEmail}`;
-      const avatar = `${user.strPictureFilePath}`
+      const avatar = `${user.strPictureFilePath}`;
 
       res.json({
         success: true,
         userName: fullName,
         phoneNumber: phoneNumber,
         email: email,
-        avatar: avatar
+        avatar: avatar,
       });
     } else {
       res.status(404).json({
@@ -532,9 +532,9 @@ app.get("/api/user-details", async (req, res) => {
   }
 });
 
-
 app.post("/api/update-user", async (req, res) => {
-  const { userID, userType, firstName, lastName, email, phone, avatarUrl } = req.body;
+  const { userID, userType, firstName, lastName, email, phone, avatarUrl } =
+    req.body;
 
   console.log("Update request received:", {
     userID,
@@ -543,7 +543,7 @@ app.post("/api/update-user", async (req, res) => {
     lastName,
     email,
     phone,
-    avatarUrl
+    avatarUrl,
   });
 
   try {
@@ -553,20 +553,48 @@ app.post("/api/update-user", async (req, res) => {
     if (userType === "1") {
       // Vendor update
       request.input("intVendorID", sqlConnectionToServer.Int, parseInt(userID));
-      request.input("strFirstName", sqlConnectionToServer.VarChar, firstName || null);
-      request.input("strLastName", sqlConnectionToServer.VarChar, lastName || null);
+      request.input(
+        "strFirstName",
+        sqlConnectionToServer.VarChar,
+        firstName || null
+      );
+      request.input(
+        "strLastName",
+        sqlConnectionToServer.VarChar,
+        lastName || null
+      );
       request.input("strEmail", sqlConnectionToServer.VarChar, email || null);
       request.input("strPhone", sqlConnectionToServer.VarChar, phone || null);
-      request.input("strPictureFilePath", sqlConnectionToServer.VarChar(500), avatarUrl || null); // Use avatarUrl and increase length
+      request.input(
+        "strPictureFilePath",
+        sqlConnectionToServer.VarChar(500),
+        avatarUrl || null
+      ); // Use avatarUrl and increase length
       result = await request.execute("uspUpdateVendor");
     } else if (userType === "2") {
       // Organizer update
-      request.input("intOrganizerID", sqlConnectionToServer.Int, parseInt(userID));
-      request.input("strFirstName", sqlConnectionToServer.VarChar, firstName || null);
-      request.input("strLastName", sqlConnectionToServer.VarChar, lastName || null);
+      request.input(
+        "intOrganizerID",
+        sqlConnectionToServer.Int,
+        parseInt(userID)
+      );
+      request.input(
+        "strFirstName",
+        sqlConnectionToServer.VarChar,
+        firstName || null
+      );
+      request.input(
+        "strLastName",
+        sqlConnectionToServer.VarChar,
+        lastName || null
+      );
       request.input("strEmail", sqlConnectionToServer.VarChar, email || null);
       request.input("strPhone", sqlConnectionToServer.VarChar, phone || null);
-      request.input("strPictureFilePath", sqlConnectionToServer.VarChar(500), avatarUrl || null); // Use avatarUrl and increase length
+      request.input(
+        "strPictureFilePath",
+        sqlConnectionToServer.VarChar(500),
+        avatarUrl || null
+      ); // Use avatarUrl and increase length
       result = await request.execute("uspUpdateOrganizer");
     } else {
       throw new Error("Invalid user type");
@@ -596,7 +624,8 @@ app.post("/api/update-user", async (req, res) => {
 
 app.post("/addtruck", async (req, res) => {
   try {
-    const { strTruckName, intCuisineTypeID, intVendorID, strOperatingLicense } = req.body;
+    const { strTruckName, intCuisineTypeID, intVendorID, strOperatingLicense } =
+      req.body;
 
     const pool = await sql.connect(config);
     const result = await pool
@@ -1415,19 +1444,19 @@ app.get("/api/foodtruck", async (req, res) => {
     if (result.recordset && result.recordset.length > 0) {
       res.json({
         success: true,
-        data: result.recordset[0]
+        data: result.recordset[0],
       });
     } else {
       res.json({
         success: false,
-        message: "No truck found"
+        message: "No truck found",
       });
     }
   } catch (error) {
     console.error(error);
     res.status(500).json({
       success: false,
-      message: "Failed to fetch truck details"
+      message: "Failed to fetch truck details",
     });
   }
 });
@@ -1436,29 +1465,33 @@ app.get("/api/foodtruck", async (req, res) => {
 app.post("/api/updatetruck", async (req, res) => {
   try {
     const pool = await sqlConnectionToServer.connect(config);
-    const { intVendorID, strTruckName, intCuisineTypeID, strOperatingLicense } = req.body;
-    console.log("Reqeustbody",req.body)
+    const { intVendorID, strTruckName, intCuisineTypeID, strOperatingLicense } =
+      req.body;
+    console.log("Reqeustbody", req.body);
     await pool
       .request()
       .input("intVendorID", sqlConnectionToServer.Int, intVendorID)
       .input("strTruckName", sqlConnectionToServer.VarChar, strTruckName)
       .input("intCuisineTypeID", sqlConnectionToServer.Int, intCuisineTypeID)
-      .input("strOperatingLicense", sqlConnectionToServer.VarChar, strOperatingLicense)
+      .input(
+        "strOperatingLicense",
+        sqlConnectionToServer.VarChar,
+        strOperatingLicense
+      )
       .execute("uspUpdateFoodTruck");
 
     res.json({
       success: true,
-      message: "Truck updated successfully"
+      message: "Truck updated successfully",
     });
   } catch (error) {
     console.error(error);
     res.status(500).json({
       success: false,
-      message: "Failed to update truck details"
+      message: "Failed to update truck details",
     });
   }
 });
-
 
 app.listen(API_PORT, () => {
   console.log(`Server running on port ${API_PORT}`);

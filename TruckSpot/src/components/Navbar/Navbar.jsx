@@ -27,9 +27,9 @@ function Navbar() {
         }
       );
       if (response.data.success) {
-        console.log(response.data)
+        console.log(response.data);
         setUserName(response.data.userName);
-        setUserAvatar(response.data.avatar)
+        setUserAvatar(response.data.avatar);
       }
     } catch (error) {
       console.error("Error details:", {
@@ -42,7 +42,6 @@ function Navbar() {
   };
 
   useEffect(() => {
-    // Check session storage for user data
     const storedUserType = sessionStorage.getItem("userType");
     const storedUserID = sessionStorage.getItem("userID");
 
@@ -50,7 +49,7 @@ function Navbar() {
       setIsLoggedIn(true);
       setUserType(storedUserType);
       setUserID(storedUserID);
-      // Fetch user details when session exists
+
       fetchUserDetails();
     } else {
       console.log("No session data found");
@@ -58,11 +57,9 @@ function Navbar() {
   }, []);
 
   const handleLogout = () => {
-    // Clear session storage
     sessionStorage.removeItem("userType");
     sessionStorage.removeItem("userID");
 
-    // Reset states
     setIsLoggedIn(false);
     setUserType(null);
     setUserID(null);
@@ -110,19 +107,19 @@ function Navbar() {
         </div>
         <div className="navbar-end">
           <div className="dropdown dropdown-end">
-          <div
-            tabIndex={0}
-            role="button"
-            className="btn btn-ghost btn-circle avatar"
-          >
-            <div className="w-10 h-10 rounded-full overflow-hidden">
-              <img 
-                src={userAvatar} 
-                alt="user avatar" 
-                className="w-full h-full object-cover"
-              />
+            <div
+              tabIndex={0}
+              role="button"
+              className="btn btn-ghost btn-circle avatar"
+            >
+              <div className="w-10 h-10 rounded-full overflow-hidden">
+                <img
+                  src={userAvatar}
+                  alt="user avatar"
+                  className="w-full h-full object-cover"
+                />
+              </div>
             </div>
-          </div>
             <ul
               tabIndex={0}
               className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow"

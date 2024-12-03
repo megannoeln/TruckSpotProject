@@ -9,22 +9,22 @@ function UpdateAccount() {
     lastName: "",
     phone: "",
     email: "",
-    selectedAvatar: 0
+    selectedAvatar: 0,
   });
   const [statusMessage, setStatusMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const avatars = [
-    `https://api.dicebear.com/7.x/fun-emoji/svg?seed=Felix`, 
+    `https://api.dicebear.com/7.x/fun-emoji/svg?seed=Felix`,
     `https://api.dicebear.com/7.x/fun-emoji/svg?seed=Sophie`,
-    `https://api.dicebear.com/7.x/fun-emoji/svg?seed=Alex`, 
+    `https://api.dicebear.com/7.x/fun-emoji/svg?seed=Alex`,
     `https://api.dicebear.com/7.x/fun-emoji/svg?seed=Luna`,
-    `https://api.dicebear.com/7.x/fun-emoji/svg?seed=Max`,  
-    `https://api.dicebear.com/7.x/fun-emoji/svg?seed=Zoe`, 
-    `https://api.dicebear.com/7.x/fun-emoji/svg?seed=Leo`,  
-    `https://api.dicebear.com/7.x/fun-emoji/svg?seed=Mia`, 
-    `https://api.dicebear.com/7.x/fun-emoji/svg?seed=Sam` 
+    `https://api.dicebear.com/7.x/fun-emoji/svg?seed=Max`,
+    `https://api.dicebear.com/7.x/fun-emoji/svg?seed=Zoe`,
+    `https://api.dicebear.com/7.x/fun-emoji/svg?seed=Leo`,
+    `https://api.dicebear.com/7.x/fun-emoji/svg?seed=Mia`,
+    `https://api.dicebear.com/7.x/fun-emoji/svg?seed=Sam`,
   ];
 
   useEffect(() => {
@@ -32,28 +32,29 @@ function UpdateAccount() {
       try {
         const userID = sessionStorage.getItem("userID");
         const userType = sessionStorage.getItem("userType");
-  
+
         if (!userID || !userType) {
           setStatusMessage("User session not found.");
           return;
         }
         const endpoint = `http://localhost:5000/api/user-details?userID=${userID}&userType=${userType}`;
         const response = await axios.get(endpoint);
-  
+
         if (response.data.success) {
-          const { userName, phoneNumber, email, strPictureFilePath } = response.data; // Change avatar to strPictureFilePath
+          const { userName, phoneNumber, email, strPictureFilePath } =
+            response.data;
           const [firstName, lastName] = userName.split(" ");
           const formattedPhone = phoneNumber.replace(/-/g, "");
-  
-          // Find the index of the avatar URL in the avatars array
-          const avatarIndex = avatars.findIndex(avatar => avatar === strPictureFilePath);
-  
+          const avatarIndex = avatars.findIndex(
+            (avatar) => avatar === strPictureFilePath
+          );
+
           setFormData({
             firstName: firstName || "",
             lastName: lastName || "",
             phone: formattedPhone || "",
             email: email || "",
-            selectedAvatar: avatarIndex !== -1 ? avatarIndex : 0 // Set to found index or default to 0
+            selectedAvatar: avatarIndex !== -1 ? avatarIndex : 0,
           });
         } else {
           setStatusMessage("Failed to load user details.");
@@ -63,17 +64,17 @@ function UpdateAccount() {
         setStatusMessage("An error occurred while loading user details.");
       }
     };
-  
+
     fetchUserDetails();
   }, []);
 
   const handleAvatarSelect = (index) => {
-    setFormData(prev => ({ ...prev, selectedAvatar: index }));
+    setFormData((prev) => ({ ...prev, selectedAvatar: index }));
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
@@ -105,7 +106,7 @@ function UpdateAccount() {
         userType,
         ...formData,
         avatarUrl: avatars[formData.selectedAvatar],
-        phone: formData.phone.replace(/-/g, "")
+        phone: formData.phone.replace(/-/g, ""),
       };
 
       const response = await axios.post(
@@ -115,7 +116,7 @@ function UpdateAccount() {
 
       if (response.data.success) {
         setStatusMessage("User updated successfully!");
-        navigate('/myaccount'); // Redirect to MyAccount page
+        navigate("/myaccount");
       } else {
         setStatusMessage("Failed to update user: " + response.data.message);
       }
@@ -139,8 +140,10 @@ function UpdateAccount() {
             </div>
             <div className="col-span-12 md:col-span-9">
               <div className="space-y-8">
-                <h2 className="text-xl font-semibold text-gray-100">Personal Details</h2>
-                
+                <h2 className="text-xl font-semibold text-gray-100">
+                  Personal Details
+                </h2>
+
                 <form onSubmit={handleSubmit} className="space-y-8">
                   <div className="flex gap-8">
                     <div>
@@ -175,7 +178,9 @@ function UpdateAccount() {
 
                     <div className="space-y-4 flex-1 max-w-sm">
                       <div>
-                        <label className="text-sm text-gray-400">First Name</label>
+                        <label className="text-sm text-gray-400">
+                          First Name
+                        </label>
                         <input
                           type="text"
                           name="firstName"
@@ -186,7 +191,9 @@ function UpdateAccount() {
                         />
                       </div>
                       <div>
-                        <label className="text-sm text-gray-400">Last Name</label>
+                        <label className="text-sm text-gray-400">
+                          Last Name
+                        </label>
                         <input
                           type="text"
                           name="lastName"
@@ -197,7 +204,9 @@ function UpdateAccount() {
                         />
                       </div>
                       <div>
-                        <label className="text-sm text-gray-400">Phone Number</label>
+                        <label className="text-sm text-gray-400">
+                          Phone Number
+                        </label>
                         <input
                           type="text"
                           name="phone"
@@ -231,7 +240,11 @@ function UpdateAccount() {
                 </form>
 
                 {statusMessage && (
-                  <p className={`mt-4 ${loading ? "text-blue-500" : "text-red-500"}`}>
+                  <p
+                    className={`mt-4 ${
+                      loading ? "text-blue-500" : "text-red-500"
+                    }`}
+                  >
                     {statusMessage}
                   </p>
                 )}
@@ -243,6 +256,5 @@ function UpdateAccount() {
     </>
   );
 }
-
 
 export default UpdateAccount;
