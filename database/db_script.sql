@@ -494,6 +494,17 @@ VALUES
 (26, 'J5', '10x10', 1),
 (26, 'J6', '10x10', 1);
 
+INSERT INTO TEventSpaces (intEventID, strSpaceNum, strSize, boolIsAvailable) 
+VALUES
+(6, 'A1', '10x10', 1),
+(6, 'A2', '10x10', 1),
+(6, 'A3', '10x20', 1),
+(6, 'A4', '10x20', 1),
+(6, 'B1', '10x10', 1),
+(6, 'B2', '10x10', 1),
+(6, 'B3', '10x20', 1),
+(6, 'B4', '10x20', 1);
+
 
 -- TFoodTruckEvents
 INSERT INTO TFoodTruckEvents (intEventID, intFoodTruckID, monTotalRevenue, intRating, strVendorComment)
