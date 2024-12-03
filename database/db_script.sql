@@ -1135,8 +1135,8 @@ GO
 
 -- UPDATE FOODTRUCK
 CREATE PROCEDURE uspUpdateFoodTruck
-    @intFoodTruckID INT,
-    @intVendorID INT = NULL,
+    @intVendorID INT,
+    @intFoodTruckID INT = NULL,
     @intCuisineTypeID INT = NULL,
     @strTruckName VARCHAR(50) = NULL,
     @monMinPrice MONEY = NULL,
@@ -1153,15 +1153,15 @@ BEGIN
     BEGIN TRY
         UPDATE TFoodTrucks
         SET 
-            intVendorID = COALESCE(@intVendorID, intVendorID),
             intCuisineTypeID = COALESCE(@intCuisineTypeID, intCuisineTypeID),
             strTruckName = COALESCE(@strTruckName, strTruckName),
             monMinPrice = COALESCE(@monMinPrice, monMinPrice),
             monMaxPrice = COALESCE(@monMaxPrice, monMaxPrice),
             strLogoFilePath = COALESCE(@strLogoFilePath, strLogoFilePath),
             strOperatingLicense = COALESCE(@strOperatingLicense, strOperatingLicense)
-        WHERE intFoodTruckID = @intFoodTruckID;
-
+        WHERE 
+            intVendorID = @intVendorID;
+            
         COMMIT TRANSACTION;  
     END TRY
     BEGIN CATCH
@@ -1169,6 +1169,7 @@ BEGIN
         THROW;
     END CATCH
 END
+GO
 GO
 
 -- testing update food truck
