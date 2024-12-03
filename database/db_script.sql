@@ -1217,7 +1217,8 @@ BEGIN
         strEmail,
         strPhone,
         dtDateCreated,
-        dtLastLogin
+        dtLastLogin,
+		strPictureFilePath
     FROM TVendors
     WHERE intVendorID = @intVendorID;
 END
@@ -1243,7 +1244,8 @@ BEGIN
         strEmail,
         strPhone,
         dtDateCreated,
-        dtLastLogin
+        dtLastLogin,
+		strPictureFilePath
     FROM TOrganizers
     WHERE intOrganizerID = @intOrganizerID;
 END
