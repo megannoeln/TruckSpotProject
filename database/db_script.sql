@@ -90,6 +90,9 @@ CREATE TABLE TVendors
 	,CONSTRAINT TVendors_PK PRIMARY KEY ( intVendorID )
 );
 
+ALTER TABLE TVendors
+ADD strPictureFilePath VARCHAR(500) NULL;
+
 CREATE TABLE TOrganizers
 (
 	 intOrganizerID			INTEGER	IDENTITY		NOT NULL
@@ -102,6 +105,9 @@ CREATE TABLE TOrganizers
 	,dtLastLogin			DATETIME				NOT NULL
 	,CONSTRAINT TOrganizers_PK PRIMARY KEY ( intOrganizerID )
 );
+
+ALTER TABLE TOrganizers
+ADD strPictureFilePath VARCHAR(500) NULL;
 
 CREATE TABLE TEvents
 (
@@ -699,7 +705,8 @@ CREATE PROCEDURE uspCreateOrganizer
     @strLastName AS VARCHAR(50),
     @strPassword AS VARCHAR(50),
     @strEmail AS VARCHAR(50),
-    @strPhone AS VARCHAR(15)
+    @strPhone AS VARCHAR(15),
+	@strPictureFilePath AS VARCHAR(500) = NULL
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -714,7 +721,8 @@ BEGIN
         strEmail,
         strPhone,
         dtDateCreated,
-        dtLastLogin
+        dtLastLogin,
+		strPictureFilePath
     )
     VALUES (
         @strFirstName,
@@ -723,7 +731,8 @@ BEGIN
         @strEmail,
         @strPhone,
         GETDATE(),       
-        GETDATE()
+        GETDATE(),
+		@strPictureFilePath
     );
 
  
@@ -763,7 +772,8 @@ CREATE PROCEDURE uspCreateVendor
     @strLastName AS VARCHAR(50),
     @strPassword AS VARCHAR(50),
     @strEmail AS VARCHAR(50),
-    @strPhone AS VARCHAR(15)
+    @strPhone AS VARCHAR(15),
+	@strPictureFilePath AS VARCHAR(500) = NULL
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -778,7 +788,8 @@ BEGIN
         strEmail,
         strPhone,
         dtDateCreated,
-        dtLastLogin
+        dtLastLogin,
+		strPictureFilePath
     )
     VALUES (
         @strFirstName,
@@ -787,7 +798,8 @@ BEGIN
         @strEmail,
         @strPhone,
         GETDATE(),       
-        GETDATE()
+        GETDATE(),
+		@strPictureFilePath
     );
 
 
@@ -975,7 +987,8 @@ CREATE PROCEDURE uspUpdateVendor
     @strLastName VARCHAR(50) = NULL,
 
     @strEmail VARCHAR(50) = NULL,
-    @strPhone VARCHAR(15) = NULL
+    @strPhone VARCHAR(15) = NULL,
+	@strPictureFilePath VARCHAR(500) = NULL 
 AS
 BEGIN
     SET NOCOUNT ON;  
@@ -991,7 +1004,8 @@ BEGIN
             strLastName = COALESCE(@strLastName, strLastName),
 
             strEmail = COALESCE(@strEmail, strEmail),
-            strPhone = COALESCE(@strPhone, strPhone)
+            strPhone = COALESCE(@strPhone, strPhone),
+			strPictureFilePath = COALESCE(@strPictureFilePath, strPictureFilePath)
         WHERE intVendorID = @intVendorID;
 
         COMMIT TRANSACTION;  
@@ -1025,7 +1039,8 @@ CREATE PROCEDURE uspUpdateOrganizer
     @strLastName VARCHAR(50) = NULL,
     
     @strEmail VARCHAR(50) = NULL,
-    @strPhone VARCHAR(15) = NULL
+    @strPhone VARCHAR(15) = NULL,
+	@strPictureFilePath VARCHAR(500) = NULL 
 AS
 BEGIN
     SET NOCOUNT ON;  
@@ -1041,7 +1056,8 @@ BEGIN
             strLastName = COALESCE(@strLastName, strLastName),
 
             strEmail = COALESCE(@strEmail, strEmail),
-            strPhone = COALESCE(@strPhone, strPhone)
+            strPhone = COALESCE(@strPhone, strPhone),
+			strPictureFilePath = COALESCE(@strPictureFilePath, strPictureFilePath)
         WHERE intOrganizerID = @intOrganizerID;
 
         COMMIT TRANSACTION;  
@@ -1201,7 +1217,8 @@ BEGIN
         strEmail,
         strPhone,
         dtDateCreated,
-        dtLastLogin
+        dtLastLogin,
+		strPictureFilePath
     FROM TVendors
     WHERE intVendorID = @intVendorID;
 END
@@ -1227,7 +1244,8 @@ BEGIN
         strEmail,
         strPhone,
         dtDateCreated,
-        dtLastLogin
+        dtLastLogin,
+		strPictureFilePath
     FROM TOrganizers
     WHERE intOrganizerID = @intOrganizerID;
 END
