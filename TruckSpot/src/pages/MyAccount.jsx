@@ -119,7 +119,7 @@ function MyAccount() {
             </div>
             <div className="col-span-12 md:col-span-9">
               <div className="space-y-8">
-                <h2 className="text-xl font-semibold text-gray-100">
+                <h2 className="text-xl font-semibold text-gray-900">
                   Account Information
                 </h2>
 
@@ -140,20 +140,20 @@ function MyAccount() {
                     <div className="grid grid-cols-2 gap-8">
                       {/* Personal Details */}
                       <div className="space-y-4">
-                        <h3 className="text-lg font-semibold text-gray-100">
+                        <h3 className="text-lg font-semibold text-gray-900">
                           Personal Details
                         </h3>
                         <div>
-                          <p className="text-sm text-gray-400">Name</p>
-                          <p className="mt-1">{userName}</p>
+                          <p className="text-sm text-gray-700">Name</p>
+                          <p className="mt-1 text-gray-900">{userName}</p>
                         </div>
                         <div>
-                          <p className="text-sm text-gray-400">Phone Number</p>
-                          <p className="mt-1">{userDetails.phoneNumber}</p>
+                          <p className="text-sm text-gray-700">Phone Number</p>
+                          <p className="mt-1 text-gray-900">{userDetails.phoneNumber}</p>
                         </div>
                         <div>
-                          <p className="text-sm text-gray-400">Email</p>
-                          <p className="mt-1">{userDetails.email}</p>
+                          <p className="text-sm text-gray-700">Email</p>
+                          <p className="mt-1 text-gray-900">{userDetails.email}</p>
                         </div>
                       </div>
 
@@ -166,31 +166,31 @@ function MyAccount() {
                           {truckDetails ? (
                             <>
                               <div>
-                                <p className="text-sm text-gray-400">
+                                <p className="text-sm text-gray-700">
                                   Truck Name
                                 </p>
-                                <p className="mt-1">{truckDetails.truckName}</p>
+                                <p className="mt-1 text-gray-900">{truckDetails.truckName}</p>
                               </div>
                               <div>
-                                <p className="text-sm text-gray-400">
+                                <p className="text-sm text-gray-700">
                                   Cuisine Type
                                 </p>
-                                <p className="mt-1">
+                                <p className="mt-1 text-gray-900">
                                   {truckDetails.cusineType}
                                 </p>
                               </div>
                               <div>
-                                <p className="text-sm text-gray-400">
+                                <p className="text-sm text-gray-700">
                                   Operating License
                                 </p>
-                                <p className="mt-1">
+                                <p className="mt-1 text-gray-900">
                                   {truckDetails.strOperatingLicense}
                                 </p>
                               </div>
                             </>
                           ) : (
                             <div className="space-y-4">
-                              <p className="text-gray-400">
+                              <p className="text-gray-700">
                                 No truck data available for this vendor.
                               </p>
                             </div>
