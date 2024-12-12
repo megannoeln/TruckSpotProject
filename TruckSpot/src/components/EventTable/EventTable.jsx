@@ -64,7 +64,6 @@ function EventTable() {
         alert("Reservation cancelled successfully");
       } catch (error) {
         console.error("Error cancelling reservation:", error);
-        alert("Failed to cancel reservation");
       }
     }
   };

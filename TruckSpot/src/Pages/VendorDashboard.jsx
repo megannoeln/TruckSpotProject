@@ -15,6 +15,8 @@ function VendorDashboard() {
     averageRevenue: 0,
   });
 
+const [passedEvents, setPassedEvents] = useState([]);
+
   useEffect(() => {
     const fetchStats = async () => {
       const userId = sessionStorage.getItem("userID");
@@ -33,18 +35,18 @@ function VendorDashboard() {
   }, []);
 
   useEffect(() => {
-    const fetchUpcomingEvents = async () => {
+    const fetchPassedEvents = async () => {
       const userId = sessionStorage.getItem("userID");
       try {
         const response = await axios.get(
-          `http://localhost:5000/api/vendor/upcoming-events/${userId}`
+          `http://localhost:5000/api/vendor/passed-events/${userId}`
         );
-        setUpcomingEvents(response.data);
+        setPassedEvents(response.data);
       } catch (error) {
         console.error("Error:", error);
       }
     };
-    fetchUpcomingEvents();
+    fetchPassedEvents();
   }, []);
 
   return (
@@ -85,6 +87,50 @@ function VendorDashboard() {
             </div>
 
             <ItemSoldDashboard/>
+
+            <div className="bg-white rounded-lg shadow">
+              <h3 className="p-4 text-lg font-semibold border-b">
+                Past Events
+              </h3>
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600">
+                        Event Name
+                      </th>
+                      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600">
+                        Organizer
+                      </th>
+                      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600">
+                        Total Revenue
+                      </th>
+                      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600">
+                        Date
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200">
+                    {passedEvents.map((event) => (
+                      <tr key={event.intEventID}>
+                        <td className="px-6 py-4 text-sm">{event.EventName}</td>
+                        <td className="px-6 py-4 text-sm">
+                          {event.OrganizerName}
+                        </td>
+                        <td className="px-6 py-4 text-sm">
+                          ${event.Revenue}
+                        </td>
+                        <td className="px-6 py-4 text-sm">
+                          {new Date(event.EventDate).toLocaleDateString()}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+
 
           </div>
         </div>

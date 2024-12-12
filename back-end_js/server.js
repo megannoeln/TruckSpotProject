@@ -1246,6 +1246,27 @@ app.get("/api/organizer/upcoming-events/:userId", async (req, res) => {
   }
 });
 
+
+app.get("/api/vendor/passed-events/:userId", async (req, res) => {
+  try {
+    const pool = await sqlConnectionToServer.connect(config);
+    const userId = req.params.userId;
+
+    const result = await pool
+      .request()
+      .input("intVendorID", sqlConnectionToServer.Int, userId)
+      .execute("uspUpcomingEventsVendor");
+    console.log(result.recordset)
+    res.json(result.recordset);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to fetch upcoming events" });
+  }
+});
+
+
+
+
 // Get Vendor statistic for dashboard
 app.get("/api/vendor/stats/:userId", async (req, res) => {
   try {
