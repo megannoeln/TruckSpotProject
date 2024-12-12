@@ -119,7 +119,7 @@ function MyAccount() {
             </div>
             <div className="col-span-12 md:col-span-9">
               <div className="space-y-8">
-                <h2 className="text-xl font-semibold text-gray-900">
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
                   Account Information
                 </h2>
 
@@ -140,20 +140,20 @@ function MyAccount() {
                     <div className="grid grid-cols-2 gap-8">
                       {/* Personal Details */}
                       <div className="space-y-4">
-                        <h3 className="text-lg font-semibold text-gray-900">
+                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                           Personal Details
                         </h3>
                         <div>
-                          <p className="text-sm text-gray-700">Name</p>
-                          <p className="mt-1 text-gray-900">{userName}</p>
+                          <p className="text-sm text-gray-700 dark:text-gray-300">Name</p>
+                          <p className="mt-1 text-gray-900 dark:text-white">{userName}</p>
                         </div>
                         <div>
-                          <p className="text-sm text-gray-700">Phone Number</p>
-                          <p className="mt-1 text-gray-900">{userDetails.phoneNumber}</p>
+                          <p className="text-sm text-gray-700 dark:text-gray-300">Phone Number</p>
+                          <p className="mt-1 text-gray-900 dark:text-white">{userDetails.phoneNumber}</p>
                         </div>
                         <div>
-                          <p className="text-sm text-gray-700">Email</p>
-                          <p className="mt-1 text-gray-900">{userDetails.email}</p>
+                          <p className="text-sm text-gray-700 dark:text-gray-300">Email</p>
+                          <p className="mt-1 text-gray-900 dark:text-white">{userDetails.email}</p>
                         </div>
                       </div>
 
@@ -166,24 +166,24 @@ function MyAccount() {
                           {truckDetails ? (
                             <>
                               <div>
-                                <p className="text-sm text-gray-700">
+                                <p className="text-sm text-gray-700 dark:text-white">
                                   Truck Name
                                 </p>
-                                <p className="mt-1 text-gray-900">{truckDetails.truckName}</p>
+                                <p className="mt-1 text-gray-900 dark:text-white">{truckDetails.truckName}</p>
                               </div>
                               <div>
-                                <p className="text-sm text-gray-700">
+                                <p className="text-sm text-gray-700 dark:text-white">
                                   Cuisine Type
                                 </p>
-                                <p className="mt-1 text-gray-900">
-                                  {truckDetails.cusineType}
+                                <p className="mt-1 text-gray-900 dark:text-white">
+                                  {truckDetails.cusineType }
                                 </p>
                               </div>
                               <div>
-                                <p className="text-sm text-gray-700">
+                                <p className="text-sm text-gray-700 dark:text-white">
                                   Operating License
                                 </p>
-                                <p className="mt-1 text-gray-900">
+                                <p className="mt-1 text-gray-900 dark:text-white" >
                                   {truckDetails.strOperatingLicense}
                                 </p>
                               </div>

@@ -6,11 +6,17 @@ const config = {
   database: "truckspot",
   port: 1433, // Default SQL Server port
   options: {
-    encrypt: true, // Required for Azure connections
-    trustServerCertificate: true, // Use only for development
+    encrypt: true,
+    trustServerCertificate: false,
     enableArithAbort: true,
-    trustedConnection: false
-  },
+    connectionTimeout: 30000,
+    requestTimeout: 30000,
+    pool: {
+      max: 10,
+      min: 0,
+      idleTimeoutMillis: 30000
+    }
+  }
 };
 
 // Export Configurations to Modules in need of it

@@ -53,7 +53,7 @@ function SideBar() {
       {/* Sidebar */}
       <aside id="logo-sidebar" className="h-fit  w-full" aria-label="Sidebar">
         <div className="h-full px-3 py-4 overflow-y-auto">
-          <a href="/" className="flex items-center ps-2.5 mb-5">
+          <a className="flex items-center ps-2.5 mb-5">
             <span className="self-center text-xl font-semibold whitespace-nowrap dark:text-white text-gray-900">
               My Account
             </span>
